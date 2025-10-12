@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import health
+from routers import health, users, quests, items
 
 app = FastAPI(
     title="Embark API",
@@ -19,6 +19,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(users.router, prefix="/api", tags=["users"])
+app.include_router(quests.router, prefix="/api", tags=["quests"])
+app.include_router(items.router, prefix="/api", tags=["items"])
 
 
 @app.get("/")

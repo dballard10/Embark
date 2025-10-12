@@ -17,6 +17,7 @@ export interface Quest {
   xp_reward: number;
   time_limit_hours: number;
   reward_item_id: string;
+  created_at: string;
 }
 
 export interface UserCompletedQuest {

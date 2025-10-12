@@ -1,4 +1,11 @@
-import { IconHome, IconMap, IconBox, IconUser } from "@tabler/icons-react";
+import {
+  IconHome,
+  IconMap,
+  IconBox,
+  IconUser,
+  IconCode,
+} from "@tabler/icons-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
   id: string;
@@ -8,6 +15,7 @@ interface NavItem {
     stroke?: number;
     className?: string;
   }>;
+  path?: string;
 }
 
 interface BottomNavProps {
@@ -16,24 +24,37 @@ interface BottomNavProps {
 }
 
 const navItems: NavItem[] = [
-  { id: "home", label: "Home", icon: IconHome },
+  { id: "home", label: "Home", icon: IconHome, path: "/" },
   { id: "quests", label: "Quests", icon: IconMap },
   { id: "vault", label: "Vault", icon: IconBox },
   { id: "profile", label: "Profile", icon: IconUser },
 ];
 
 function BottomNav({ currentPage = "home", onNavigate }: BottomNavProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isDev = import.meta.env.DEV;
+  const isDevPage = location.pathname === "/dev";
+
+  const handleNavClick = (item: NavItem) => {
+    if (item.path) {
+      navigate(item.path);
+    } else {
+      onNavigate?.(item.id);
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-slate-900 to-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-2xl">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-4 gap-1">
+        <div className={`grid gap-1 ${isDev ? "grid-cols-5" : "grid-cols-4"}`}>
           {navItems.map((item) => {
             const isActive = currentPage === item.id;
             const Icon = item.icon;
             return (
               <button
                 key={item.id}
-                onClick={() => onNavigate?.(item.id)}
+                onClick={() => handleNavClick(item)}
                 className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${
                   isActive ? "text-cyan-400" : "text-gray-400 hover:text-white"
                 }`}
@@ -58,6 +79,34 @@ function BottomNav({ currentPage = "home", onNavigate }: BottomNavProps) {
               </button>
             );
           })}
+
+          {/* Dev Button - Only visible in development */}
+          {isDev && (
+            <button
+              onClick={() => navigate("/dev")}
+              className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${
+                isDevPage ? "text-amber-400" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <div
+                className={`mb-1 transition-transform duration-200 ${
+                  isDevPage ? "scale-110" : "hover:scale-105"
+                }`}
+              >
+                <IconCode size={28} stroke={2} />
+              </div>
+              <div
+                className={`text-xs font-semibold ${
+                  isDevPage ? "text-amber-400" : "text-gray-400"
+                }`}
+              >
+                Dev
+              </div>
+              {isDevPage && (
+                <div className="absolute bottom-0 h-1 w-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-full"></div>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
