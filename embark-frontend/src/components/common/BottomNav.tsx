@@ -25,12 +25,12 @@ interface BottomNavProps {
 
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: IconHome, path: "/" },
-  { id: "quests", label: "Quests", icon: IconMap },
-  { id: "vault", label: "Vault", icon: IconBox },
-  { id: "profile", label: "Profile", icon: IconUser },
+  { id: "quests", label: "Quests", icon: IconMap, path: "/quests" },
+  { id: "vault", label: "Vault", icon: IconBox, path: "/vault" },
+  { id: "profile", label: "Profile", icon: IconUser, path: "/profile" },
 ];
 
-function BottomNav({ currentPage = "home", onNavigate }: BottomNavProps) {
+function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isDev = import.meta.env.DEV;
@@ -44,12 +44,25 @@ function BottomNav({ currentPage = "home", onNavigate }: BottomNavProps) {
     }
   };
 
+  // Determine active page from location if currentPage is not provided
+  const getActivePage = () => {
+    if (currentPage) return currentPage;
+
+    // Match location to nav items
+    const matchedItem = navItems.find(
+      (item) => item.path === location.pathname
+    );
+    return matchedItem?.id || "home";
+  };
+
+  const activePage = getActivePage();
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-slate-900 to-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-2xl">
       <div className="max-w-7xl mx-auto">
         <div className={`grid gap-1 ${isDev ? "grid-cols-5" : "grid-cols-4"}`}>
           {navItems.map((item) => {
-            const isActive = currentPage === item.id;
+            const isActive = activePage === item.id;
             const Icon = item.icon;
             return (
               <button

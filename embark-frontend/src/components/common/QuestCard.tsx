@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTierStars } from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
+import type { Item } from "../../types/item.types";
 import {
   IconTarget,
   IconTrophy,
@@ -10,14 +11,20 @@ import {
   IconLock,
   IconStarFilled,
   IconInfoCircle,
+  IconGift,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
   userQuest?: UserCompletedQuest;
-  variant?: "active" | "available" | "locked";
+  variant?: "active" | "available" | "locked" | "completed";
+  rewardItem?: Item;
 }
 
-function QuestCard({ userQuest, variant = "active" }: QuestCardProps) {
+function QuestCard({
+  userQuest,
+  variant = "active",
+  rewardItem,
+}: QuestCardProps) {
   const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState("");
 
@@ -101,26 +108,47 @@ function QuestCard({ userQuest, variant = "active" }: QuestCardProps) {
           {userQuest.quest.title}
         </h3>
 
-        {/* Rewards */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-yellow-900/30 border border-yellow-600/40 rounded-lg p-2 text-center">
-            <div className="flex items-center justify-center gap-1 font-bold text-yellow-300">
-              <IconTrophy size={18} stroke={2} />
-              {userQuest.quest.glory_reward.toLocaleString()}
+        {/* Rewards - Only show for active and available quests */}
+        {variant !== "completed" && (
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-yellow-900/30 border border-yellow-600/40 rounded-lg p-2 text-center">
+              <div className="flex items-center justify-center gap-1 font-bold text-yellow-300">
+                <IconTrophy size={18} stroke={2} />
+                {userQuest.quest.glory_reward.toLocaleString()}
+              </div>
+            </div>
+            <div className="bg-blue-900/30 border border-blue-600/40 rounded-lg p-2 text-center">
+              <div className="flex items-center justify-center gap-1 font-bold text-blue-300">
+                <IconBolt size={18} stroke={2} />
+                {userQuest.quest.xp_reward.toLocaleString()}
+              </div>
+            </div>
+            <div className="bg-purple-900/30 border border-purple-600/40 rounded-lg p-2 text-center">
+              <div className="flex items-center justify-center gap-1 font-bold text-purple-300">
+                <IconStarFilled />
+              </div>
             </div>
           </div>
-          <div className="bg-blue-900/30 border border-blue-600/40 rounded-lg p-2 text-center">
-            <div className="flex items-center justify-center gap-1 font-bold text-blue-300">
-              <IconBolt size={18} stroke={2} />
-              {userQuest.quest.xp_reward.toLocaleString()}
+        )}
+
+        {/* Item Earned - Only show for completed quests */}
+        {variant === "completed" && rewardItem && (
+          <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/50 rounded-lg p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center">
+                <IconGift size={28} className="text-purple-300" stroke={1.5} />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-semibold text-white line-clamp-1">
+                  {rewardItem.name}
+                </div>
+                <div className="flex items-center gap-0.5 mt-1">
+                  {getTierStars(rewardItem.rarity_tier)}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="bg-purple-900/30 border border-purple-600/40 rounded-lg p-2 text-center">
-            <div className="flex items-center justify-center gap-1 font-bold text-purple-300">
-              <IconStarFilled />
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Action Buttons */}
         {variant === "active" && (

@@ -1,4 +1,4 @@
-import { formatDistanceToNow, isPast } from "date-fns";
+import { formatDistanceToNow, isPast, format } from "date-fns";
 
 /**
  * Format time remaining until deadline
@@ -18,4 +18,23 @@ export function formatTimeRemaining(deadline: string): string {
  */
 export function isQuestExpired(deadline: string): boolean {
   return isPast(new Date(deadline));
+}
+
+/**
+ * Format date in a friendly, readable way
+ */
+export function formatDateFriendly(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  // If less than 7 days ago, show relative time
+  if (diffInDays < 7) {
+    return formatDistanceToNow(date, { addSuffix: true });
+  }
+
+  // Otherwise show formatted date
+  return format(date, "MMM d, yyyy");
 }

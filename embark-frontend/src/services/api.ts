@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Quest } from "../types/quest.types";
+import type { Quest, UserCompletedQuest } from "../types/quest.types";
 import type { Item } from "../types/item.types";
 import type { User } from "../types/user.types";
 
@@ -27,6 +27,38 @@ export const fetchAllQuests = async (): Promise<Quest[]> => {
   }
 };
 
+export const fetchActiveQuests = async (
+  userId: string
+): Promise<UserCompletedQuest | null> => {
+  try {
+    const response = await api.get<UserCompletedQuest>(
+      `/users/${userId}/quests/active`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching active quests:", error);
+    return null;
+  }
+};
+
+export const fetchCompletedQuests = async (
+  userId: string,
+  limit: number = 50
+): Promise<UserCompletedQuest[]> => {
+  try {
+    const response = await api.get<UserCompletedQuest[]>(
+      `/users/${userId}/quests/history`,
+      {
+        params: { limit },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching completed quests:", error);
+    throw new Error("Failed to fetch completed quests");
+  }
+};
+
 // Item API calls
 export const fetchAllItems = async (): Promise<Item[]> => {
   try {
@@ -47,6 +79,20 @@ export const fetchItemById = async (id: string): Promise<Item> => {
   } catch (error) {
     console.error(`Error fetching item ${id}:`, error);
     throw new Error("Failed to fetch item");
+  }
+};
+
+export const fetchUserItems = async (
+  userId: string
+): Promise<import("../types/item.types").UserItem[]> => {
+  try {
+    const response = await api.get<import("../types/item.types").UserItem[]>(
+      `/users/${userId}/items`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching items for user ${userId}:`, error);
+    throw new Error("Failed to fetch user items");
   }
 };
 
