@@ -1,0 +1,19 @@
+{
+  "name": "embark",
+  "version": "1.0.0",
+  "description": "Life gamification app - Transform your daily activities into epic quests",
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd embark-backend && uv run fastapi dev main.py",
+    "dev:frontend": "cd embark-frontend && npm run dev"
+  },
+  "keywords": [
+    "gamification",
+    "productivity",
+    "quests",
+    "life-rpg"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

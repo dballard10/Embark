@@ -48,27 +48,44 @@ Create `embark-frontend/.env`:
 VITE_API_URL=http://localhost:8000
 ```
 
-### 3. Start Backend
+### 3. Install Dependencies
+
+```bash
+# Install root dependencies (first time only)
+npm install
+
+# Install frontend dependencies (first time only)
+cd embark-frontend && npm install && cd ..
+```
+
+### 4. Start Both Servers
+
+**Easy way (recommended):**
+
+```bash
+npm run dev
+```
+
+This starts both backend and frontend servers concurrently!
+
+- Backend: http://localhost:8000 (test at http://localhost:8000/api/health)
+- Frontend: http://localhost:5173
+
+**Manual way (two terminals):**
+
+Terminal 1:
 
 ```bash
 cd embark-backend
 uv run fastapi dev main.py
 ```
 
-Backend runs at: http://localhost:8000  
-Test health check: http://localhost:8000/api/health
-
-### 4. Start Frontend
-
-In a new terminal:
+Terminal 2:
 
 ```bash
 cd embark-frontend
-npm install  # First time only
 npm run dev
 ```
-
-Frontend runs at: http://localhost:5173
 
 ## 📁 Project Structure
 

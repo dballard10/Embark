@@ -1,4 +1,6 @@
+import React from "react";
 import type { QuestTier, QuestTierName } from "../types/quest.types";
+import { IconStar, IconFlame } from "@tabler/icons-react";
 
 /**
  * Get color class for tier badge
@@ -31,11 +33,21 @@ export function getTierName(tier: QuestTier): QuestTierName {
 }
 
 /**
- * Get star display for tier (⭐ × tier or 🔥⭐ for Conqueror)
+ * Get star display for tier using Tabler icons
  */
-export function getTierStars(tier: QuestTier): string {
+export function getTierStars(tier: QuestTier): React.ReactElement {
+  const stars = Array.from({ length: tier }, (_, i) => (
+    <IconStar key={i} size={16} fill="currentColor" stroke={1.5} />
+  ));
+
   if (tier === 6) {
-    return "🔥" + "⭐".repeat(tier);
+    return (
+      <>
+        <IconFlame size={16} fill="currentColor" stroke={1.5} />
+        {stars}
+      </>
+    );
   }
-  return "⭐".repeat(tier);
+
+  return <>{stars}</>;
 }

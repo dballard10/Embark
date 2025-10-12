@@ -1,0 +1,114 @@
+import {
+  calculateLevel,
+  getLevelProgress,
+  getCurrentLevelXP,
+} from "../../utils/levelCalculator";
+import {
+  IconTrophy,
+  IconDiamond,
+  IconSettings,
+  IconUser,
+} from "@tabler/icons-react";
+
+interface TopBarProps {
+  username: string;
+  totalXP: number;
+  totalGlory: number;
+  totalItems: number;
+}
+
+function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
+  const level = calculateLevel(totalXP);
+  const levelProgress = getLevelProgress(totalXP);
+  const currentLevelXP = getCurrentLevelXP(totalXP);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/95 to-slate-900/80 backdrop-blur-md border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Profile Section - Left */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg border-2 border-purple-400/30">
+              <IconUser size={24} className="text-white" stroke={2} />
+            </div>
+            <span className="text-lg font-bold text-white hidden sm:block">
+              {username}
+            </span>
+          </div>
+
+          {/* Level & XP - Center */}
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 flex items-center justify-center shadow-lg border-2 border-cyan-300/50">
+                <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center">
+                  <span className="text-xl font-bold text-cyan-300">
+                    {level}
+                  </span>
+                </div>
+              </div>
+              {/* XP Ring Progress */}
+              <svg className="absolute top-0 left-0 w-14 h-14 -rotate-90">
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26"
+                  fill="none"
+                  stroke="rgba(34, 211, 238, 0.2)"
+                  strokeWidth="2"
+                />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26"
+                  fill="none"
+                  stroke="rgba(34, 211, 238, 1)"
+                  strokeWidth="2"
+                  strokeDasharray={`${2 * Math.PI * 26}`}
+                  strokeDashoffset={`${
+                    2 * Math.PI * 26 * (1 - levelProgress / 100)
+                  }`}
+                  strokeLinecap="round"
+                  className="transition-all duration-500"
+                />
+              </svg>
+            </div>
+
+            {/* XP Progress Text */}
+            <div className="hidden sm:block">
+              <div className="text-xs text-gray-400">XP</div>
+              <div className="text-sm font-semibold text-white">
+                {currentLevelXP.toLocaleString()} / 10,000
+              </div>
+            </div>
+          </div>
+
+          {/* Currency Display - Right */}
+          <div className="flex items-center gap-3">
+            {/* Glory */}
+            <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 border border-yellow-600/50 rounded-full px-4 py-2 shadow-lg">
+              <IconTrophy size={24} className="text-yellow-400" />
+              <span className="font-bold text-yellow-300 text-lg">
+                {totalGlory.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Items/Gems */}
+            <div className="flex items-center gap-2 bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-600/50 rounded-full px-4 py-2 shadow-lg">
+              <IconDiamond size={24} className="text-green-400" />
+              <span className="font-bold text-green-300 text-lg">
+                {totalItems}
+              </span>
+            </div>
+
+            {/* Settings */}
+            <button className="w-12 h-12 rounded-full bg-slate-800/80 border border-white/20 flex items-center justify-center hover:bg-slate-700/80 transition-colors shadow-lg">
+              <IconSettings size={24} className="text-gray-300" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default TopBar;
