@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getTierStars } from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import {
@@ -7,8 +8,8 @@ import {
   IconBolt,
   IconClock,
   IconLock,
-  IconGift,
   IconStarFilled,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
@@ -17,6 +18,7 @@ interface QuestCardProps {
 }
 
 function QuestCard({ userQuest, variant = "active" }: QuestCardProps) {
+  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState("");
 
   useEffect(() => {
@@ -120,11 +122,19 @@ function QuestCard({ userQuest, variant = "active" }: QuestCardProps) {
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Buttons */}
         {variant === "active" && (
-          <button className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg">
-            Complete
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate(`/quest/${userQuest.id}`)}
+              className="flex items-center justify-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg text-sm"
+            >
+              <IconInfoCircle size={18} stroke={2} />
+            </button>
+            <button className="flex-1 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg">
+              Complete
+            </button>
+          </div>
         )}
 
         {variant === "available" && (

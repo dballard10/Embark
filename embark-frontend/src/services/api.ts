@@ -40,6 +40,16 @@ export const fetchAllItems = async (): Promise<Item[]> => {
   }
 };
 
+export const fetchItemById = async (id: string): Promise<Item> => {
+  try {
+    const response = await api.get<Item>(`/items/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching item ${id}:`, error);
+    throw new Error("Failed to fetch item");
+  }
+};
+
 // User API calls
 export const fetchAllUsers = async (): Promise<User[]> => {
   try {
