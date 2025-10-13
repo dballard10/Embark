@@ -11,169 +11,73 @@ import {
   IconStarFilled,
 } from "@tabler/icons-react";
 import { formatDateFriendly } from "../utils/dateUtils";
-
-// Mock user data
-const mockUser = {
-  id: "1",
-  username: "GeneralJF",
-  total_glory: 3445,
-  total_xp: 3095,
-  level: 9,
-  created_at: new Date().toISOString(),
-  total_items: 103,
-};
-
-// Mock user items (same as VaultPage)
-const mockUserItems: UserItem[] = [
-  {
-    id: "ui-1",
-    user_id: "1",
-    item_id: "1",
-    item: {
-      id: "1",
-      name: "Champion's Medallion",
-      description:
-        "A prestigious award for completing physical challenges. This medallion is forged from the finest metals and inscribed with ancient runes of strength. It has been awarded to only the most dedicated warriors throughout history.",
-      rarity_tier: 2,
-      rarity_stars: 3,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: false,
-  },
-  {
-    id: "ui-2",
-    user_id: "1",
-    item_id: "2",
-    item: {
-      id: "2",
-      name: "Scholar's Bookmark",
-      description:
-        "A beautiful bookmark for dedicated readers. Crafted from aged parchment and adorned with wisdom symbols, this bookmark marks not just pages, but the journey of knowledge itself.",
-      rarity_tier: 1,
-      rarity_stars: 2,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: false,
-  },
-  {
-    id: "ui-3",
-    user_id: "1",
-    item_id: "3",
-    item: {
-      id: "3",
-      name: "Warrior's Blade",
-      description:
-        "A legendary sword forged in the fires of Mount Doom. This blade has been passed down through generations of champions, each adding their own mark to its storied history. The steel never dulls, and its edge remains eternally sharp.",
-      rarity_tier: 4,
-      rarity_stars: 5,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: true,
-  },
-  {
-    id: "ui-4",
-    user_id: "1",
-    item_id: "4",
-    item: {
-      id: "4",
-      name: "Mystic Amulet",
-      description:
-        "An ancient amulet with mysterious powers. Legend says it was created by the first mages to walk the earth, imbuing it with arcane energies that still pulse within its crystal core.",
-      rarity_tier: 3,
-      rarity_stars: 4,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: false,
-  },
-  {
-    id: "ui-5",
-    user_id: "1",
-    item_id: "5",
-    item: {
-      id: "5",
-      name: "Dragon Scale Shield",
-      description:
-        "A shield crafted from real dragon scales. Each scale is harder than diamond and lighter than feather, providing unmatched protection. The shield still carries the ancient magic of the dragon that once wore these scales.",
-      rarity_tier: 5,
-      rarity_stars: 6,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: false,
-  },
-  {
-    id: "ui-6",
-    user_id: "1",
-    item_id: "6",
-    item: {
-      id: "6",
-      name: "Bronze Coin",
-      description:
-        "A simple bronze coin from a novice quest. While modest in appearance, this coin represents your first steps on the path to greatness. Every champion started with their first coin.",
-      rarity_tier: 1,
-      rarity_stars: 1,
-      image_url: null,
-      created_at: new Date().toISOString(),
-    },
-    acquired_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    is_featured: false,
-  },
-];
+import { useUser } from "../contexts/UserContext";
+import { fetchUserItems } from "../services/api";
 
 function ItemDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user] = useState(mockUser);
+  const { selectedUser, isLoading: userLoading } = useUser();
   const [userItem, setUserItem] = useState<UserItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadItem();
-  }, [id]);
+    if (selectedUser?.id && id) {
+      loadItem();
+    }
+  }, [id, selectedUser?.id]);
 
   const loadItem = async () => {
+    if (!selectedUser?.id || !id) return;
+
     try {
       setLoading(true);
 
-      // Use mock data for now
-      const foundItem = mockUserItems.find((item) => item.id === id);
+      // Fetch all user items and find the specific one
+      const userItems = await fetchUserItems(selectedUser.id);
+      const foundItem = userItems.find((item) => item.id === id);
+
       if (foundItem) {
         setUserItem(foundItem);
+      } else {
+        setUserItem(null);
       }
-
-      // Uncomment when API is ready:
-      // const item = await fetchItemById(id);
-      // const userItems = await fetchUserItems(user.id);
-      // const userItem = userItems.find(ui => ui.item_id === item.id);
-      // setUserItem(userItem || null);
     } catch (error) {
       console.error("Error loading item:", error);
+      setUserItem(null);
     } finally {
       setLoading(false);
     }
   };
 
+  if (userLoading || !selectedUser) {
+    return (
+      <div className="game-container flex items-center justify-center min-h-screen">
+        <div className="text-gray-400 text-lg">Loading...</div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="game-container flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="game-container flex items-center justify-center min-h-screen">
+        <div className="text-white text-xl">Loading item...</div>
       </div>
     );
   }
 
   if (!userItem?.item) {
     return (
-      <div className="game-container flex items-center justify-center">
-        <div className="text-white text-xl">Item not found</div>
+      <div className="game-container flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-white text-xl mb-4">Item not found</div>
+          <button
+            onClick={() => navigate("/vault")}
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          >
+            Back to Vault
+          </button>
+        </div>
       </div>
     );
   }
@@ -187,10 +91,10 @@ function ItemDetailsPage() {
     <div className="game-container">
       {/* Top Stats Bar */}
       <TopBar
-        username={user.username}
-        totalXP={user.total_xp}
-        totalGlory={user.total_glory}
-        totalItems={user.total_items}
+        username={selectedUser.username}
+        totalXP={selectedUser.total_xp}
+        totalGlory={selectedUser.total_glory}
+        totalItems={0}
       />
 
       {/* Back button header */}

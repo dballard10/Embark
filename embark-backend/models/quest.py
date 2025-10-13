@@ -78,3 +78,18 @@ class ActiveQuestResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+class CompletedQuestResponse(BaseModel):
+    """Model for completed quest with full quest details"""
+    id: UUID
+    user_id: UUID
+    quest_id: UUID
+    started_at: datetime
+    deadline_at: datetime
+    completed_at: Optional[datetime] = None
+    is_active: bool
+    quest: QuestResponse
+
+    class Config:
+        from_attributes = True
+

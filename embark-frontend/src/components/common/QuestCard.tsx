@@ -196,7 +196,10 @@ function QuestCard({
         )}
 
         {variant === "available" && (
-          <button className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg">
+          <button
+            onClick={onClick}
+            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+          >
             Start Quest
           </button>
         )}

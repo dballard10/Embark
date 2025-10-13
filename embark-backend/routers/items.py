@@ -122,6 +122,23 @@ async def award_item_to_user(user_id: UUID, item_id: UUID):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.post("/users/{user_id}/items/{item_id}/purchase")
+async def purchase_item(user_id: UUID, item_id: UUID):
+    """
+    Purchase an item for a user with glory
+    
+    - **user_id**: UUID of the user
+    - **item_id**: UUID of the item to purchase
+    
+    Returns the purchased item, new glory balance, and item price
+    """
+    try:
+        service = get_item_service()
+        return await service.purchase_item(user_id, item_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.get("/users/{user_id}/items", response_model=list[UserItemResponse])
 async def get_user_items(user_id: UUID):
     """

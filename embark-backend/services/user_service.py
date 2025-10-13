@@ -112,8 +112,8 @@ class UserService:
             new_glory = user.total_glory + stats_update.glory_delta
             new_xp = user.total_xp + stats_update.xp_delta
 
-            # Calculate new level (simplified: every 1000 XP = 1 level)
-            new_level = 1 + (new_xp // 1000)
+            # Calculate new level (every 10000 XP = 1 level)
+            new_level = 1 + (new_xp // 10000)
 
             # Update user
             response = (

@@ -9,6 +9,7 @@ from models.quest import (
     UserQuestCreate,
     UserQuestResponse,
     ActiveQuestResponse,
+    CompletedQuestResponse,
 )
 
 
@@ -111,10 +112,10 @@ class QuestService:
     async def start_quest(self, user_id: UUID, quest_data: UserQuestCreate) -> UserQuestResponse:
         """Start a quest for a user"""
         try:
-            # Check if user already has an active quest
-            active_quest = await self.get_active_quest(user_id)
-            if active_quest:
-                raise ValueError("User already has an active quest")
+            # Check if user already has 4 active quests (maximum)
+            active_quests = await self.get_active_quests(user_id)
+            if len(active_quests) >= 4:
+                raise ValueError("User already has maximum number of active quests (4)")
 
             # Get quest to determine time limit
             quest = await self.get_quest(quest_data.quest_id)
@@ -145,8 +146,8 @@ class QuestService:
         except Exception as e:
             raise ValueError(f"Error starting quest: {str(e)}")
 
-    async def get_active_quest(self, user_id: UUID) -> Optional[ActiveQuestResponse]:
-        """Get user's active quest with full quest details"""
+    async def get_active_quests(self, user_id: UUID) -> list[ActiveQuestResponse]:
+        """Get user's active quests with full quest details"""
         try:
             response = (
                 self.supabase.table("user_completed_quests")
@@ -157,46 +158,72 @@ class QuestService:
             )
 
             if not response.data:
-                return None
+                return []
 
-            user_quest = response.data[0]
-            # Fetch quest details separately
-            quest = await self.get_quest(UUID(user_quest["quest_id"]))
-            
-            if not quest:
-                raise ValueError("Quest not found")
+            active_quests = []
+            for user_quest in response.data:
+                # Fetch quest details separately
+                quest = await self.get_quest(UUID(user_quest["quest_id"]))
+                
+                if quest:
+                    active_quests.append(ActiveQuestResponse(**user_quest, quest=quest))
 
-            return ActiveQuestResponse(**user_quest, quest=quest)
+            return active_quests
+        except Exception as e:
+            raise ValueError(f"Error fetching active quests: {str(e)}")
+
+    async def get_active_quest(self, user_id: UUID) -> Optional[ActiveQuestResponse]:
+        """Get user's active quest with full quest details (deprecated - use get_active_quests)"""
+        try:
+            active_quests = await self.get_active_quests(user_id)
+            return active_quests[0] if active_quests else None
         except Exception as e:
             raise ValueError(f"Error fetching active quest: {str(e)}")
 
-    async def complete_quest(self, user_id: UUID) -> UserQuestResponse:
-        """Complete user's active quest"""
+    async def complete_quest(self, user_id: UUID, user_quest_id: UUID) -> ActiveQuestResponse:
+        """Complete a specific user quest and return full details including quest data"""
         try:
-            # Get active quest
-            active_quest = await self.get_active_quest(user_id)
-            if not active_quest:
-                raise ValueError("No active quest found")
-
-            # Check if deadline has passed
-            if datetime.now(timezone.utc) > active_quest.deadline_at:
-                raise ValueError("Quest deadline has passed")
-
-            # Mark quest as completed
-            completed_at = datetime.now(timezone.utc)
+            # Get the specific user quest to verify it exists and is active
             response = (
                 self.supabase.table("user_completed_quests")
-                .update(
-                    {"is_active": False, "completed_at": completed_at.isoformat()}
-                )
-                .eq("id", str(active_quest.id))
+                .select("*")
+                .eq("id", str(user_quest_id))
+                .eq("user_id", str(user_id))
+                .eq("is_active", True)
                 .execute()
             )
 
             if not response.data:
+                raise ValueError("Active quest not found or does not belong to user")
+
+            user_quest = response.data[0]
+
+            # Get quest details before completing
+            quest = await self.get_quest(UUID(user_quest["quest_id"]))
+            if not quest:
+                raise ValueError("Quest not found")
+
+            # Check if deadline has passed
+            deadline = datetime.fromisoformat(user_quest["deadline_at"].replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) > deadline:
+                raise ValueError("Quest deadline has passed")
+
+            # Mark quest as completed
+            completed_at = datetime.now(timezone.utc)
+            update_response = (
+                self.supabase.table("user_completed_quests")
+                .update(
+                    {"is_active": False, "completed_at": completed_at.isoformat()}
+                )
+                .eq("id", str(user_quest_id))
+                .execute()
+            )
+
+            if not update_response.data:
                 raise ValueError("Failed to complete quest")
 
-            return UserQuestResponse(**response.data[0])
+            # Return full quest details for reward processing
+            return ActiveQuestResponse(**update_response.data[0], quest=quest)
         except Exception as e:
             raise ValueError(f"Error completing quest: {str(e)}")
 
@@ -222,12 +249,12 @@ class QuestService:
 
     async def get_user_quest_history(
         self, user_id: UUID, limit: int = 50
-    ) -> list[UserQuestResponse]:
-        """Get user's completed quest history"""
+    ) -> list[CompletedQuestResponse]:
+        """Get user's completed quest history with full quest details"""
         try:
             response = (
                 self.supabase.table("user_completed_quests")
-                .select("*")
+                .select("*, quests(*)")
                 .eq("user_id", str(user_id))
                 .eq("is_active", False)
                 .order("completed_at", desc=True)
@@ -235,7 +262,17 @@ class QuestService:
                 .execute()
             )
 
-            return [UserQuestResponse(**quest) for quest in response.data]
+            # Parse the response to match CompletedQuestResponse structure
+            completed_quests = []
+            for quest_data in response.data:
+                # Extract quest details from nested quests object
+                quest_details = quest_data.pop("quests", None)
+                if quest_details:
+                    quest_response = QuestResponse(**quest_details)
+                    completed_quest = CompletedQuestResponse(**quest_data, quest=quest_response)
+                    completed_quests.append(completed_quest)
+
+            return completed_quests
         except Exception as e:
             raise ValueError(f"Error fetching quest history: {str(e)}")
 

@@ -193,3 +193,65 @@ class ItemService:
         except Exception as e:
             raise ValueError(f"Error setting featured item: {str(e)}")
 
+    async def purchase_item(
+        self, user_id: UUID, item_id: UUID
+    ) -> dict:
+        """Purchase an item for a user"""
+        try:
+            # 1. Check if item exists
+            item = await self.get_item(item_id)
+            if not item:
+                raise ValueError("Item not found")
+
+            # 2. Check if user already owns the item
+            user_items_response = (
+                self.supabase.table("user_items")
+                .select("id")
+                .eq("user_id", str(user_id))
+                .eq("item_id", str(item_id))
+                .execute()
+            )
+            
+            if user_items_response.data:
+                raise ValueError("You already own this item")
+
+            # 3. Get user's current glory
+            user_response = (
+                self.supabase.table("users")
+                .select("total_glory")
+                .eq("id", str(user_id))
+                .execute()
+            )
+
+            if not user_response.data:
+                raise ValueError("User not found")
+
+            user_glory = user_response.data[0]["total_glory"]
+
+            # 4. Check if user has enough glory
+            if user_glory < item.price:
+                raise ValueError(f"Insufficient glory. You need {item.price} glory but only have {user_glory}")
+
+            # 5. Deduct glory from user
+            new_glory = user_glory - item.price
+            update_response = (
+                self.supabase.table("users")
+                .update({"total_glory": new_glory})
+                .eq("id", str(user_id))
+                .execute()
+            )
+
+            if not update_response.data:
+                raise ValueError("Failed to update user glory")
+
+            # 6. Award item to user
+            user_item = await self.award_item_to_user(user_id, item_id)
+
+            return {
+                "user_item": user_item,
+                "new_glory": new_glory,
+                "item_price": item.price
+            }
+        except Exception as e:
+            raise ValueError(f"Error purchasing item: {str(e)}")
+

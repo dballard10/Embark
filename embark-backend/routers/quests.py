@@ -10,6 +10,7 @@ from models.quest import (
     UserQuestCreate,
     UserQuestResponse,
     ActiveQuestResponse,
+    CompletedQuestResponse,
 )
 from services.quest_service import QuestService
 from services.user_service import UserService
@@ -141,55 +142,60 @@ async def start_quest(user_id: UUID, quest_data: UserQuestCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/users/{user_id}/quests/active", response_model=Optional[ActiveQuestResponse])
-async def get_active_quest(user_id: UUID):
+@router.get("/users/{user_id}/quests/active", response_model=list[ActiveQuestResponse])
+async def get_active_quests(user_id: UUID):
     """
-    Get user's active quest
+    Get user's active quests (up to 4)
     
     - **user_id**: UUID of the user
     """
     try:
         service = get_quest_service()
-        return await service.get_active_quest(user_id)
+        return await service.get_active_quests(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/users/{user_id}/quests/complete", response_model=UserQuestResponse)
-async def complete_quest(user_id: UUID):
+@router.post("/users/{user_id}/quests/{user_quest_id}/complete", response_model=UserQuestResponse)
+async def complete_quest(user_id: UUID, user_quest_id: UUID):
     """
-    Complete user's active quest and award items
+    Complete a specific user quest and award rewards
     
     - **user_id**: UUID of the user
+    - **user_quest_id**: UUID of the user_completed_quest entry to complete
     """
     try:
         quest_service = get_quest_service()
         user_service = get_user_service()
         item_service = get_item_service()
         
-        # Get active quest details
-        active_quest = await quest_service.get_active_quest(user_id)
-        if not active_quest:
-            raise HTTPException(status_code=404, detail="No active quest found")
-        
-        # Complete the quest
-        completed_quest = await quest_service.complete_quest(user_id)
+        # Complete the quest and get full details
+        completed_quest = await quest_service.complete_quest(user_id, user_quest_id)
         
         # Award glory and XP
         from models.user import UserStatsUpdate
         stats_update = UserStatsUpdate(
-            glory_delta=active_quest.quest.glory_reward,
-            xp_delta=active_quest.quest.xp_reward,
+            glory_delta=completed_quest.quest.glory_reward,
+            xp_delta=completed_quest.quest.xp_reward,
         )
         await user_service.update_user_stats(user_id, stats_update)
         
         # Award item if quest has item reward
-        if active_quest.quest.reward_item_id:
+        if completed_quest.quest.reward_item_id:
             await item_service.award_item_to_user(
-                user_id, active_quest.quest.reward_item_id
+                user_id, completed_quest.quest.reward_item_id
             )
         
-        return completed_quest
+        # Return just the user quest response (without nested quest details for consistency)
+        return UserQuestResponse(
+            id=completed_quest.id,
+            user_id=completed_quest.user_id,
+            quest_id=completed_quest.quest_id,
+            started_at=completed_quest.started_at,
+            completed_at=completed_quest.completed_at,
+            deadline_at=completed_quest.deadline_at,
+            is_active=completed_quest.is_active,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -213,13 +219,13 @@ async def abandon_quest(user_id: UUID):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/users/{user_id}/quests/history", response_model=list[UserQuestResponse])
+@router.get("/users/{user_id}/quests/history", response_model=list[CompletedQuestResponse])
 async def get_quest_history(
     user_id: UUID,
     limit: int = Query(default=50, ge=1, le=100),
 ):
     """
-    Get user's completed quest history
+    Get user's completed quest history with full quest details
     
     - **user_id**: UUID of the user
     - **limit**: Maximum number of quests to return (1-100)

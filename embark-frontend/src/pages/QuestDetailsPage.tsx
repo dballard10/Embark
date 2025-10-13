@@ -3,8 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getTierStars, getTierName, getTierColor } from "../utils/tierUtils";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
+import { useUser } from "../contexts/UserContext";
 import type { UserCompletedQuest } from "../types/quest.types";
 import type { Item } from "../types/item.types";
+import {
+  fetchActiveQuests,
+  fetchItemById,
+  fetchUserItems,
+  completeQuest,
+} from "../services/api";
 import {
   IconArrowLeft,
   IconTarget,
@@ -18,112 +25,60 @@ import {
   IconStar,
 } from "@tabler/icons-react";
 
-// Mock user data
-const mockUser = {
-  id: "1",
-  username: "GeneralJF",
-  total_glory: 3445,
-  total_xp: 3095,
-  level: 9,
-  created_at: new Date().toISOString(),
-  total_items: 103,
-};
-
-// Mock data - in real app, would fetch from API
-const mockActiveQuests: UserCompletedQuest[] = [
-  {
-    id: "1",
-    user_id: "1",
-    quest_id: "1",
-    quest: {
-      id: "1",
-      title: "Morning Workout Challenge",
-      description:
-        "Complete a 30-minute workout session to boost your energy and start your day strong. This quest will help build consistency in your fitness routine.",
-      tier: 2 as const,
-      glory_reward: 5000,
-      xp_reward: 5000,
-      time_limit_hours: 24,
-      reward_item_id: "1",
-      created_at: new Date().toISOString(),
-    },
-    started_at: new Date().toISOString(),
-    completed_at: null,
-    deadline_at: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
-    is_active: true,
-  },
-  {
-    id: "2",
-    user_id: "1",
-    quest_id: "2",
-    quest: {
-      id: "2",
-      title: "Read for 1 Hour",
-      description:
-        "Spend quality time reading a book of your choice. Reading expands your knowledge and improves focus.",
-      tier: 1 as const,
-      glory_reward: 2000,
-      xp_reward: 2000,
-      time_limit_hours: 48,
-      reward_item_id: "2",
-      created_at: new Date().toISOString(),
-    },
-    started_at: new Date().toISOString(),
-    completed_at: null,
-    deadline_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString(),
-    is_active: true,
-  },
-];
-
 function QuestDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user] = useState(mockUser);
+  const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
+  const [userItemCount, setUserItemCount] = useState(0);
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
   const [rewardItem, setRewardItem] = useState<Item | null>(null);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
-  const [currentPage, setCurrentPage] = useState("home");
+  const [loading, setLoading] = useState(true);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch quest data - using mock for now
-    const quest = mockActiveQuests.find((q) => q.id === id);
-    if (quest) {
-      setUserQuest(quest);
-      // Mock item data for now - in production, would fetch from API
-      // if (quest.quest?.reward_item_id) {
-      //   fetchItemById(quest.quest.reward_item_id)
-      //     .then(setRewardItem)
-      //     .catch(console.error);
-      // }
-
-      // Set mock reward item based on quest
-      const mockRewardItems: Record<string, Item> = {
-        "1": {
-          id: "1",
-          name: "Champion's Medallion",
-          description: "A prestigious award for completing physical challenges",
-          rarity_tier: 2,
-          rarity_stars: 3,
-          image_url: null,
-          created_at: new Date().toISOString(),
-        },
-        "2": {
-          id: "2",
-          name: "Scholar's Bookmark",
-          description: "A beautiful bookmark for dedicated readers",
-          rarity_tier: 1,
-          rarity_stars: 2,
-          image_url: null,
-          created_at: new Date().toISOString(),
-        },
-      };
-
-      if (quest.quest?.reward_item_id) {
-        setRewardItem(mockRewardItems[quest.quest.reward_item_id] || null);
-      }
+    if (selectedUser?.id) {
+      loadQuestData();
     }
-  }, [id]);
+  }, [id, selectedUser?.id]);
+
+  const loadQuestData = async () => {
+    if (!selectedUser?.id) return;
+
+    try {
+      setLoading(true);
+
+      // Fetch active quests
+      const activeQuests = await fetchActiveQuests(selectedUser.id);
+
+      // Find the quest by ID
+      const quest = activeQuests.find((q) => q.id === id);
+
+      if (quest) {
+        setUserQuest(quest);
+
+        // Fetch reward item if exists
+        if (quest.quest?.reward_item_id) {
+          try {
+            const item = await fetchItemById(quest.quest.reward_item_id);
+            setRewardItem(item);
+          } catch (error) {
+            console.error("Error loading reward item:", error);
+          }
+        }
+      }
+
+      // Fetch user items for count
+      const items = await fetchUserItems(selectedUser.id);
+      setUserItemCount(items.length);
+    } catch (error) {
+      console.error("Error loading quest data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (userQuest?.deadline_at) {
@@ -163,9 +118,25 @@ function QuestDetailsPage() {
     }
   }, [userQuest?.deadline_at]);
 
+  if (userLoading || loading) {
+    return (
+      <div className="game-container flex items-center justify-center min-h-screen">
+        <div className="text-gray-400 text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!selectedUser) {
+    return (
+      <div className="game-container flex items-center justify-center min-h-screen">
+        <div className="text-gray-400 text-lg">No user selected</div>
+      </div>
+    );
+  }
+
   if (!userQuest?.quest) {
     return (
-      <div className="game-container flex items-center justify-center">
+      <div className="game-container flex items-center justify-center min-h-screen">
         <div className="text-white text-xl">Quest not found</div>
       </div>
     );
@@ -204,47 +175,84 @@ function QuestDetailsPage() {
     });
   };
 
-  const handleComplete = () => {
-    console.log("Complete quest:", quest.id);
-    // TODO: Make API call to complete quest
+  const handleComplete = async () => {
+    console.log("Complete button clicked");
+
+    if (!selectedUser || !userQuest) {
+      console.error("Missing selectedUser or userQuest", {
+        selectedUser,
+        userQuest,
+      });
+      setError("Unable to complete quest: Missing user or quest data");
+      return;
+    }
+
+    try {
+      setIsCompleting(true);
+      setError(null);
+
+      console.log("Completing quest:", {
+        userId: selectedUser.id,
+        userQuestId: userQuest.id,
+      });
+
+      // Complete the quest
+      await completeQuest(selectedUser.id, userQuest.id);
+
+      console.log("Quest completed successfully");
+
+      // Refresh user data to show updated glory, XP, and items
+      await refreshUser();
+
+      // Navigate back to quests page
+      navigate("/quests");
+    } catch (err) {
+      console.error("Error completing quest:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to complete quest";
+      setError(errorMessage);
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   const handleAbandon = () => {
-    console.log("Abandon quest:", quest.id);
+    console.log("Abandon quest:", userQuest?.id);
     // TODO: Make API call to abandon quest
-  };
-
-  const handleNavigation = (page: string) => {
-    setCurrentPage(page);
-    console.log(`Navigate to ${page}`);
-    // TODO: Implement actual navigation
   };
 
   return (
     <div className="game-container">
       {/* Top Stats Bar */}
       <TopBar
-        username={user.username}
-        totalXP={user.total_xp}
-        totalGlory={user.total_glory}
-        totalItems={user.total_items}
+        username={selectedUser.username}
+        totalXP={selectedUser.total_xp}
+        totalGlory={selectedUser.total_glory}
+        totalItems={userItemCount}
       />
 
       {/* Back button header */}
       <div className="bg-gradient-to-r from-slate-800/95 to-slate-900/95 border-b-2 border-purple-500/30 sticky top-[72px] z-10 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 py-3">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/quests")}
             className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors duration-200"
           >
             <IconArrowLeft size={24} stroke={2} />
-            <span className="font-semibold">Back</span>
+            <span className="font-semibold">Back to Quests</span>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Quest Icon and Title Section */}
         <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-purple-500/30 rounded-xl overflow-hidden shadow-2xl">
           {/* Quest Icon */}
@@ -428,21 +436,23 @@ function QuestDetailsPage() {
         <div className="grid grid-cols-2 gap-4 pb-6">
           <button
             onClick={handleAbandon}
-            className="py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg"
+            disabled={isCompleting}
+            className="py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Abandon Quest
           </button>
           <button
             onClick={handleComplete}
-            className="py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg"
+            disabled={isCompleting}
+            className="py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            Complete Quest
+            {isCompleting ? "Completing..." : "Complete Quest"}
           </button>
         </div>
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNav currentPage={currentPage} onNavigate={handleNavigation} />
+      <BottomNav currentPage="quests" />
     </div>
   );
 }

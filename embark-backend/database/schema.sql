@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS rewards (
     rarity_tier INTEGER NOT NULL CHECK (rarity_tier >= 1 AND rarity_tier <= 6),
     rarity_stars INTEGER NOT NULL CHECK (rarity_stars >= 1 AND rarity_stars <= 6),
     image_url TEXT,
+    price INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -65,8 +66,6 @@ CREATE INDEX IF NOT EXISTS idx_user_completed_quests_is_active ON user_completed
 CREATE INDEX IF NOT EXISTS idx_user_items_user_id ON user_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_quests_tier ON quests(tier);
 
--- Add constraint to ensure only one active quest per user
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_active_quest 
-ON user_completed_quests(user_id) 
-WHERE is_active = TRUE;
+-- Note: Users can have up to 4 active quests simultaneously
+-- No constraint needed as this is enforced in application logic
 

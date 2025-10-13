@@ -11,6 +11,7 @@ class ItemBase(BaseModel):
     rarity_tier: int = Field(..., ge=1, le=6)
     rarity_stars: int = Field(..., ge=1, le=6)
     image_url: Optional[str] = None
+    price: int = Field(default=0, ge=0)
 
 
 class ItemCreate(ItemBase):
@@ -25,6 +26,7 @@ class ItemUpdate(BaseModel):
     rarity_tier: Optional[int] = Field(None, ge=1, le=6)
     rarity_stars: Optional[int] = Field(None, ge=1, le=6)
     image_url: Optional[str] = None
+    price: Optional[int] = Field(None, ge=0)
 
 
 class ItemResponse(ItemBase):

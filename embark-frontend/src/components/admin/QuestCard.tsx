@@ -1,26 +1,45 @@
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { Quest } from "../../types/quest.types";
 import { getTierColor, getTierName } from "../../utils/tierUtils";
 import JsonViewer from "./JsonViewer";
 
 interface QuestCardProps {
   quest: Quest;
+  onEdit: (quest: Quest) => void;
+  onDelete: (quest: Quest) => void;
 }
 
-function QuestCard({ quest }: QuestCardProps) {
+function QuestCard({ quest, onEdit, onDelete }: QuestCardProps) {
   const tierColor = getTierColor(quest.tier);
   const tierName = getTierName(quest.tier);
 
   return (
-    <div className="bg-slate-800 rounded-lg p-5 border-2 hover:border-slate-600 transition-all duration-200 shadow-lg">
-      {/* Header */}
+    <div className="bg-slate-800 rounded-lg p-5 border-2 border-slate-700 hover:border-slate-600 transition-all duration-200 shadow-lg">
+      {/* Header with Actions */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="text-lg font-bold text-white leading-tight flex-1">
           {quest.title}
         </h3>
-        <div
-          className={`px-3 py-1 rounded-full text-xs font-bold ${tierColor} whitespace-nowrap`}
-        >
-          T{quest.tier} - {tierName}
+        <div className="flex items-center gap-2">
+          <div
+            className={`px-3 py-1 rounded-full text-xs font-bold ${tierColor} whitespace-nowrap`}
+          >
+            T{quest.tier} - {tierName}
+          </div>
+          <button
+            onClick={() => onEdit(quest)}
+            className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            title="Edit Quest"
+          >
+            <IconEdit size={16} />
+          </button>
+          <button
+            onClick={() => onDelete(quest)}
+            className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            title="Delete Quest"
+          >
+            <IconTrash size={16} />
+          </button>
         </div>
       </div>
 

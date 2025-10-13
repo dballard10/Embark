@@ -7,6 +7,7 @@ export interface Item {
   rarity_tier: RarityTier;
   rarity_stars: number;
   image_url: string | null;
+  price: number;
   created_at: string;
 }
 

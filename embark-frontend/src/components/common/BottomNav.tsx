@@ -1,4 +1,10 @@
-import { IconHome, IconMap, IconBox, IconCode } from "@tabler/icons-react";
+import {
+  IconHome,
+  IconMap,
+  IconBox,
+  IconCode,
+  IconShoppingBag,
+} from "@tabler/icons-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
@@ -20,6 +26,7 @@ interface BottomNavProps {
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: IconHome, path: "/" },
   { id: "quests", label: "Quests", icon: IconMap, path: "/quests" },
+  { id: "shop", label: "Shop", icon: IconShoppingBag, path: "/shop" },
   { id: "vault", label: "Vault", icon: IconBox, path: "/vault" },
 ];
 
@@ -27,7 +34,7 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isDev = import.meta.env.DEV;
-  const isDevPage = location.pathname === "/dev";
+  const isDevPage = location.pathname === "/admin";
 
   const handleNavClick = (item: NavItem) => {
     if (item.path) {
@@ -53,7 +60,7 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-slate-900 to-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-2xl">
       <div className="max-w-7xl mx-auto">
-        <div className={`grid gap-1 ${isDev ? "grid-cols-4" : "grid-cols-3"}`}>
+        <div className={`grid gap-1 ${isDev ? "grid-cols-5" : "grid-cols-4"}`}>
           {navItems.map((item) => {
             const isActive = activePage === item.id;
             const Icon = item.icon;
@@ -86,10 +93,10 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
             );
           })}
 
-          {/* Dev Button - Only visible in development */}
+          {/* Admin Button - Only visible in development */}
           {isDev && (
             <button
-              onClick={() => navigate("/dev")}
+              onClick={() => navigate("/admin")}
               className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${
                 isDevPage ? "text-amber-400" : "text-gray-400 hover:text-white"
               }`}
@@ -106,7 +113,7 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                   isDevPage ? "text-amber-400" : "text-gray-400"
                 }`}
               >
-                Dev
+                Admin
               </div>
               {isDevPage && (
                 <div className="absolute bottom-0 h-1 w-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-full"></div>
