@@ -12,18 +12,21 @@ import {
   IconStarFilled,
   IconInfoCircle,
   IconGift,
+  IconPlus,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
   userQuest?: UserCompletedQuest;
-  variant?: "active" | "available" | "locked" | "completed";
+  variant?: "active" | "available" | "locked" | "completed" | "add";
   rewardItem?: Item;
+  onClick?: () => void;
 }
 
 function QuestCard({
   userQuest,
   variant = "active",
   rewardItem,
+  onClick,
 }: QuestCardProps) {
   const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -63,7 +66,34 @@ function QuestCard({
     }
   }, [userQuest?.deadline_at, variant]);
 
-  if (variant === "locked" || !userQuest?.quest) {
+  if (variant === "locked") {
+    return (
+      <div className="quest-card-locked">
+        <div className="flex flex-col items-center justify-center h-full">
+          <IconLock size={48} className="text-gray-500 mb-2" stroke={1.5} />
+          <div className="text-sm text-gray-400 font-semibold">Locked</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === "add") {
+    return (
+      <div
+        className="quest-card-locked border-2 border-dashed border-blue-500/50 hover:border-blue-400 hover:bg-blue-950/30 cursor-pointer transition-all duration-200 hover:scale-105"
+        onClick={onClick}
+      >
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mb-3 shadow-lg shadow-blue-500/20">
+            <IconPlus size={32} className="text-blue-400" stroke={2.5} />
+          </div>
+          <div className="text-sm text-blue-300 font-semibold">Add Quest</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userQuest?.quest) {
     return (
       <div className="quest-card-locked">
         <div className="flex flex-col items-center justify-center h-full">

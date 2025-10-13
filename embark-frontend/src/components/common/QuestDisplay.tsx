@@ -5,11 +5,13 @@ import { IconMap, IconSwords } from "@tabler/icons-react";
 interface QuestDisplayProps {
   activeQuests: UserCompletedQuest[];
   availableQuestSlots?: number;
+  onAddQuest?: () => void;
 }
 
 function QuestDisplay({
   activeQuests,
   availableQuestSlots = 4,
+  onAddQuest,
 }: QuestDisplayProps) {
   const hasActiveQuests = activeQuests.length > 0;
 
@@ -19,7 +21,7 @@ function QuestDisplay({
     if (i < activeQuests.length) {
       questSlots.push({ type: "active", quest: activeQuests[i] });
     } else {
-      questSlots.push({ type: "locked", quest: null });
+      questSlots.push({ type: "add", quest: null });
     }
   }
 
@@ -60,6 +62,8 @@ function QuestDisplay({
           >
             {slot.type === "active" && slot.quest ? (
               <QuestCard userQuest={slot.quest} variant="active" />
+            ) : slot.type === "add" ? (
+              <QuestCard variant="add" onClick={onAddQuest} />
             ) : (
               <QuestCard variant="locked" />
             )}

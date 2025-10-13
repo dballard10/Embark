@@ -1,10 +1,4 @@
-import {
-  IconHome,
-  IconMap,
-  IconBox,
-  IconUser,
-  IconCode,
-} from "@tabler/icons-react";
+import { IconHome, IconMap, IconBox, IconCode } from "@tabler/icons-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
@@ -27,7 +21,6 @@ const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: IconHome, path: "/" },
   { id: "quests", label: "Quests", icon: IconMap, path: "/quests" },
   { id: "vault", label: "Vault", icon: IconBox, path: "/vault" },
-  { id: "profile", label: "Profile", icon: IconUser, path: "/profile" },
 ];
 
 function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
@@ -60,7 +53,7 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-slate-900 to-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-2xl">
       <div className="max-w-7xl mx-auto">
-        <div className={`grid gap-1 ${isDev ? "grid-cols-5" : "grid-cols-4"}`}>
+        <div className={`grid gap-1 ${isDev ? "grid-cols-4" : "grid-cols-3"}`}>
           {navItems.map((item) => {
             const isActive = activePage === item.id;
             const Icon = item.icon;
