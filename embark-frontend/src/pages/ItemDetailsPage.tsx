@@ -6,13 +6,14 @@ import BottomNav from "../components/common/BottomNav";
 import type { UserItem } from "../types/item.types";
 import {
   IconArrowLeft,
-  IconBox,
   IconCalendar,
   IconStarFilled,
 } from "@tabler/icons-react";
 import { formatDateFriendly } from "../utils/dateUtils";
 import { useUser } from "../contexts/UserContext";
 import { fetchUserItems } from "../services/api";
+import { getItemImage } from "../utils/itemImageUtils";
+import ItemIcon from "../components/common/ItemIcon";
 
 function ItemDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -86,6 +87,7 @@ function ItemDetailsPage() {
   const tier = item.rarity_tier;
   const tierName = getTierName(tier);
   const tierColor = getTierColor(tier);
+  const itemImage = getItemImage(item.name, item.image_url);
 
   return (
     <div className="game-container">
@@ -116,14 +118,14 @@ function ItemDetailsPage() {
         <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-purple-500/30 rounded-xl overflow-hidden shadow-2xl">
           {/* Item Image */}
           <div className="flex items-center justify-center h-64 bg-gradient-to-br from-purple-600/20 to-blue-600/20 relative">
-            {item.image_url ? (
+            {itemImage ? (
               <img
-                src={item.image_url}
+                src={itemImage}
                 alt={item.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain p-8"
               />
             ) : (
-              <IconBox size={120} className="text-purple-400" stroke={1.5} />
+              <ItemIcon size={120} className="text-purple-400" />
             )}
 
             {/* Tier Badge */}

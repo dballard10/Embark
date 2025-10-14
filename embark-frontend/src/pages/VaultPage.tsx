@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
-import ItemCard from "../components/common/ItemCard";
 import CardSkeleton from "../components/common/CardSkeleton";
+import ItemDetailsModal from "../components/common/ItemDetailsModal";
 import type { UserItem, RarityTier } from "../types/item.types";
 import { IconFilter, IconSortAscending } from "@tabler/icons-react";
+import {
+  getTierStars,
+  getTierGradientColor,
+  getTierColor,
+} from "../utils/tierUtils";
 import { useUser } from "../contexts/UserContext";
 import { fetchUserItems } from "../services/api";
+import { getItemImage } from "../utils/itemImageUtils";
+import ItemIcon from "../components/common/ItemIcon";
 
 type FilterTier = "all" | RarityTier;
 type SortOption =
@@ -21,6 +28,8 @@ function VaultPage() {
   const [loading, setLoading] = useState(true);
   const [filterTier, setFilterTier] = useState<FilterTier>("all");
   const [sortOption, setSortOption] = useState<SortOption>("date-newest");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -93,50 +102,50 @@ function VaultPage() {
         {/* Page Title */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">Item Vault</h1>
-          <p className="text-gray-400">
-            Your collection of earned items and rewards
-          </p>
-        </div>
+          {/* Filter and Sort Controls */}
+          <div className="mb-6 flex flex-col sm:flex-row gap-4">
+            {/* Filter Dropdown */}
+            <div className="flex-1">
+              <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                <IconFilter size={18} stroke={2} />
+                Filter by Rarity
+              </label>
+              <select
+                value={filterTier}
+                onChange={(e) => setFilterTier(e.target.value as FilterTier)}
+                className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
+              >
+                <option value="all">All Rarities</option>
+                <option value={1}>Tier 1 - Novice</option>
+                <option value={2}>Tier 2 - Adventurer</option>
+                <option value={3}>Tier 3 - Warrior</option>
+                <option value={4}>Tier 4 - Champion</option>
+                <option value={5}>Tier 5 - Master</option>
+                <option value={6}>Tier 6 - Conqueror</option>
+              </select>
+            </div>
 
-        {/* Filter and Sort Controls */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
-          {/* Filter Dropdown */}
-          <div className="flex-1">
-            <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-              <IconFilter size={18} stroke={2} />
-              Filter by Rarity
-            </label>
-            <select
-              value={filterTier}
-              onChange={(e) => setFilterTier(e.target.value as FilterTier)}
-              className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
-            >
-              <option value="all">All Rarities</option>
-              <option value={1}>Tier 1 - Novice</option>
-              <option value={2}>Tier 2 - Adventurer</option>
-              <option value={3}>Tier 3 - Warrior</option>
-              <option value={4}>Tier 4 - Champion</option>
-              <option value={5}>Tier 5 - Master</option>
-              <option value={6}>Tier 6 - Conqueror</option>
-            </select>
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="flex-1">
-            <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-              <IconSortAscending size={18} stroke={2} />
-              Sort By
-            </label>
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
-            >
-              <option value="date-newest">Date Obtained - Newest First</option>
-              <option value="date-oldest">Date Obtained - Oldest First</option>
-              <option value="rarity-highest">Rarity - Highest First</option>
-              <option value="rarity-lowest">Rarity - Lowest First</option>
-            </select>
+            {/* Sort Dropdown */}
+            <div className="flex-1">
+              <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                <IconSortAscending size={18} stroke={2} />
+                Sort By
+              </label>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
+              >
+                <option value="date-newest">
+                  Date Obtained - Newest First
+                </option>
+                <option value="date-oldest">
+                  Date Obtained - Oldest First
+                </option>
+                <option value="rarity-highest">Rarity - Highest First</option>
+                <option value="rarity-lowest">Rarity - Lowest First</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -161,15 +170,79 @@ function VaultPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredAndSortedItems.map((userItem) => (
-              <ItemCard key={userItem.id} userItem={userItem} />
-            ))}
+            {filteredAndSortedItems.map((userItem) => {
+              const item = userItem.item;
+              if (!item) return null;
+
+              const itemImage = getItemImage(item.name, item.image_url);
+
+              return (
+                <div
+                  key={userItem.id}
+                  onClick={() => {
+                    setSelectedItemId(userItem.id);
+                    setIsModalOpen(true);
+                  }}
+                  className={`relative flex flex-col bg-gradient-to-br ${getTierGradientColor(
+                    item.rarity_tier
+                  )} border-2 rounded-xl overflow-hidden shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-2xl cursor-pointer`}
+                >
+                  {/* Rarity Stars Badge */}
+                  <div className="absolute top-3 right-3 z-10">
+                    <div
+                      className={`flex items-center gap-0.5 px-2 py-1 rounded-lg bg-gradient-to-r ${getTierColor(
+                        item.rarity_tier
+                      )} border border-white/30 text-xs font-bold text-white shadow-lg`}
+                    >
+                      {getTierStars(item.rarity_tier)}
+                    </div>
+                  </div>
+
+                  {/* Item Icon Area */}
+                  <div className="h-32 bg-gradient-to-br from-slate-700/30 to-slate-800/30 flex items-center justify-center relative overflow-hidden">
+                    {itemImage ? (
+                      <img
+                        src={itemImage}
+                        alt={item.name}
+                        className="h-full w-full object-contain p-4"
+                      />
+                    ) : (
+                      <ItemIcon size={64} className="text-white/20" />
+                    )}
+                  </div>
+
+                  {/* Item Info */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg text-white line-clamp-1">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-300 line-clamp-2 mt-1">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Bottom Navigation */}
       <BottomNav currentPage="vault" />
+
+      {/* Item Details Modal */}
+      {selectedItemId && (
+        <ItemDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedItemId(null);
+          }}
+          userItemId={selectedItemId}
+        />
+      )}
     </div>
   );
 }

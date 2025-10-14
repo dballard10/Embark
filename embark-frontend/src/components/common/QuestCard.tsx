@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getTierStars } from "../../utils/tierUtils";
+import {
+  getTierStars,
+  getTierColor,
+  getTierGradientColor,
+} from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import type { Item } from "../../types/item.types";
 import {
@@ -9,10 +12,9 @@ import {
   IconBolt,
   IconClock,
   IconLock,
-  IconStarFilled,
-  IconInfoCircle,
   IconGift,
   IconPlus,
+  IconDiamond,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
@@ -28,7 +30,6 @@ function QuestCard({
   rewardItem,
   onClick,
 }: QuestCardProps) {
-  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState("");
 
   useEffect(() => {
@@ -104,16 +105,33 @@ function QuestCard({
     );
   }
 
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
+  const questTier = userQuest.quest.tier;
+  const tierGradient = getTierGradientColor(questTier);
+  const tierBadgeColor = getTierColor(questTier);
+
   return (
     <div
-      className={`quest-card ${
+      onClick={handleCardClick}
+      className={`relative bg-gradient-to-br ${tierGradient} border-2 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
         variant === "active" ? "quest-card-active" : ""
+      } ${
+        variant === "active" || variant === "available"
+          ? "cursor-pointer hover:scale-105 hover:shadow-2xl"
+          : ""
       }`}
     >
       {/* Tier Badge */}
       <div className="absolute top-2 right-2 z-10">
-        <div className="flex items-center gap-0.5 px-2 py-1 rounded-lg bg-gradient-to-r from-purple-600/80 to-pink-600/80 border border-purple-400/50 text-xs font-bold text-white shadow-lg">
-          {getTierStars(userQuest.quest.tier)}
+        <div
+          className={`flex items-center gap-0.5 px-2 py-1 rounded-lg bg-gradient-to-r ${tierBadgeColor} border border-white/30 text-xs font-bold text-white shadow-lg`}
+        >
+          {getTierStars(questTier)}
         </div>
       </div>
 
@@ -128,13 +146,13 @@ function QuestCard({
       )}
 
       {/* Quest Icon/Image */}
-      <div className="flex items-center justify-center h-32 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-t-xl">
-        <IconTarget size={64} className="text-blue-400" stroke={1.5} />
+      <div className="flex items-center justify-center h-40 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-t-xl">
+        <IconTarget size={80} className="text-white/40" stroke={1.5} />
       </div>
 
       {/* Quest Info */}
-      <div className="p-4 space-y-3">
-        <h3 className="font-bold text-lg text-white line-clamp-2 min-h-[3.5rem]">
+      <div className="p-4 space-y-2">
+        <h3 className="font-bold text-lg text-white line-clamp-2">
           {userQuest.quest.title}
         </h3>
 
@@ -153,10 +171,10 @@ function QuestCard({
                 {userQuest.quest.xp_reward.toLocaleString()}
               </div>
             </div>
-            <div className="bg-purple-900/30 border border-purple-600/40 rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1 font-bold text-purple-300">
-                <IconStarFilled />
-              </div>
+            <div
+              className={`flex items-center justify-center gap-1 rounded-lg bg-gradient-to-r ${tierBadgeColor} border border-white/30 p-2 text-xs font-bold text-white shadow-lg`}
+            >
+              <IconDiamond size={18} stroke={2} />
             </div>
           </div>
         )}
@@ -182,22 +200,23 @@ function QuestCard({
 
         {/* Action Buttons */}
         {variant === "active" && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => navigate(`/quest/${userQuest.id}`)}
-              className="flex items-center justify-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg text-sm"
-            >
-              <IconInfoCircle size={18} stroke={2} />
-            </button>
-            <button className="flex-1 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg">
-              Complete
-            </button>
-          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              // TODO: Handle complete quest
+            }}
+            className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+          >
+            Complete
+          </button>
         )}
 
         {variant === "available" && (
           <button
-            onClick={onClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick) onClick();
+            }}
             className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
           >
             Start Quest

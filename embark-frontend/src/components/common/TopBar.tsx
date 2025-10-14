@@ -4,6 +4,7 @@ import {
   getCurrentLevelXP,
 } from "../../utils/levelCalculator";
 import { IconTrophy, IconDiamond, IconSettings } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 interface TopBarProps {
   username: string;
@@ -13,6 +14,7 @@ interface TopBarProps {
 }
 
 function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
+  const navigate = useNavigate();
   const level = calculateLevel(totalXP);
   const levelProgress = getLevelProgress(totalXP);
   const currentLevelXP = getCurrentLevelXP(totalXP);
@@ -23,7 +25,10 @@ function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
         <div className="flex items-center justify-between">
           {/* Level & XP - Left */}
           <div className="flex items-center gap-4">
-            <div className="relative">
+            <button
+              onClick={() => navigate("/")}
+              className="relative cursor-pointer transition-transform hover:scale-105"
+            >
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 flex items-center justify-center shadow-lg border-2 border-cyan-300/50">
                 <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center">
                   <span className="text-xl font-bold text-cyan-300">
@@ -58,7 +63,7 @@ function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
                   className="transition-all duration-500 drop-shadow-[0_0_4px_rgba(34,211,238,0.8)]"
                 />
               </svg>
-            </div>
+            </button>
             <div className="hidden sm:block">
               <div className="text-xl font-bold text-white mb-1">
                 {username}
@@ -75,20 +80,26 @@ function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
           {/* Currency Display - Right */}
           <div className="flex items-center gap-3">
             {/* Glory */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 border border-yellow-600/50 rounded-full px-4 py-2 shadow-lg">
+            <button
+              onClick={() => navigate("/shop")}
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 border border-yellow-600/50 rounded-full px-4 py-2 shadow-lg cursor-pointer transition-transform hover:scale-105"
+            >
               <IconTrophy size={24} className="text-yellow-400" />
               <span className="font-bold text-yellow-300 text-lg">
                 {totalGlory.toLocaleString()}
               </span>
-            </div>
+            </button>
 
             {/* Items/Gems */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-600/50 rounded-full px-4 py-2 shadow-lg">
+            <button
+              onClick={() => navigate("/vault")}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-600/50 rounded-full px-4 py-2 shadow-lg cursor-pointer transition-transform hover:scale-105"
+            >
               <IconDiamond size={24} className="text-green-400" />
               <span className="font-bold text-green-300 text-lg">
                 {totalItems}
               </span>
-            </div>
+            </button>
 
             {/* Settings */}
             <button className="w-12 h-12 rounded-full bg-slate-800/80 border border-white/20 flex items-center justify-center hover:bg-slate-700/80 transition-colors shadow-lg">

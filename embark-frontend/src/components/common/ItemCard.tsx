@@ -1,15 +1,16 @@
-import { useNavigate } from "react-router-dom";
 import type { UserItem } from "../../types/item.types";
 import { getTierColor, getTierName } from "../../utils/tierUtils";
-import { IconStar, IconBox } from "@tabler/icons-react";
+import { IconStar } from "@tabler/icons-react";
 import { formatDateFriendly } from "../../utils/dateUtils";
+import { getItemImage } from "../../utils/itemImageUtils";
+import ItemIcon from "./ItemIcon";
 
 interface ItemCardProps {
   userItem: UserItem;
+  onClick?: () => void;
 }
 
-function ItemCard({ userItem }: ItemCardProps) {
-  const navigate = useNavigate();
+function ItemCard({ userItem, onClick }: ItemCardProps) {
   const item = userItem.item;
 
   if (!item) {
@@ -18,9 +19,10 @@ function ItemCard({ userItem }: ItemCardProps) {
 
   const tierColor = getTierColor(item.rarity_tier);
   const tierName = getTierName(item.rarity_tier);
+  const itemImage = getItemImage(item.name, item.image_url);
 
   const handleClick = () => {
-    navigate(`/item/${userItem.id}`);
+    onClick?.();
   };
 
   return (
@@ -30,14 +32,14 @@ function ItemCard({ userItem }: ItemCardProps) {
     >
       {/* Item Image/Placeholder */}
       <div className="flex items-center justify-center h-40 bg-gradient-to-br from-purple-600/20 to-blue-600/20 relative">
-        {item.image_url ? (
+        {itemImage ? (
           <img
-            src={item.image_url}
+            src={itemImage}
             alt={item.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain p-4"
           />
         ) : (
-          <IconBox size={64} className="text-purple-400" stroke={1.5} />
+          <ItemIcon size={64} className="text-purple-400" />
         )}
 
         {/* Tier Badge */}

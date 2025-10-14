@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
+import ActiveQuestsGrid from "../components/common/ActiveQuestsGrid";
 import QuestCard from "../components/common/QuestCard";
 import CardSkeleton from "../components/common/CardSkeleton";
 import QuestSelectionModal from "../components/common/QuestSelectionModal";
+import QuestDetailsModal from "../components/common/QuestDetailsModal";
 import type { UserCompletedQuest } from "../types/quest.types";
 import type { Item } from "../types/item.types";
 import { useUser } from "../contexts/UserContext";
@@ -25,6 +27,8 @@ function QuestsPage() {
   >({});
   const [loading, setLoading] = useState(true);
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+  const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -91,39 +95,15 @@ function QuestsPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 pb-24">
         {/* Active Quests Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            Active Quests
-            <span className="text-sm font-normal text-gray-400">
-              ({activeQuests.length}/4)
-            </span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {loading
-              ? [...Array(4)].map((_, index) => (
-                  <CardSkeleton
-                    key={`skeleton-active-${index}`}
-                    variant="quest"
-                  />
-                ))
-              : [...Array(4)].map((_, index) => {
-                  const quest = activeQuests[index];
-                  return quest ? (
-                    <QuestCard
-                      key={quest.id}
-                      userQuest={quest}
-                      variant="active"
-                    />
-                  ) : (
-                    <QuestCard
-                      key={`add-${index}`}
-                      variant="add"
-                      onClick={handleAddQuest}
-                    />
-                  );
-                })}
-          </div>
-        </div>
+        <ActiveQuestsGrid
+          activeQuests={activeQuests}
+          loading={loading}
+          onAddQuest={handleAddQuest}
+          onQuestClick={(questId) => {
+            setSelectedQuestId(questId);
+            setIsQuestDetailsModalOpen(true);
+          }}
+        />
 
         {/* Completed Quests Section */}
         <div>
@@ -180,6 +160,20 @@ function QuestsPage() {
         activeQuests={activeQuests}
         completedQuests={completedQuests}
       />
+
+      {/* Quest Details Modal */}
+      {selectedQuestId && (
+        <QuestDetailsModal
+          isOpen={isQuestDetailsModalOpen}
+          onClose={() => {
+            setIsQuestDetailsModalOpen(false);
+            setSelectedQuestId(null);
+            // Reload quests after completing
+            loadQuests();
+          }}
+          questId={selectedQuestId}
+        />
+      )}
     </div>
   );
 }

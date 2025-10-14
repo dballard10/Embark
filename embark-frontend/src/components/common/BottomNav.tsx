@@ -1,20 +1,11 @@
-import {
-  IconHome,
-  IconMap,
-  IconBox,
-  IconCode,
-  IconShoppingBag,
-} from "@tabler/icons-react";
+import { IconHome, IconMap, IconBox, IconCode } from "@tabler/icons-react";
+import { IoStorefrontOutline } from "react-icons/io5";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavItem {
   id: string;
   label: string;
-  icon: React.ComponentType<{
-    size?: number;
-    stroke?: number;
-    className?: string;
-  }>;
+  icon: React.ComponentType<any>;
   path?: string;
 }
 
@@ -26,7 +17,7 @@ interface BottomNavProps {
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: IconHome, path: "/" },
   { id: "quests", label: "Quests", icon: IconMap, path: "/quests" },
-  { id: "shop", label: "Shop", icon: IconShoppingBag, path: "/shop" },
+  { id: "shop", label: "Shop", icon: IoStorefrontOutline, path: "/shop" },
   { id: "vault", label: "Vault", icon: IconBox, path: "/vault" },
 ];
 
@@ -77,7 +68,12 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                     isActive ? "scale-110" : "hover:scale-105"
                   }`}
                 >
-                  <Icon size={28} stroke={2} />
+                  <Icon
+                    size={28}
+                    {...(item.icon === IoStorefrontOutline
+                      ? {}
+                      : { stroke: 2 })}
+                  />
                 </div>
                 <div
                   className={`text-xs font-semibold ${

@@ -2,6 +2,7 @@ import { IconEdit, IconTrash } from "@tabler/icons-react";
 import type { Item } from "../../types/item.types";
 import { getTierColor, getTierName } from "../../utils/tierUtils";
 import JsonViewer from "./JsonViewer";
+import { getItemImage } from "../../utils/itemImageUtils";
 
 interface ItemCardProps {
   item: Item;
@@ -12,6 +13,7 @@ interface ItemCardProps {
 function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
   const tierColor = getTierColor(item.rarity_tier);
   const tierName = getTierName(item.rarity_tier);
+  const itemImage = getItemImage(item.name, item.image_url);
 
   return (
     <div className="bg-slate-800 rounded-lg p-5 border-2 border-slate-700 hover:border-slate-600 transition-all duration-200 shadow-lg">
@@ -68,13 +70,21 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
         </div>
       </div>
 
-      {/* Image URL */}
-      {item.image_url && (
-        <div className="mt-3 text-xs text-slate-400">
-          <span className="text-slate-500">Image: </span>
-          <span className="font-mono break-all">{item.image_url}</span>
-        </div>
-      )}
+      {/* Image Information */}
+      <div className="mt-3 space-y-1">
+        {item.image_url && (
+          <div className="text-xs text-slate-400">
+            <span className="text-slate-500">DB Image: </span>
+            <span className="font-mono break-all">{item.image_url}</span>
+          </div>
+        )}
+        {itemImage && (
+          <div className="text-xs text-slate-400">
+            <span className="text-slate-500">Local Image: </span>
+            <span className="font-mono break-all">{itemImage}</span>
+          </div>
+        )}
+      </div>
 
       <JsonViewer data={item} />
     </div>

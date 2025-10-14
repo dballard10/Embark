@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { IconX, IconLoader } from "@tabler/icons-react";
+import { IconX, IconLoader, IconArrowLeft } from "@tabler/icons-react";
 import QuestCard from "./QuestCard";
+import QuestDetailsView from "./QuestDetailsView";
 import CardSkeleton from "./CardSkeleton";
 import type { Quest, UserCompletedQuest } from "../../types/quest.types";
-import { fetchAllQuests, startQuest } from "../../services/api";
+import type { Item } from "../../types/item.types";
+import { fetchAllQuests, startQuest, fetchItemById } from "../../services/api";
 
 interface QuestSelectionModalProps {
   isOpen: boolean;
@@ -22,17 +24,29 @@ function QuestSelectionModal({
   activeQuests,
   completedQuests,
 }: QuestSelectionModalProps) {
-  const [allQuests, setAllQuests] = useState<Quest[]>([]);
   const [availableQuests, setAvailableQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [startingQuestId, setStartingQuestId] = useState<string | null>(null);
+  const [selectedQuestForDetails, setSelectedQuestForDetails] =
+    useState<Quest | null>(null);
+  const [rewardItem, setRewardItem] = useState<Item | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       loadQuests();
+      setSelectedQuestForDetails(null);
+      setRewardItem(null);
     }
   }, [isOpen, activeQuests, completedQuests]);
+
+  useEffect(() => {
+    if (selectedQuestForDetails?.reward_item_id) {
+      loadRewardItem(selectedQuestForDetails.reward_item_id);
+    } else {
+      setRewardItem(null);
+    }
+  }, [selectedQuestForDetails]);
 
   const loadQuests = async () => {
     try {
@@ -41,7 +55,6 @@ function QuestSelectionModal({
 
       // Fetch all quests from database
       const quests = await fetchAllQuests();
-      setAllQuests(quests);
 
       // Filter out active and completed quests
       const activeQuestIds = new Set(activeQuests.map((q) => q.quest_id));
@@ -60,12 +73,33 @@ function QuestSelectionModal({
     }
   };
 
-  const handleStartQuest = async (questId: string) => {
+  const loadRewardItem = async (itemId: string) => {
     try {
-      setStartingQuestId(questId);
+      const item = await fetchItemById(itemId);
+      setRewardItem(item);
+    } catch (err) {
+      console.error("Error loading reward item:", err);
+      setRewardItem(null);
+    }
+  };
+
+  const handleQuestClick = (quest: Quest) => {
+    setSelectedQuestForDetails(quest);
+  };
+
+  const handleBackToList = () => {
+    setSelectedQuestForDetails(null);
+    setRewardItem(null);
+  };
+
+  const handleStartQuest = async () => {
+    if (!selectedQuestForDetails) return;
+
+    try {
+      setStartingQuestId(selectedQuestForDetails.id);
       setError(null);
 
-      await startQuest(userId, questId);
+      await startQuest(userId, selectedQuestForDetails.id);
 
       // Success! Close modal and notify parent
       onQuestSelected();
@@ -84,11 +118,26 @@ function QuestSelectionModal({
       <div className="bg-slate-800 rounded-xl shadow-2xl border-2 border-slate-600 max-w-6xl w-full my-8 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Select a Quest</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Choose a quest to add to your active quests
-            </p>
+          <div className="flex items-center gap-3">
+            {selectedQuestForDetails && (
+              <button
+                onClick={handleBackToList}
+                className="text-slate-400 hover:text-white transition-colors"
+                disabled={!!startingQuestId}
+              >
+                <IconArrowLeft size={24} />
+              </button>
+            )}
+            <div>
+              <h2 className="text-2xl font-bold text-white">
+                {selectedQuestForDetails ? "Quest Details" : "Select a Quest"}
+              </h2>
+              <p className="text-sm text-gray-400 mt-1">
+                {selectedQuestForDetails
+                  ? "Review quest details and start when ready"
+                  : "Choose a quest to add to your active quests"}
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -107,13 +156,32 @@ function QuestSelectionModal({
             </div>
           )}
 
-          {loading ? (
+          {selectedQuestForDetails ? (
+            // Quest Details View
+            <QuestDetailsView
+              userQuest={{
+                id: "",
+                user_id: userId,
+                quest_id: selectedQuestForDetails.id,
+                quest: selectedQuestForDetails,
+                started_at: "",
+                completed_at: null,
+                deadline_at: "",
+                is_active: false,
+              }}
+              rewardItem={rewardItem}
+              showActionButtons={false}
+              showStartedInfo={false}
+            />
+          ) : loading ? (
+            // Loading State
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, index) => (
                 <CardSkeleton key={`skeleton-quest-${index}`} variant="quest" />
               ))}
             </div>
           ) : availableQuests.length === 0 ? (
+            // Empty State
             <div className="text-center py-12 bg-slate-800/30 border border-slate-700/50 rounded-xl">
               <p className="text-gray-400 text-lg">
                 No available quests found. You've either completed or are
@@ -121,10 +189,9 @@ function QuestSelectionModal({
               </p>
             </div>
           ) : (
+            // Quest List
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {availableQuests.map((quest) => {
-                const isStarting = startingQuestId === quest.id;
-
                 // Create a mock UserCompletedQuest for display purposes
                 const mockUserQuest: UserCompletedQuest = {
                   id: "",
@@ -138,27 +205,12 @@ function QuestSelectionModal({
                 };
 
                 return (
-                  <div key={quest.id} className="relative">
-                    {isStarting && (
-                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 rounded-xl">
-                        <IconLoader
-                          size={48}
-                          className="text-blue-400 animate-spin"
-                        />
-                      </div>
-                    )}
-                    <div
-                      onClick={() => !isStarting && handleStartQuest(quest.id)}
-                      className={`cursor-pointer ${
-                        isStarting ? "pointer-events-none" : ""
-                      }`}
-                    >
-                      <QuestCard
-                        userQuest={mockUserQuest}
-                        variant="available"
-                      />
-                    </div>
-                  </div>
+                  <QuestCard
+                    key={quest.id}
+                    userQuest={mockUserQuest}
+                    variant="available"
+                    onClick={() => handleQuestClick(quest)}
+                  />
                 );
               })}
             </div>
@@ -167,13 +219,39 @@ function QuestSelectionModal({
 
         {/* Footer */}
         <div className="flex justify-end gap-3 p-6 border-t border-slate-700">
-          <button
-            onClick={onClose}
-            disabled={!!startingQuestId}
-            className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Cancel
-          </button>
+          {selectedQuestForDetails ? (
+            <>
+              <button
+                onClick={handleBackToList}
+                disabled={!!startingQuestId}
+                className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleStartQuest}
+                disabled={!!startingQuestId}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                {startingQuestId ? (
+                  <span className="flex items-center gap-2">
+                    <IconLoader size={20} className="animate-spin" />
+                    Starting...
+                  </span>
+                ) : (
+                  "Start Quest"
+                )}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onClose}
+              disabled={!!startingQuestId}
+              className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </div>
     </div>

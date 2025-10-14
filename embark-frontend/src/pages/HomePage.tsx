@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import TopBar from "../components/common/TopBar";
-import QuestCard from "../components/common/QuestCard";
-import CardSkeleton from "../components/common/CardSkeleton";
+import ActiveQuestsGrid from "../components/common/ActiveQuestsGrid";
+import QuestSelectionModal from "../components/common/QuestSelectionModal";
+import QuestDetailsModal from "../components/common/QuestDetailsModal";
 import BottomNav from "../components/common/BottomNav";
 import type { UserCompletedQuest } from "../types/quest.types";
 import {
@@ -30,9 +31,15 @@ import {
 function HomePage() {
   const { selectedUser, isLoading: userLoading } = useUser();
   const [activeQuests, setActiveQuests] = useState<UserCompletedQuest[]>([]);
+  const [completedQuests, setCompletedQuests] = useState<UserCompletedQuest[]>(
+    []
+  );
   const [questsCompletedCount, setQuestsCompletedCount] = useState(0);
   const [userItemCount, setUserItemCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+  const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -47,11 +54,15 @@ function HomePage() {
       setLoading(true);
       // Fetch active quest
       const activeQuestData = await fetchActiveQuests(selectedUser.id);
-      setActiveQuests(activeQuestData ? [activeQuestData] : []);
+      setActiveQuests(activeQuestData || []);
 
-      // Fetch completed quests for count
-      const completedQuests = await fetchCompletedQuests(selectedUser.id, 1000);
-      setQuestsCompletedCount(completedQuests.length);
+      // Fetch completed quests
+      const completedQuestsData = await fetchCompletedQuests(
+        selectedUser.id,
+        1000
+      );
+      setCompletedQuests(completedQuestsData);
+      setQuestsCompletedCount(completedQuestsData.length);
 
       // Fetch user items for count
       const items = await fetchUserItems(selectedUser.id);
@@ -63,9 +74,13 @@ function HomePage() {
     }
   };
 
-  const handleFindQuest = () => {
-    console.log("Navigate to quest browser");
-    // TODO: Navigate to quest browser page
+  const handleAddQuest = () => {
+    setIsQuestModalOpen(true);
+  };
+
+  const handleQuestAdded = () => {
+    // Reload data after a quest is added
+    loadData();
   };
 
   if (userLoading || !selectedUser) {
@@ -266,36 +281,15 @@ function HomePage() {
         </div>
 
         {/* Active Quests Section */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            Active Quests
-            <span className="text-sm font-normal text-gray-400">
-              ({activeQuests.length}/4)
-            </span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {loading
-              ? [...Array(4)].map((_, index) => (
-                  <CardSkeleton key={`skeleton-${index}`} variant="quest" />
-                ))
-              : [...Array(4)].map((_, index) => {
-                  const quest = activeQuests[index];
-                  return quest ? (
-                    <QuestCard
-                      key={quest.id}
-                      userQuest={quest}
-                      variant="active"
-                    />
-                  ) : (
-                    <QuestCard
-                      key={`add-${index}`}
-                      variant="add"
-                      onClick={handleFindQuest}
-                    />
-                  );
-                })}
-          </div>
-        </div>
+        <ActiveQuestsGrid
+          activeQuests={activeQuests}
+          loading={loading}
+          onAddQuest={handleAddQuest}
+          onQuestClick={(questId) => {
+            setSelectedQuestId(questId);
+            setIsQuestDetailsModalOpen(true);
+          }}
+        />
 
         {/* Quick Stats Grid */}
         <div>
@@ -363,6 +357,30 @@ function HomePage() {
 
       {/* Bottom Navigation */}
       <BottomNav currentPage="home" />
+
+      {/* Quest Selection Modal */}
+      <QuestSelectionModal
+        isOpen={isQuestModalOpen}
+        onClose={() => setIsQuestModalOpen(false)}
+        onQuestSelected={handleQuestAdded}
+        userId={selectedUser.id}
+        activeQuests={activeQuests}
+        completedQuests={completedQuests}
+      />
+
+      {/* Quest Details Modal */}
+      {selectedQuestId && (
+        <QuestDetailsModal
+          isOpen={isQuestDetailsModalOpen}
+          onClose={() => {
+            setIsQuestDetailsModalOpen(false);
+            setSelectedQuestId(null);
+            // Reload data after completing quest
+            loadData();
+          }}
+          questId={selectedQuestId}
+        />
+      )}
     </div>
   );
 }
