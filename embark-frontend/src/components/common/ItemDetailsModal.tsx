@@ -7,11 +7,39 @@ import {
   getTierBorderColor,
 } from "../../utils/tierUtils";
 import type { UserItem } from "../../types/item.types";
+import type { QuestTier } from "../../types/quest.types";
 import { getItemImage } from "../../utils/itemImageUtils";
 import ItemIcon from "./ItemIcon";
 import { formatDateFriendly } from "../../utils/dateUtils";
 import { useUser } from "../../contexts/UserContext";
 import { fetchUserItems } from "../../services/api";
+import ItemDetailsModalSkeleton from "./ItemDetailsModalSkeleton";
+
+// Helper function to get base color for tier diagonal pattern
+function getTierBaseColor(tier: QuestTier): string {
+  const colors: Record<QuestTier, string> = {
+    1: "#6b7280", // gray-500
+    2: "#22c55e", // green-500
+    3: "#3b82f6", // blue-500
+    4: "#a855f7", // purple-500
+    5: "#f97316", // orange-500
+    6: "#dc2626", // red-600
+  };
+  return colors[tier];
+}
+
+// Helper function to get darker shade for diagonal pattern
+function getTierDarkerColor(tier: QuestTier): string {
+  const colors: Record<QuestTier, string> = {
+    1: "#4b5563", // gray-600
+    2: "#16a34a", // green-600
+    3: "#2563eb", // blue-600
+    4: "#9333ea", // purple-600
+    5: "#ea580c", // orange-600
+    6: "#be123c", // red-700
+  };
+  return colors[tier];
+}
 
 interface ItemDetailsModalProps {
   isOpen: boolean;
@@ -90,13 +118,36 @@ function ItemDetailsModal({
     : "border-purple-500/50";
   const itemImage = item ? getItemImage(item.name, item.image_url) : null;
 
+  // Get tier-specific colors for diagonal pattern
+  const baseColor = tier ? getTierBaseColor(tier) : "#3b82f6";
+  const darkerColor = tier ? getTierDarkerColor(tier) : "#2563eb";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
-        className={`bg-gradient-to-br from-slate-800/95 to-slate-900/95 rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-modal-scale`}
+        className={`rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-modal-scale`}
+        style={{
+          backgroundColor: baseColor,
+          backgroundImage: `repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 69px,
+            ${darkerColor}E6 69px,
+            transparent 71px,
+            transparent 141px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 69px,
+            ${darkerColor}E6 69px,
+            transparent 71px,
+            transparent 141px
+          )`,
+        }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -113,9 +164,7 @@ function ItemDetailsModal({
 
         {/* Loading State */}
         {loading && (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-gray-400 text-lg">Loading item...</div>
-          </div>
+          <ItemDetailsModalSkeleton tierBorderColor={tierBorderColor} />
         )}
 
         {/* Error State */}
@@ -132,18 +181,22 @@ function ItemDetailsModal({
           <div className="p-6 space-y-6">
             {/* Item Image and Title Section */}
             <div
-              className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
+              className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
             >
-              {/* Item Image */}
-              <div className="flex items-center justify-center h-64 bg-gradient-to-br from-purple-600/20 to-blue-600/20 relative">
+              {/* Item Image - Transparent Gallery View */}
+              <div className="h-64 relative bg-transparent">
                 {itemImage ? (
-                  <img
-                    src={itemImage}
-                    alt={item.name}
-                    className="w-full h-full object-contain p-8"
-                  />
+                  <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md">
+                    <img
+                      src={itemImage}
+                      alt={item.name}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
                 ) : (
-                  <ItemIcon size={120} className="text-purple-400" />
+                  <div className="w-full h-full flex items-center justify-center bg-black/10 backdrop-blur-md">
+                    <ItemIcon size={120} className="text-purple-400" />
+                  </div>
                 )}
 
                 {/* Tier Badge */}
@@ -168,14 +221,14 @@ function ItemDetailsModal({
               </div>
 
               {/* Title and Description */}
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-4 bg-black/20">
                 <h1
                   id="item-modal-title"
                   className="text-3xl font-bold text-white font-title"
                 >
                   {item.name}
                 </h1>
-                <p className="text-gray-300 text-lg leading-relaxed">
+                <p className="text-gray-100 text-lg leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -185,7 +238,7 @@ function ItemDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Date Obtained */}
               <div
-                className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-5 md:col-span-2`}
+                className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5 md:col-span-2`}
               >
                 <div className="flex items-center gap-3">
                   <IconCalendar
@@ -209,7 +262,7 @@ function ItemDetailsModal({
 
             {/* Additional Info Section */}
             <div
-              className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-6`}
+              className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
             >
               <h2 className="text-xl font-bold text-white font-title mb-4">
                 Item Details

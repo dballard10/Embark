@@ -4,7 +4,7 @@ import BottomNav from "../components/common/BottomNav";
 import CardSkeleton from "../components/common/CardSkeleton";
 import ItemDetailsModal from "../components/common/ItemDetailsModal";
 import type { UserItem, RarityTier } from "../types/item.types";
-import { IconFilter, IconSortAscending } from "@tabler/icons-react";
+import { IconFilter, IconSortAscending, IconBox } from "@tabler/icons-react";
 import {
   getTierStars,
   getTierGradientColor,
@@ -97,55 +97,76 @@ function VaultPage() {
         totalItems={userItems.length}
       />
 
+      {/* Vault Header */}
+      <div className="bg-gradient-to-r from-purple-900/90 via-indigo-900/90 to-purple-900/90 border-b-2 border-purple-600 sticky top-[72px] z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                <IconBox size={32} className="text-white" stroke={2} />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-purple-100">
+                  Item Vault
+                </h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border-2 border-purple-500/40">
+              <IconBox size={28} className="text-purple-400" stroke={2} />
+              <div>
+                <div className="text-xs text-purple-300/80 font-semibold">
+                  Total Items
+                </div>
+                <div className="text-2xl font-bold text-purple-200">
+                  {userItems.length}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 pb-24">
-        {/* Page Title */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">Item Vault</h1>
-          {/* Filter and Sort Controls */}
-          <div className="mb-6 flex flex-col sm:flex-row gap-4">
-            {/* Filter Dropdown */}
-            <div className="flex-1">
-              <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                <IconFilter size={18} stroke={2} />
-                Filter by Rarity
-              </label>
-              <select
-                value={filterTier}
-                onChange={(e) => setFilterTier(e.target.value as FilterTier)}
-                className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
-              >
-                <option value="all">All Rarities</option>
-                <option value={1}>Tier 1 - Novice</option>
-                <option value={2}>Tier 2 - Adventurer</option>
-                <option value={3}>Tier 3 - Warrior</option>
-                <option value={4}>Tier 4 - Champion</option>
-                <option value={5}>Tier 5 - Master</option>
-                <option value={6}>Tier 6 - Conqueror</option>
-              </select>
-            </div>
+        {/* Filter and Sort Controls */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          {/* Filter Dropdown */}
+          <div className="flex-1">
+            <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+              <IconFilter size={18} stroke={2} />
+              Filter by Rarity
+            </label>
+            <select
+              value={filterTier}
+              onChange={(e) => setFilterTier(e.target.value as FilterTier)}
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
+            >
+              <option value="all">All Rarities</option>
+              <option value={1}>Tier 1 - Novice</option>
+              <option value={2}>Tier 2 - Adventurer</option>
+              <option value={3}>Tier 3 - Warrior</option>
+              <option value={4}>Tier 4 - Champion</option>
+              <option value={5}>Tier 5 - Master</option>
+              <option value={6}>Tier 6 - Conqueror</option>
+            </select>
+          </div>
 
-            {/* Sort Dropdown */}
-            <div className="flex-1">
-              <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                <IconSortAscending size={18} stroke={2} />
-                Sort By
-              </label>
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
-              >
-                <option value="date-newest">
-                  Date Obtained - Newest First
-                </option>
-                <option value="date-oldest">
-                  Date Obtained - Oldest First
-                </option>
-                <option value="rarity-highest">Rarity - Highest First</option>
-                <option value="rarity-lowest">Rarity - Lowest First</option>
-              </select>
-            </div>
+          {/* Sort Dropdown */}
+          <div className="flex-1">
+            <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+              <IconSortAscending size={18} stroke={2} />
+              Sort By
+            </label>
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-purple-500/30 rounded-lg text-white focus:border-purple-400 focus:outline-none transition-colors"
+            >
+              <option value="date-newest">Date Obtained - Newest First</option>
+              <option value="date-oldest">Date Obtained - Oldest First</option>
+              <option value="rarity-highest">Rarity - Highest First</option>
+              <option value="rarity-lowest">Rarity - Lowest First</option>
+            </select>
           </div>
         </div>
 

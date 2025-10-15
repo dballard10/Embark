@@ -127,11 +127,13 @@ function QuestDetailsView({
     <div className="space-y-6">
       {/* Quest Icon and Title Section */}
       <div
-        className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
+        className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
       >
         {/* Quest Icon */}
-        <div className="flex items-center justify-center h-48 bg-gradient-to-br from-blue-600/20 to-purple-600/20 relative">
-          <IconTarget size={96} className="text-blue-400" stroke={1.5} />
+        <div className="h-48 relative bg-transparent">
+          <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md">
+            <IconTarget size={96} className="text-blue-400" stroke={1.5} />
+          </div>
 
           {/* Tier Badge */}
           <div className="absolute top-4 right-4">
@@ -155,11 +157,11 @@ function QuestDetailsView({
         </div>
 
         {/* Title and Description */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 bg-black/20">
           <h1 className="text-3xl font-bold text-white font-title">
             {quest.title}
           </h1>
-          <p className="text-gray-300 text-lg leading-relaxed">
+          <p className="text-gray-100 text-lg leading-relaxed">
             {quest.description}
           </p>
         </div>
@@ -168,7 +170,7 @@ function QuestDetailsView({
       {/* Timer Display - Only show if quest has started */}
       {showStartedInfo && userQuest.deadline_at && (
         <div
-          className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-6`}
+          className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -192,7 +194,7 @@ function QuestDetailsView({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Challenge Rating */}
         <div
-          className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-5`}
+          className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
         >
           <div className="flex items-center gap-3">
             <IconAlertTriangle
@@ -214,7 +216,7 @@ function QuestDetailsView({
         {/* Started At - Only show if quest has started */}
         {showStartedInfo && userQuest.started_at && (
           <div
-            className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-5`}
+            className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
           >
             <div className="flex items-center gap-3">
               <IconCalendar size={28} className="text-blue-400" stroke={2} />
@@ -232,7 +234,7 @@ function QuestDetailsView({
 
         {/* Time Commitment */}
         <div
-          className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-5 ${
+          className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5 ${
             !showStartedInfo ? "md:col-span-2" : ""
           }`}
         >
@@ -252,7 +254,7 @@ function QuestDetailsView({
 
       {/* Rewards Section */}
       <div
-        className={`bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 ${tierBorderColor} rounded-xl p-6`}
+        className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
       >
         <h2 className="text-2xl font-bold text-white font-title mb-4">
           Rewards

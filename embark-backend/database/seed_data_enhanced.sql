@@ -23,40 +23,40 @@ BEGIN
     -- ========================================
     
     -- Tier 1 Rewards (Common)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('11111111-1111-1111-1111-111111111111', 'Bronze Compass', 'A simple compass for new adventurers', 1, 1),
-    ('11111111-1111-1111-1111-111111111112', 'Wooden Training Sword', 'Perfect for beginners learning the basics', 1, 1),
-    ('11111111-1111-1111-1111-111111111113', 'Leather Journal', 'Record your early victories and lessons', 1, 1);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('11111111-1111-1111-1111-111111111111', 'Bronze Compass', 'A simple compass for new adventurers', 1, 1, 0),
+    ('11111111-1111-1111-1111-111111111112', 'Wooden Training Sword', 'Perfect for beginners learning the basics', 1, 1, 0),
+    ('11111111-1111-1111-1111-111111111113', 'Leather Journal', 'Record your early victories and lessons', 1, 1, 0);
 
     -- Tier 2 Rewards (Uncommon)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('22222222-2222-2222-2222-222222222221', 'Silver Blade', 'A well-crafted sword for seasoned warriors', 2, 2),
-    ('22222222-2222-2222-2222-222222222222', 'Enchanted Quill', 'Write with creativity and precision', 2, 2),
-    ('22222222-2222-2222-2222-222222222223', 'Crystal Hourglass', 'Master the flow of time itself', 2, 2);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('22222222-2222-2222-2222-222222222221', 'Silver Blade', 'A well-crafted sword for seasoned warriors', 2, 2, 0),
+    ('22222222-2222-2222-2222-222222222222', 'Enchanted Quill', 'Write with creativity and precision', 2, 2, 0),
+    ('22222222-2222-2222-2222-222222222223', 'Crystal Hourglass', 'Master the flow of time itself', 2, 2, 0);
 
     -- Tier 3 Rewards (Rare)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('33333333-3333-3333-3333-333333333331', 'Golden Shield', 'An enchanted shield that deflects harm', 3, 3),
-    ('33333333-3333-3333-3333-333333333332', 'Spellbound Lute', 'Create music that moves hearts and minds', 3, 3),
-    ('33333333-3333-3333-3333-333333333333', 'Sage Robes', 'Garments worn by masters of knowledge', 3, 3);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('33333333-3333-3333-3333-333333333331', 'Golden Shield', 'An enchanted shield that deflects harm', 3, 3, 0),
+    ('33333333-3333-3333-3333-333333333332', 'Spellbound Lute', 'Create music that moves hearts and minds', 3, 3, 0),
+    ('33333333-3333-3333-3333-333333333333', 'Sage Robes', 'Garments worn by masters of knowledge', 3, 3, 0);
 
     -- Tier 4 Rewards (Epic)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('44444444-4444-4444-4444-444444444441', 'Diamond Amulet', 'A precious amulet radiating power', 4, 4),
-    ('44444444-4444-4444-4444-444444444442', 'Starlight Bow', 'Arrows guided by celestial precision', 4, 4),
-    ('44444444-4444-4444-4444-444444444443', 'Wisdom Tome', 'Ancient knowledge bound in mystic pages', 4, 4);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('44444444-4444-4444-4444-444444444441', 'Diamond Amulet', 'A precious amulet radiating power', 4, 4, 0),
+    ('44444444-4444-4444-4444-444444444442', 'Starlight Bow', 'Arrows guided by celestial precision', 4, 4, 0),
+    ('44444444-4444-4444-4444-444444444443', 'Wisdom Tome', 'Ancient knowledge bound in mystic pages', 4, 4, 0);
 
     -- Tier 5 Rewards (Legendary)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('55555555-5555-5555-5555-555555555551', 'Obsidian Crown', 'A legendary crown worn by masters', 5, 5),
-    ('55555555-5555-5555-5555-555555555552', 'Dragonscale Armor', 'Impenetrable defense forged from dragon hide', 5, 5),
-    ('55555555-5555-5555-5555-555555555553', 'Eternal Flame Blade', 'A sword burning with undying fire', 5, 5);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('55555555-5555-5555-5555-555555555551', 'Obsidian Crown', 'A legendary crown worn by masters', 5, 5, 0),
+    ('55555555-5555-5555-5555-555555555552', 'Dragonscale Armor', 'Impenetrable defense forged from dragon hide', 5, 5, 0),
+    ('55555555-5555-5555-5555-555555555553', 'Eternal Flame Blade', 'A sword burning with undying fire', 5, 5, 0);
 
     -- Tier 6 Rewards (Mythic)
-    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars) VALUES
-    ('66666666-6666-6666-6666-666666666661', 'Phoenix Essence', 'The mythical essence of a phoenix', 6, 6),
-    ('66666666-6666-6666-6666-666666666662', 'Titan Heart Stone', 'A crystallized heart of an ancient titan', 6, 6),
-    ('66666666-6666-6666-6666-666666666663', 'Crown of Infinity', 'Transcend the limits of mortal achievement', 6, 6);
+    INSERT INTO rewards (id, name, description, rarity_tier, rarity_stars, price) VALUES
+    ('66666666-6666-6666-6666-666666666661', 'Phoenix Essence', 'The mythical essence of a phoenix', 6, 6, 1000000),
+    ('66666666-6666-6666-6666-666666666662', 'Titan Heart Stone', 'A crystallized heart of an ancient titan', 6, 6, 1000000),
+    ('66666666-6666-6666-6666-666666666663', 'Crown of Infinity', 'Transcend the limits of mortal achievement', 6, 6, 1000000);
 
     -- ========================================
     -- QUESTS - Tier 1 (Common)

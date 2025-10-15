@@ -4,12 +4,40 @@ import QuestDetailsView from "./QuestDetailsView";
 import { useUser } from "../../contexts/UserContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import type { Item } from "../../types/item.types";
+import type { QuestTier } from "../../types/quest.types";
 import { getTierBorderColor } from "../../utils/tierUtils";
 import {
   fetchActiveQuests,
   fetchItemById,
   completeQuest,
 } from "../../services/api";
+import QuestDetailsModalSkeleton from "./QuestDetailsModalSkeleton";
+
+// Helper function to get base color for tier diagonal pattern
+function getTierBaseColor(tier: QuestTier): string {
+  const colors: Record<QuestTier, string> = {
+    1: "#6b7280", // gray-500
+    2: "#22c55e", // green-500
+    3: "#3b82f6", // blue-500
+    4: "#a855f7", // purple-500
+    5: "#f97316", // orange-500
+    6: "#dc2626", // red-600
+  };
+  return colors[tier];
+}
+
+// Helper function to get darker shade for diagonal pattern
+function getTierDarkerColor(tier: QuestTier): string {
+  const colors: Record<QuestTier, string> = {
+    1: "#4b5563", // gray-600
+    2: "#16a34a", // green-600
+    3: "#2563eb", // blue-600
+    4: "#9333ea", // purple-600
+    5: "#ea580c", // orange-600
+    6: "#be123c", // red-700
+  };
+  return colors[tier];
+}
 
 interface QuestDetailsModalProps {
   isOpen: boolean;
@@ -120,9 +148,14 @@ function QuestDetailsModal({
 
   if (!isOpen) return null;
 
-  const tierBorderColor = userQuest?.quest?.tier
-    ? getTierBorderColor(userQuest.quest.tier)
+  const tier = userQuest?.quest?.tier;
+  const tierBorderColor = tier
+    ? getTierBorderColor(tier)
     : "border-purple-500/50";
+
+  // Get tier-specific colors for diagonal pattern
+  const baseColor = tier ? getTierBaseColor(tier) : "#3b82f6";
+  const darkerColor = tier ? getTierDarkerColor(tier) : "#2563eb";
 
   return (
     <div
@@ -130,7 +163,26 @@ function QuestDetailsModal({
       onClick={onClose}
     >
       <div
-        className={`bg-gradient-to-br from-slate-800/95 to-slate-900/95 rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-modal-scale`}
+        className={`rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-modal-scale`}
+        style={{
+          backgroundColor: baseColor,
+          backgroundImage: `repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 69px,
+            ${darkerColor}E6 69px,
+            transparent 71px,
+            transparent 141px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 69px,
+            ${darkerColor}E6 69px,
+            transparent 71px,
+            transparent 141px
+          )`,
+        }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -147,9 +199,7 @@ function QuestDetailsModal({
 
         {/* Loading State */}
         {loading && (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-gray-400 text-lg">Loading quest...</div>
-          </div>
+          <QuestDetailsModalSkeleton tierBorderColor={tierBorderColor} />
         )}
 
         {/* Error State */}

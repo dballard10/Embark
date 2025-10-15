@@ -14,6 +14,7 @@ import {
   fetchCompletedQuests,
   fetchUserItems,
 } from "../services/api";
+import { IconTarget, IconCheck } from "@tabler/icons-react";
 
 function QuestsPage() {
   const { selectedUser, isLoading: userLoading } = useUser();
@@ -91,6 +92,35 @@ function QuestsPage() {
         totalGlory={selectedUser.total_glory}
         totalItems={userItemCount}
       />
+
+      {/* Quest Board Header */}
+      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 sticky top-[72px] z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                <IconTarget size={32} className="text-white" stroke={2} />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-blue-100">
+                  Quest Board
+                </h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border-2 border-blue-500/40">
+              <IconCheck size={28} className="text-blue-400" stroke={2} />
+              <div>
+                <div className="text-xs text-blue-300/80 font-semibold">
+                  Active Quests
+                </div>
+                <div className="text-2xl font-bold text-blue-200">
+                  {activeQuests.length} / 4
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 pb-24">
