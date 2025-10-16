@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd embark-frontend && npm run build",
+  "outputDirectory": "embark-frontend/dist",
+  "installCommand": "cd embark-frontend && npm install"
+}
