@@ -1,9 +1,10 @@
 import { IconStar } from "@tabler/icons-react";
 import { getTierColor } from "../../utils/tierUtils";
+import type { QuestTier } from "../../types/quest.types";
 
 interface RarityBadgeProps {
   rarityStars: number;
-  rarityTier: number;
+  rarityTier: QuestTier;
   size?: "sm" | "md" | "lg";
 }
 

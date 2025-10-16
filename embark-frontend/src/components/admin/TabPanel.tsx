@@ -1,5 +1,5 @@
 import { IconAlertCircle } from "@tabler/icons-react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import LoadingIcon from "../common/LoadingIcon";
 
 interface TabPanelProps {

@@ -1,8 +1,5 @@
-import axios, {
-  AxiosInstance,
-  AxiosError,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError } from "axios";
+import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { API_CONFIG } from "./config";
 
 /**

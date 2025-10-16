@@ -129,7 +129,7 @@ export function failure<E = Error>(error: E): Result<never, E> {
   return { ok: false, error };
 }
 
-export function isSuccess<T, E>(
+export function isResultSuccess<T, E>(
   result: Result<T, E>
 ): result is { ok: true; value: T } {
   return result.ok === true;

@@ -93,8 +93,7 @@ export function canAbandonQuest(quest: UserCompletedQuest): {
  */
 export function canSelectQuest(
   questId: string,
-  activeQuests: UserCompletedQuest[],
-  completedQuests: UserCompletedQuest[]
+  activeQuests: UserCompletedQuest[]
 ): {
   canSelect: boolean;
   reason?: string;
@@ -110,7 +109,10 @@ export function canSelectQuest(
   // Check if can start more quests
   const canStartResult = canStartQuest(activeQuests);
   if (!canStartResult.canStart) {
-    return canStartResult;
+    return {
+      canSelect: false,
+      reason: canStartResult.reason,
+    };
   }
 
   return { canSelect: true };

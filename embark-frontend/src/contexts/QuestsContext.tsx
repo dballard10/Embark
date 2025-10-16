@@ -1,11 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import type { UserCompletedQuest } from "../types/quest.types";
 import { fetchActiveQuests, fetchCompletedQuests } from "../services/api";
 import { useUser } from "./UserContext";

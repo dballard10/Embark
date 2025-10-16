@@ -1,18 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import {
-  IconShield,
-  IconStar,
-  IconCalendar,
-  IconTrophy,
-  IconBox,
-  IconSparkles,
-} from "@tabler/icons-react";
+import { IconShield, IconStar, IconCalendar } from "@tabler/icons-react";
 import { formatDateFriendly } from "../../../utils/dateUtils";
 import { ProfileStats } from "./ProfileStats";
 import { LevelProgressCard } from "./LevelProgressCard";
 import type { User } from "../../../types/user.types";
 import type { ProfileData } from "../../../hooks/useProfileData";
-import LoadingIcon from "../../common/LoadingIcon";
 
 interface ProfileHeaderProps {
   user: User;

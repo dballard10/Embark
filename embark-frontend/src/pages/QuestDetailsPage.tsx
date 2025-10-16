@@ -8,29 +8,15 @@ import { useUser } from "../contexts/UserContext";
 import { useItems } from "../contexts/ItemsContext";
 import { useQuestsContext } from "../contexts/QuestsContext";
 import type { UserCompletedQuest } from "../types/quest.types";
-import { completeQuest, type QuestCompletionResponse } from "../services/api";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 function QuestDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
-  const {
-    itemCount: userItemCount,
-    loading: itemsLoading,
-    refreshItems,
-  } = useItems();
-  const {
-    activeQuests,
-    loading: questsLoading,
-    refreshQuests,
-  } = useQuestsContext();
+  const { selectedUser, isLoading: userLoading } = useUser();
+  const { itemCount: userItemCount, loading: itemsLoading } = useItems();
+  const { activeQuests, loading: questsLoading } = useQuestsContext();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [completionMessage, setCompletionMessage] = useState<string | null>(
-    null
-  );
 
   useEffect(() => {
     loadQuestData();
@@ -75,70 +61,6 @@ function QuestDetailsPage() {
     );
   }
 
-  const handleComplete = async () => {
-    console.log("Complete button clicked");
-
-    if (!selectedUser || !userQuest) {
-      console.error("Missing selectedUser or userQuest", {
-        selectedUser,
-        userQuest,
-      });
-      setError("Unable to complete quest: Missing user or quest data");
-      return;
-    }
-
-    try {
-      setIsCompleting(true);
-      setError(null);
-
-      console.log("Completing quest:", {
-        userId: selectedUser.id,
-        userQuestId: userQuest.id,
-      });
-
-      // Complete the quest
-      const response: QuestCompletionResponse = await completeQuest(
-        selectedUser.id,
-        userQuest.id
-      );
-
-      console.log("Quest completed successfully");
-
-      // Set completion message based on whether item was awarded
-      if (response.awarded_item) {
-        setCompletionMessage(
-          `Quest completed! You received: ${response.awarded_item.item.name}`
-        );
-      } else {
-        setCompletionMessage(
-          "Quest completed! (You already own all items from this tier)"
-        );
-      }
-
-      // Refresh user data to show updated glory, XP, items, and quests
-      await refreshUser();
-      await refreshItems();
-      await refreshQuests();
-
-      // Navigate back to quests page after brief delay
-      setTimeout(() => {
-        navigate("/quests");
-      }, 2000);
-    } catch (err) {
-      console.error("Error completing quest:", err);
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to complete quest";
-      setError(errorMessage);
-    } finally {
-      setIsCompleting(false);
-    }
-  };
-
-  const handleAbandon = () => {
-    console.log("Abandon quest:", userQuest?.id);
-    // TODO: Make API call to abandon quest
-  };
-
   return (
     <div className="game-container">
       {/* Top Stats Bar */}
@@ -165,20 +87,6 @@ function QuestDetailsPage() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-red-300 text-sm mb-6">
-            {error}
-          </div>
-        )}
-
-        {/* Completion Message */}
-        {completionMessage && (
-          <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center mb-6">
-            {completionMessage}
-          </div>
-        )}
-
         <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
       </div>
 

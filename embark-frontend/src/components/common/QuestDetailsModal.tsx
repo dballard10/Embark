@@ -96,7 +96,7 @@ function QuestDetailsModal({
       );
 
       // Set completion message based on whether item was awarded
-      if (response.awarded_item) {
+      if (response.awarded_item?.item) {
         setCompletionMessage(
           `Quest completed! You received: ${response.awarded_item.item.name}`
         );

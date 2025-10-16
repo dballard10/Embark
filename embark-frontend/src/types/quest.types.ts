@@ -16,7 +16,7 @@ export interface Quest {
   glory_reward: number;
   xp_reward: number;
   time_limit_hours: number;
-  reward_item_id: string;
+  reward_item_id: string | null;
   created_at: string;
 }
 
