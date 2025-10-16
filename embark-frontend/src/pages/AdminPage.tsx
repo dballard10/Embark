@@ -285,12 +285,13 @@ function AdminPage() {
           totalXP={selectedUser.total_xp}
           totalGlory={selectedUser.total_glory}
           totalItems={userItemCount}
+          isLoadingItems={loading}
         />
       )}
 
       {/* Header */}
       <div className="pt-20 pb-24">
-        <div className="bg-slate-800/50 border-b border-slate-700 sticky top-16 z-10 backdrop-blur-sm">
+        <div className="bg-slate-800/50 border-b border-slate-700 fixed top-16 left-0 right-0 z-10 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center gap-3 mb-4">
               <IconShield className="text-amber-500" size={32} />
@@ -383,7 +384,7 @@ function AdminPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6 pt-[220px]">
           {activeTab === "quests" && (
             <TabPanel isLoading={loading} error={error}>
               {filteredQuests.map((quest) => (

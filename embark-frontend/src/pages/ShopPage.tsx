@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
+import LoadingIcon from "../components/common/LoadingIcon";
 import {
   getTierStars,
   getTierGradientColor,
   getTierColor,
 } from "../utils/tierUtils";
 import { useUser } from "../contexts/UserContext";
+import { useItems } from "../contexts/ItemsContext";
 import type { Item } from "../types/item.types";
-import { fetchAllItems, fetchUserItems, purchaseItem } from "../services/api";
+import { fetchAllItems, purchaseItem } from "../services/api";
 import { IconTrophy, IconCheck, IconX } from "@tabler/icons-react";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { getItemImage } from "../utils/itemImageUtils";
@@ -17,9 +19,13 @@ import CardSkeleton from "../components/common/CardSkeleton";
 
 function ShopPage() {
   const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
+  const {
+    itemCount: userItemCount,
+    isOwnedItem,
+    refreshItems,
+    loading: itemsLoading,
+  } = useItems();
   const [items, setItems] = useState<Item[]>([]);
-  const [ownedItemIds, setOwnedItemIds] = useState<Set<string>>(new Set());
-  const [userItemCount, setUserItemCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{
     message: string;
@@ -42,14 +48,6 @@ function ShopPage() {
       // Fetch all items
       const allItems = await fetchAllItems();
       setItems(allItems);
-
-      // Fetch user's owned items
-      const userItems = await fetchUserItems(selectedUser.id);
-      setUserItemCount(userItems.length);
-
-      // Create set of owned item IDs for quick lookup
-      const ownedIds = new Set(userItems.map((ui) => ui.item_id));
-      setOwnedItemIds(ownedIds);
     } catch (error) {
       console.error("Error loading shop data:", error);
       showNotification("Failed to load shop", "error");
@@ -84,8 +82,8 @@ function ShopPage() {
       // Refresh user data to update glory
       await refreshUser();
 
-      // Reload shop data to update owned items
-      await loadShopData();
+      // Refresh items to update owned items
+      await refreshItems();
 
       showNotification(`Successfully purchased ${item.name}!`, "success");
     } catch (error: any) {
@@ -99,7 +97,7 @@ function ShopPage() {
   if (userLoading || !selectedUser) {
     return (
       <div className="game-container flex items-center justify-center min-h-screen">
-        <div className="text-gray-400 text-lg">Loading...</div>
+        <LoadingIcon size="large" />
       </div>
     );
   }
@@ -112,6 +110,7 @@ function ShopPage() {
         totalXP={selectedUser.total_xp}
         totalGlory={selectedUser.total_glory}
         totalItems={userItemCount}
+        isLoadingItems={itemsLoading}
       />
 
       {/* Notification Banner */}
@@ -135,7 +134,7 @@ function ShopPage() {
       )}
 
       {/* Shop Header */}
-      <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 sticky top-[72px] z-20">
+      <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 fixed top-[72px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -164,7 +163,7 @@ function ShopPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24">
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -178,7 +177,7 @@ function ShopPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items.map((item) => {
-              const isOwned = ownedItemIds.has(item.id);
+              const isOwned = isOwnedItem(item.id);
               const canAfford = selectedUser.total_glory >= item.price;
               const isPurchasing = purchasingItemId === item.id;
 
@@ -270,17 +269,22 @@ function ShopPage() {
                         <button
                           onClick={() => handlePurchase(item)}
                           disabled={!canAfford || isPurchasing}
-                          className={`w-full py-3 font-bold rounded-lg transition-all duration-200 ${
+                          className={`w-full py-3 font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                             canAfford && !isPurchasing
                               ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg hover:shadow-xl"
                               : "bg-gradient-to-r from-gray-600 to-gray-700 text-gray-400 cursor-not-allowed opacity-60"
                           }`}
                         >
-                          {isPurchasing
-                            ? "Purchasing..."
-                            : canAfford
-                            ? "Purchase"
-                            : "Cannot Afford"}
+                          {isPurchasing ? (
+                            <>
+                              <LoadingIcon size="small" />
+                              <span>Purchasing...</span>
+                            </>
+                          ) : canAfford ? (
+                            "Purchase"
+                          ) : (
+                            "Cannot Afford"
+                          )}
                         </button>
                       )}
                     </div>

@@ -3,39 +3,27 @@ import {
   getTierStars,
   getTierName,
   getTierColor,
-  getTierBorderColor,
+  getTierTextColor,
 } from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
-import type { Item } from "../../types/item.types";
 import {
   IconTarget,
   IconTrophy,
   IconBolt,
   IconClock,
-  IconStarFilled,
   IconAlertTriangle,
   IconCalendar,
   IconHourglass,
-  IconStar,
+  IconBox,
 } from "@tabler/icons-react";
 
 interface QuestDetailsViewProps {
   userQuest: UserCompletedQuest;
-  rewardItem: Item | null;
-  showActionButtons?: boolean;
-  onComplete?: () => void;
-  onAbandon?: () => void;
-  isCompleting?: boolean;
   showStartedInfo?: boolean;
 }
 
 function QuestDetailsView({
   userQuest,
-  rewardItem,
-  showActionButtons = true,
-  onComplete,
-  onAbandon,
-  isCompleting = false,
   showStartedInfo = true,
 }: QuestDetailsViewProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -91,7 +79,7 @@ function QuestDetailsView({
   const tier = quest.tier;
   const tierName = getTierName(tier);
   const tierColor = getTierColor(tier);
-  const tierBorderColor = getTierBorderColor(tier);
+  const tierBorderColor = "border-blue-500/50";
 
   const getChallengeRating = () => {
     if (tier <= 2) return { text: "Easy", color: "text-green-400" };
@@ -100,19 +88,6 @@ function QuestDetailsView({
   };
 
   const challengeRating = getChallengeRating();
-
-  const getTimerColor = () => {
-    if (!userQuest.deadline_at) return "from-green-600 to-emerald-600";
-
-    const deadline = new Date(userQuest.deadline_at);
-    const now = new Date();
-    const hoursRemaining =
-      (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-    if (hoursRemaining < 2) return "from-red-600 to-red-700";
-    if (hoursRemaining < 6) return "from-yellow-600 to-orange-600";
-    return "from-green-600 to-emerald-600";
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString("en-US", {
@@ -158,15 +133,12 @@ function QuestDetailsView({
 
         {/* Title and Description */}
         <div className="p-6 space-y-4 bg-black/20">
-          <h1 className="text-3xl font-bold text-white font-title">
-            {quest.title}
-          </h1>
+          <h1 className="text-3xl font-bold text-white">{quest.title}</h1>
           <p className="text-gray-100 text-lg leading-relaxed">
             {quest.description}
           </p>
         </div>
       </div>
-
       {/* Timer Display - Only show if quest has started */}
       {showStartedInfo && userQuest.deadline_at && (
         <div
@@ -174,14 +146,10 @@ function QuestDetailsView({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <IconClock size={32} className="text-purple-400" stroke={2} />
+              <IconClock size={32} className="" stroke={2} />
               <div>
-                <div className="text-sm text-gray-400 font-semibold">
-                  Time Remaining
-                </div>
-                <div
-                  className={`text-2xl font-bold bg-gradient-to-r ${getTimerColor()} bg-clip-text text-transparent`}
-                >
+                <div className="text-sm font-semibold">Time Remaining</div>
+                <div className="text-2xl font-bold text-white">
                   {timeRemaining}
                 </div>
               </div>
@@ -189,7 +157,6 @@ function QuestDetailsView({
           </div>
         </div>
       )}
-
       {/* Quest Info Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Challenge Rating */}
@@ -203,9 +170,7 @@ function QuestDetailsView({
               stroke={2}
             />
             <div>
-              <div className="text-sm text-gray-400 font-semibold">
-                Challenge Rating
-              </div>
+              <div className="text-sm font-semibold">Challenge Rating</div>
               <div className={`text-xl font-bold ${challengeRating.color}`}>
                 {challengeRating.text}
               </div>
@@ -219,11 +184,9 @@ function QuestDetailsView({
             className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
           >
             <div className="flex items-center gap-3">
-              <IconCalendar size={28} className="text-blue-400" stroke={2} />
+              <IconCalendar size={28} className="" stroke={2} />
               <div>
-                <div className="text-sm text-gray-400 font-semibold">
-                  Started At
-                </div>
+                <div className="text-sm font-semibold">Started At</div>
                 <div className="text-xl font-bold text-white">
                   {formatDate(userQuest.started_at)}
                 </div>
@@ -239,11 +202,9 @@ function QuestDetailsView({
           }`}
         >
           <div className="flex items-center gap-3">
-            <IconHourglass size={28} className="text-purple-400" stroke={2} />
+            <IconHourglass size={28} className="" stroke={2} />
             <div>
-              <div className="text-sm text-gray-400 font-semibold">
-                Time Commitment
-              </div>
+              <div className="text-sm font-semibold">Time Commitment</div>
               <div className="text-xl font-bold text-white">
                 {quest.time_limit_hours} hours
               </div>
@@ -251,102 +212,61 @@ function QuestDetailsView({
           </div>
         </div>
       </div>
-
       {/* Rewards Section */}
       <div
         className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
       >
-        <h2 className="text-2xl font-bold text-white font-title mb-4">
-          Rewards
-        </h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Rewards</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Glory Reward */}
-          <div className="bg-yellow-900/20 border-2 border-yellow-600/40 rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-2 border-yellow-600/40 rounded-lg p-6 text-center">
             <IconTrophy
               size={48}
               className="text-yellow-400 mx-auto mb-3"
               stroke={2}
             />
-            <div className="text-sm text-gray-400 font-semibold mb-1">
-              Glory
-            </div>
             <div className="text-3xl font-bold text-yellow-300">
               {quest.glory_reward.toLocaleString()}
             </div>
           </div>
 
           {/* XP Reward */}
-          <div className="bg-blue-900/20 border-2 border-blue-600/40 rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-2 border-blue-600/40 rounded-lg p-6 text-center">
             <IconBolt
               size={48}
               className="text-blue-400 mx-auto mb-3"
               stroke={2}
             />
-            <div className="text-sm text-gray-400 font-semibold mb-1">
-              Experience
-            </div>
             <div className="text-3xl font-bold text-blue-300">
               {quest.xp_reward.toLocaleString()}
             </div>
           </div>
 
           {/* Item Reward */}
-          <div className="bg-purple-900/20 border-2 border-purple-600/40 rounded-lg p-6">
-            <IconStarFilled
-              size={48}
-              className="text-purple-400 mx-auto mb-3"
-              stroke={2}
-            />
-            <div className="text-sm text-gray-400 font-semibold mb-2 text-center">
-              Reward Item
-            </div>
-            {rewardItem ? (
-              <div className="space-y-2">
-                <div className="text-lg font-bold text-purple-300 text-center">
-                  {rewardItem.name}
+          <div
+            className={`bg-gradient-to-r ${tierColor} border-2 ${tierBorderColor} rounded-lg p-6 relative`}
+          >
+            <div className="space-y-2">
+              <div>
+                <IconBox
+                  size={48}
+                  className={`${getTierTextColor(tier)} mx-auto mb-3`}
+                  stroke={2}
+                />
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-semibold text-white/90">
+                  Random {tierName} Item
                 </div>
-                <div className="flex justify-center gap-0.5 mb-2">
-                  {Array.from({ length: rewardItem.rarity_stars }, (_, i) => (
-                    <IconStar
-                      key={i}
-                      size={16}
-                      className="text-yellow-400"
-                      fill="currentColor"
-                      stroke={1.5}
-                    />
-                  ))}
-                </div>
-                <div className="text-sm text-gray-400 text-center">
-                  {rewardItem.description}
+                <div className="flex justify-center gap-0.5 mt-2">
+                  {getTierStars(tier)}
                 </div>
               </div>
-            ) : (
-              <div className="text-center text-gray-400">Loading...</div>
-            )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Action Buttons */}
-      {showActionButtons && onComplete && onAbandon && (
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={onAbandon}
-            disabled={isCompleting}
-            className="py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            Abandon Quest
-          </button>
-          <button
-            onClick={onComplete}
-            disabled={isCompleting}
-            className="py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-xl transition-all duration-200 hover:scale-105 shadow-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            {isCompleting ? "Completing..." : "Complete Quest"}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

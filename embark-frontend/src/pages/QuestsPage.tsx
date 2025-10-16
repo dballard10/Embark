@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
 import ActiveQuestsGrid from "../components/common/ActiveQuestsGrid";
@@ -6,65 +6,20 @@ import QuestCard from "../components/common/QuestCard";
 import CardSkeleton from "../components/common/CardSkeleton";
 import QuestSelectionModal from "../components/common/QuestSelectionModal";
 import QuestDetailsModal from "../components/common/QuestDetailsModal";
-import type { UserCompletedQuest } from "../types/quest.types";
-import type { Item } from "../types/item.types";
+import LoadingIcon from "../components/common/LoadingIcon";
 import { useUser } from "../contexts/UserContext";
-import {
-  fetchActiveQuests,
-  fetchCompletedQuests,
-  fetchUserItems,
-} from "../services/api";
+import { useItems } from "../contexts/ItemsContext";
+import { useQuestsContext } from "../contexts/QuestsContext";
 import { IconTarget, IconCheck } from "@tabler/icons-react";
 
 function QuestsPage() {
   const { selectedUser, isLoading: userLoading } = useUser();
-  const [userItemCount, setUserItemCount] = useState(0);
-  const [activeQuests, setActiveQuests] = useState<UserCompletedQuest[]>([]);
-  const [completedQuests, setCompletedQuests] = useState<UserCompletedQuest[]>(
-    []
-  );
-  const [completedQuestItems, setCompletedQuestItems] = useState<
-    Record<string, Item>
-  >({});
-  const [loading, setLoading] = useState(true);
+  const { itemCount: userItemCount, loading: itemsLoading } = useItems();
+  const { activeQuests, completedQuests, loading, refreshQuests } =
+    useQuestsContext();
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (selectedUser?.id) {
-      loadQuests();
-    }
-  }, [selectedUser?.id]);
-
-  const loadQuests = async () => {
-    if (!selectedUser?.id) return;
-
-    try {
-      setLoading(true);
-
-      // Fetch active quests (now returns array)
-      const activeQuestData = await fetchActiveQuests(selectedUser.id);
-      setActiveQuests(activeQuestData);
-
-      // Fetch completed quests
-      const completed = await fetchCompletedQuests(selectedUser.id, 50);
-      setCompletedQuests(completed);
-
-      // Fetch user items for count
-      const items = await fetchUserItems(selectedUser.id);
-      setUserItemCount(items.length);
-
-      // Load items for completed quests
-      const itemsMap: Record<string, Item> = {};
-
-      setCompletedQuestItems(itemsMap);
-    } catch (error) {
-      console.error("Error loading quests:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAddQuest = () => {
     setIsQuestModalOpen(true);
@@ -72,13 +27,13 @@ function QuestsPage() {
 
   const handleQuestAdded = () => {
     // Reload quests after a quest is added
-    loadQuests();
+    refreshQuests();
   };
 
   if (userLoading || !selectedUser) {
     return (
       <div className="game-container flex items-center justify-center min-h-screen">
-        <div className="text-gray-400 text-lg">Loading...</div>
+        <LoadingIcon size="large" />
       </div>
     );
   }
@@ -91,10 +46,11 @@ function QuestsPage() {
         totalXP={selectedUser.total_xp}
         totalGlory={selectedUser.total_glory}
         totalItems={userItemCount}
+        isLoadingItems={itemsLoading}
       />
 
       {/* Quest Board Header */}
-      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 sticky top-[72px] z-20">
+      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[72px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -123,7 +79,7 @@ function QuestsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24">
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
         {/* Active Quests Section */}
         <ActiveQuestsGrid
           activeQuests={activeQuests}
@@ -133,6 +89,7 @@ function QuestsPage() {
             setSelectedQuestId(questId);
             setIsQuestDetailsModalOpen(true);
           }}
+          showHeader={false}
         />
 
         {/* Completed Quests Section */}
@@ -166,11 +123,6 @@ function QuestsPage() {
                   key={quest.id}
                   userQuest={quest}
                   variant="completed"
-                  rewardItem={
-                    quest.quest?.reward_item_id
-                      ? completedQuestItems[quest.quest.reward_item_id]
-                      : undefined
-                  }
                 />
               ))}
             </div>
@@ -199,7 +151,7 @@ function QuestsPage() {
             setIsQuestDetailsModalOpen(false);
             setSelectedQuestId(null);
             // Reload quests after completing
-            loadQuests();
+            refreshQuests();
           }}
           questId={selectedQuestId}
         />

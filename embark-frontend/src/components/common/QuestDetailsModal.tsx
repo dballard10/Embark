@@ -1,43 +1,17 @@
 import { useState, useEffect } from "react";
 import { IconX } from "@tabler/icons-react";
 import QuestDetailsView from "./QuestDetailsView";
+import LoadingIcon from "./LoadingIcon";
 import { useUser } from "../../contexts/UserContext";
+import { useItems } from "../../contexts/ItemsContext";
+import { useQuestsContext } from "../../contexts/QuestsContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
-import type { Item } from "../../types/item.types";
-import type { QuestTier } from "../../types/quest.types";
-import { getTierBorderColor } from "../../utils/tierUtils";
 import {
-  fetchActiveQuests,
-  fetchItemById,
   completeQuest,
+  abandonQuest,
+  type QuestCompletionResponse,
 } from "../../services/api";
 import QuestDetailsModalSkeleton from "./QuestDetailsModalSkeleton";
-
-// Helper function to get base color for tier diagonal pattern
-function getTierBaseColor(tier: QuestTier): string {
-  const colors: Record<QuestTier, string> = {
-    1: "#6b7280", // gray-500
-    2: "#22c55e", // green-500
-    3: "#3b82f6", // blue-500
-    4: "#a855f7", // purple-500
-    5: "#f97316", // orange-500
-    6: "#dc2626", // red-600
-  };
-  return colors[tier];
-}
-
-// Helper function to get darker shade for diagonal pattern
-function getTierDarkerColor(tier: QuestTier): string {
-  const colors: Record<QuestTier, string> = {
-    1: "#4b5563", // gray-600
-    2: "#16a34a", // green-600
-    3: "#2563eb", // blue-600
-    4: "#9333ea", // purple-600
-    5: "#ea580c", // orange-600
-    6: "#be123c", // red-700
-  };
-  return colors[tier];
-}
 
 interface QuestDetailsModalProps {
   isOpen: boolean;
@@ -51,17 +25,22 @@ function QuestDetailsModal({
   questId,
 }: QuestDetailsModalProps) {
   const { selectedUser, refreshUser } = useUser();
+  const { refreshItems } = useItems();
+  const { activeQuests, refreshQuests } = useQuestsContext();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
-  const [rewardItem, setRewardItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isAbandoning, setIsAbandoning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [completionMessage, setCompletionMessage] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
-    if (isOpen && selectedUser?.id && questId) {
+    if (isOpen && questId) {
       loadQuestData();
     }
-  }, [isOpen, questId, selectedUser?.id]);
+  }, [isOpen, questId, activeQuests]);
 
   // ESC key handler
   useEffect(() => {
@@ -84,30 +63,15 @@ function QuestDetailsModal({
   }, [isOpen, onClose]);
 
   const loadQuestData = async () => {
-    if (!selectedUser?.id) return;
-
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch active quests
-      const activeQuests = await fetchActiveQuests(selectedUser.id);
-
-      // Find the quest by ID
+      // Find the quest by ID from context
       const quest = activeQuests.find((q) => q.id === questId);
 
       if (quest) {
         setUserQuest(quest);
-
-        // Fetch reward item if exists
-        if (quest.quest?.reward_item_id) {
-          try {
-            const item = await fetchItemById(quest.quest.reward_item_id);
-            setRewardItem(item);
-          } catch (error) {
-            console.error("Error loading reward item:", error);
-          }
-        }
       } else {
         setError("Quest not found");
       }
@@ -126,13 +90,32 @@ function QuestDetailsModal({
       setIsCompleting(true);
       setError(null);
 
-      await completeQuest(selectedUser.id, userQuest.id);
+      const response: QuestCompletionResponse = await completeQuest(
+        selectedUser.id,
+        userQuest.id
+      );
 
-      // Refresh user data
+      // Set completion message based on whether item was awarded
+      if (response.awarded_item) {
+        setCompletionMessage(
+          `Quest completed! You received: ${response.awarded_item.item.name}`
+        );
+      } else {
+        setCompletionMessage(
+          "Quest completed! (You already own all items from this tier)"
+        );
+      }
+
+      // Refresh user data, items, and quests
       await refreshUser();
+      await refreshItems();
+      await refreshQuests();
 
-      // Close modal on success
-      onClose();
+      // Close modal after a brief delay to show the message
+      setTimeout(() => {
+        onClose();
+        setCompletionMessage(null);
+      }, 2000);
     } catch (error: any) {
       console.error("Error completing quest:", error);
       setError(error.message || "Failed to complete quest");
@@ -141,21 +124,33 @@ function QuestDetailsModal({
     }
   };
 
-  const handleAbandon = () => {
-    // TODO: Implement abandon quest functionality
-    console.log("Abandon quest");
+  const handleAbandon = async () => {
+    if (!selectedUser || !userQuest) return;
+
+    try {
+      setIsAbandoning(true);
+      setError(null);
+
+      await abandonQuest(selectedUser.id, userQuest.id);
+
+      // Refresh user data and quests
+      await refreshUser();
+      await refreshQuests();
+
+      // Close modal on success
+      onClose();
+    } catch (error: any) {
+      console.error("Error abandoning quest:", error);
+      setError(error.message || "Failed to abandon quest");
+    } finally {
+      setIsAbandoning(false);
+    }
   };
 
   if (!isOpen) return null;
 
-  const tier = userQuest?.quest?.tier;
-  const tierBorderColor = tier
-    ? getTierBorderColor(tier)
-    : "border-purple-500/50";
-
-  // Get tier-specific colors for diagonal pattern
-  const baseColor = tier ? getTierBaseColor(tier) : "#3b82f6";
-  const darkerColor = tier ? getTierDarkerColor(tier) : "#2563eb";
+  const baseColor = "#0a2847";
+  const tierBorderColor = "border-blue-500/50";
 
   return (
     <div
@@ -163,66 +158,84 @@ function QuestDetailsModal({
       onClick={onClose}
     >
       <div
-        className={`rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-modal-scale`}
+        className={`rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col relative animate-modal-scale`}
         style={{
           backgroundColor: baseColor,
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 69px,
-            ${darkerColor}E6 69px,
-            transparent 71px,
-            transparent 141px
-          ),
-          repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 69px,
-            ${darkerColor}E6 69px,
-            transparent 71px,
-            transparent 141px
-          )`,
+          backgroundImage: `radial-gradient(ellipse at center, #0a2847 0%, #003d5c 100%)`,
         }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="quest-modal-title"
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-slate-700/80 hover:bg-slate-600/80 text-white transition-colors"
-          aria-label="Close modal"
-        >
-          <IconX size={24} stroke={2} />
-        </button>
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+          <div>
+            <h2
+              id="quest-modal-title"
+              className="text-2xl font-bold text-white"
+            >
+              Quest Details
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Review quest progress and manage completion
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white transition-colors"
+            aria-label="Close modal"
+          >
+            <IconX size={24} />
+          </button>
+        </div>
 
-        {/* Loading State */}
-        {loading && (
-          <QuestDetailsModalSkeleton tierBorderColor={tierBorderColor} />
-        )}
+        {/* Content */}
+        <div className="p-6 overflow-y-auto flex-1">
+          {/* Loading State */}
+          {loading && (
+            <QuestDetailsModalSkeleton tierBorderColor={tierBorderColor} />
+          )}
 
-        {/* Error State */}
-        {error && !loading && (
-          <div className="p-8">
+          {/* Error State */}
+          {error && !loading && (
             <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-red-300 text-center">
               {error}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Quest Details */}
+          {/* Completion Message */}
+          {completionMessage && (
+            <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center mb-4">
+              {completionMessage}
+            </div>
+          )}
+
+          {/* Quest Details */}
+          {!loading && !error && userQuest && (
+            <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
+          )}
+        </div>
+
+        {/* Footer */}
         {!loading && !error && userQuest && (
-          <div className="p-6">
-            <QuestDetailsView
-              userQuest={userQuest}
-              rewardItem={rewardItem}
-              showActionButtons={true}
-              onComplete={handleComplete}
-              onAbandon={handleAbandon}
-              isCompleting={isCompleting}
-              showStartedInfo={true}
-            />
+          <div className="flex justify-end gap-3 p-6 border-t border-slate-700">
+            <button
+              onClick={handleAbandon}
+              disabled={isCompleting || isAbandoning}
+              className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+            >
+              {isAbandoning && <LoadingIcon size="small" />}
+              <span>{isAbandoning ? "Abandoning..." : "Abandon Quest"}</span>
+            </button>
+            <button
+              onClick={handleComplete}
+              disabled={isCompleting || isAbandoning}
+              className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+            >
+              {isCompleting && <LoadingIcon size="small" />}
+              <span>{isCompleting ? "Completing..." : "Complete Quest"}</span>
+            </button>
           </div>
         )}
       </div>

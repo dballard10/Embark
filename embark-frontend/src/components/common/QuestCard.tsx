@@ -3,18 +3,17 @@ import {
   getTierStars,
   getTierColor,
   getTierGradientColor,
+  getTierTextColor,
 } from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import type { Item } from "../../types/item.types";
 import {
   IconTarget,
-  IconTrophy,
-  IconBolt,
   IconClock,
   IconLock,
   IconGift,
   IconPlus,
-  IconDiamond,
+  IconBox,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
@@ -118,7 +117,7 @@ function QuestCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`relative bg-gradient-to-br ${tierGradient} border-2 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
+      className={`relative flex flex-col bg-gradient-to-br ${tierGradient} border-2 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
         variant === "active" ? "quest-card-active" : ""
       } ${
         variant === "active" || variant === "available"
@@ -151,76 +150,60 @@ function QuestCard({
       </div>
 
       {/* Quest Info */}
-      <div className="p-4 space-y-2">
-        <h3 className="font-bold text-lg text-white line-clamp-2">
-          {userQuest.quest.title}
-        </h3>
+      <div className="p-4 flex flex-col flex-1">
+        <div className="flex-1">
+          <h3 className="font-bold text-lg text-white line-clamp-2 mb-2">
+            {userQuest.quest.title}
+          </h3>
+
+          {/* Item Earned - Only show for completed quests */}
+          {variant === "completed" && rewardItem && (
+            <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/50 rounded-lg p-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center">
+                  <IconGift
+                    size={28}
+                    className="text-purple-300"
+                    stroke={1.5}
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-white line-clamp-1">
+                    {rewardItem.name}
+                  </div>
+                  <div className="flex items-center gap-0.5 mt-1">
+                    {getTierStars(rewardItem.rarity_tier)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Rewards - Only show for active and available quests */}
         {variant !== "completed" && (
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-yellow-900/30 border border-yellow-600/40 rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1 font-bold text-yellow-300">
-                <IconTrophy size={18} stroke={2} />
+            <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-yellow-600/40 rounded-lg p-2 pt-3 text-center">
+              <div className="text-lg font-bold text-yellow-300">
                 {userQuest.quest.glory_reward.toLocaleString()}
               </div>
             </div>
-            <div className="bg-blue-900/30 border border-blue-600/40 rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1 font-bold text-blue-300">
-                <IconBolt size={18} stroke={2} />
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600/40 rounded-lg p-2 pt-3 text-center">
+              <div className="text-lg font-bold text-blue-300">
                 {userQuest.quest.xp_reward.toLocaleString()}
               </div>
             </div>
             <div
-              className={`flex items-center justify-center gap-1 rounded-lg bg-gradient-to-r ${tierBadgeColor} border border-white/30 p-2 text-xs font-bold text-white shadow-lg`}
+              className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-2 text-center shadow-lg`}
+              title={`Random Tier ${questTier} Item Reward`}
             >
-              <IconDiamond size={18} stroke={2} />
+              <IconBox
+                size={36}
+                className={`${getTierTextColor(questTier)} mx-auto`}
+                stroke={2}
+              />
             </div>
           </div>
-        )}
-
-        {/* Item Earned - Only show for completed quests */}
-        {variant === "completed" && rewardItem && (
-          <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/50 rounded-lg p-3">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center">
-                <IconGift size={28} className="text-purple-300" stroke={1.5} />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-white line-clamp-1">
-                  {rewardItem.name}
-                </div>
-                <div className="flex items-center gap-0.5 mt-1">
-                  {getTierStars(rewardItem.rarity_tier)}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        {variant === "active" && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              // TODO: Handle complete quest
-            }}
-            className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
-          >
-            Complete
-          </button>
-        )}
-
-        {variant === "available" && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick) onClick();
-            }}
-            className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
-          >
-            Start Quest
-          </button>
         )}
       </div>
     </div>

@@ -18,6 +18,21 @@ export function getTierColor(tier: QuestTier): string {
 }
 
 /**
+ * Get text color class for tier icons (bright solid colors)
+ */
+export function getTierTextColor(tier: QuestTier): string {
+  const colors: Record<QuestTier, string> = {
+    1: "text-gray-300",
+    2: "text-green-400",
+    3: "text-blue-400",
+    4: "text-purple-400",
+    5: "text-orange-400",
+    6: "text-pink-400",
+  };
+  return colors[tier];
+}
+
+/**
  * Get tier name from number
  */
 export function getTierName(tier: QuestTier): QuestTierName {

@@ -1,21 +1,48 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import health, users, quests, items
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-app = FastAPI(
-    title="Embark API",
-    description="Life Gamification API for the Embark MVP",
-    version="0.1.0",
+from routers import health, users, quests, items
+from config.settings import settings
+from middleware import (
+    LoggingMiddleware,
+    setup_logging,
+    http_exception_handler,
+    validation_exception_handler,
+    general_exception_handler,
+    api_exception_handler,
+    APIException,
 )
 
-# CORS Configuration for local development
+# Setup logging
+setup_logging(settings.LOG_LEVEL)
+
+# Initialize FastAPI app
+app = FastAPI(
+    title=settings.API_TITLE,
+    description=settings.API_DESCRIPTION,
+    version=settings.API_VERSION,
+)
+
+# Add logging middleware
+app.add_middleware(LoggingMiddleware)
+
+# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+    allow_methods=settings.CORS_ALLOW_METHODS,
+    allow_headers=settings.CORS_ALLOW_HEADERS,
+    expose_headers=["*"],
 )
+
+# Register exception handlers
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(APIException, api_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["health"])

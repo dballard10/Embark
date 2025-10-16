@@ -108,13 +108,29 @@ class ItemService:
 
     async def award_item_to_user(
         self, user_id: UUID, item_id: UUID
-    ) -> UserItemResponse:
-        """Award an item to a user"""
+    ) -> Optional[UserItemResponse]:
+        """
+        Award an item to a user.
+        Returns the UserItemResponse if item was awarded, or None if user already owns the item.
+        """
         try:
             # Verify item exists
             item = await self.get_item(item_id)
             if not item:
                 raise ValueError("Item not found")
+
+            # Check if user already owns this item
+            existing_item = (
+                self.supabase.table("user_items")
+                .select("id")
+                .eq("user_id", str(user_id))
+                .eq("item_id", str(item_id))
+                .execute()
+            )
+            
+            if existing_item.data:
+                # User already owns this item, return None to indicate it wasn't awarded
+                return None
 
             # Create user item entry
             insert_data = {

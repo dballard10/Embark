@@ -1,5 +1,6 @@
-import { IconAlertCircle, IconLoader } from "@tabler/icons-react";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { ReactNode } from "react";
+import LoadingIcon from "../common/LoadingIcon";
 
 interface TabPanelProps {
   isLoading: boolean;
@@ -11,10 +12,7 @@ function TabPanel({ isLoading, error, children }: TabPanelProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="flex flex-col items-center gap-3">
-          <IconLoader size={40} className="text-blue-500 animate-spin" />
-          <p className="text-slate-400">Loading...</p>
-        </div>
+        <LoadingIcon size="large" />
       </div>
     );
   }

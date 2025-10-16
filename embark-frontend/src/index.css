@@ -155,6 +155,36 @@
     animation: modal-scale 0.2s ease-out;
   }
 
+  /* Drop Shadow Glow Effect */
+  .drop-shadow-glow {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* Enhanced Slide Up with Delay Support */
+  @keyframes slide-up-delayed {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Game Container */
   .game-container {
     @apply relative min-h-screen pb-24 pt-20;

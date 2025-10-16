@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Rewards/Items table
-CREATE TABLE IF NOT EXISTS rewards (
+-- items/Items table
+CREATE TABLE IF NOT EXISTS items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS quests (
     glory_reward INTEGER NOT NULL DEFAULT 0,
     xp_reward INTEGER NOT NULL DEFAULT 0,
     time_limit_hours INTEGER NOT NULL DEFAULT 24,
-    reward_item_id UUID REFERENCES rewards(id) ON DELETE SET NULL,
+    reward_item_id UUID REFERENCES items(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -55,14 +55,16 @@ CREATE TABLE IF NOT EXISTS user_completed_quests (
 CREATE TABLE IF NOT EXISTS user_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    item_id UUID NOT NULL REFERENCES rewards(id) ON DELETE CASCADE,
+    item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
     acquired_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    is_featured BOOLEAN NOT NULL DEFAULT FALSE
+    is_featured BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE(user_id, item_id)
 );
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_user_completed_quests_user_id ON user_completed_quests(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_completed_quests_is_active ON user_completed_quests(is_active);
+CREATE INDEX IF NOT EXISTS idx_user_completed_quests_user_quest ON user_completed_quests(user_id, quest_id);
 CREATE INDEX IF NOT EXISTS idx_user_items_user_id ON user_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_quests_tier ON quests(tier);
 

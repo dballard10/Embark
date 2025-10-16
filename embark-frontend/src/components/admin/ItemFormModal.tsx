@@ -15,6 +15,7 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
     description: "",
     rarity_tier: 1,
     rarity_stars: 1,
+    price: 0,
     image_url: "",
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -27,6 +28,7 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
         description: item.description,
         rarity_tier: item.rarity_tier,
         rarity_stars: item.rarity_stars,
+        price: item.price,
         image_url: item.image_url || "",
       });
     } else {
@@ -35,6 +37,7 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
         description: "",
         rarity_tier: 1,
         rarity_stars: 1,
+        price: 0,
         image_url: "",
       });
     }
@@ -158,6 +161,31 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
                 max={6}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Price (Glory) *
+            </label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  price: parseInt(e.target.value),
+                })
+              }
+              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              min={0}
+              step={1}
+              placeholder="0"
+            />
+            <p className="text-xs text-slate-400 mt-1">
+              Common: 1,000 | Uncommon: 5,000 | Rare: 15,000 | Epic: 50,000 |
+              Legendary: 100,000 | Mythic: 1,000,000
+            </p>
           </div>
 
           <div>

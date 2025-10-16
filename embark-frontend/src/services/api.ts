@@ -77,13 +77,18 @@ export const startQuest = async (
   }
 };
 
+export interface QuestCompletionResponse {
+  user_quest: UserCompletedQuest;
+  awarded_item: UserItem | null;
+}
+
 export const completeQuest = async (
   userId: string,
   userQuestId: string
-): Promise<UserCompletedQuest> => {
+): Promise<QuestCompletionResponse> => {
   try {
     console.log("API: Completing quest", { userId, userQuestId });
-    const response = await api.post<UserCompletedQuest>(
+    const response = await api.post<QuestCompletionResponse>(
       `/users/${userId}/quests/${userQuestId}/complete`
     );
     console.log("API: Quest completed successfully", response.data);
@@ -97,6 +102,26 @@ export const completeQuest = async (
       error.response?.data?.detail ||
       error.message ||
       "Failed to complete quest";
+    throw new Error(errorMessage);
+  }
+};
+
+export const abandonQuest = async (
+  userId: string,
+  userQuestId: string
+): Promise<void> => {
+  try {
+    console.log("API: Abandoning quest", { userId, userQuestId });
+    await api.delete(`/users/${userId}/quests/${userQuestId}/abandon`);
+    console.log("API: Quest abandoned successfully");
+  } catch (error: any) {
+    console.error("API Error abandoning quest:", error);
+    console.error("API Error details:", error.response?.data);
+
+    const errorMessage =
+      error.response?.data?.detail ||
+      error.message ||
+      "Failed to abandon quest";
     throw new Error(errorMessage);
   }
 };

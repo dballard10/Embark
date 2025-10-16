@@ -3,74 +3,58 @@ import { useParams, useNavigate } from "react-router-dom";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
 import QuestDetailsView from "../components/common/QuestDetailsView";
+import LoadingIcon from "../components/common/LoadingIcon";
 import { useUser } from "../contexts/UserContext";
+import { useItems } from "../contexts/ItemsContext";
+import { useQuestsContext } from "../contexts/QuestsContext";
 import type { UserCompletedQuest } from "../types/quest.types";
-import type { Item } from "../types/item.types";
-import {
-  fetchActiveQuests,
-  fetchItemById,
-  fetchUserItems,
-  completeQuest,
-} from "../services/api";
+import { completeQuest, type QuestCompletionResponse } from "../services/api";
 import { IconArrowLeft } from "@tabler/icons-react";
 
 function QuestDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
-  const [userItemCount, setUserItemCount] = useState(0);
+  const {
+    itemCount: userItemCount,
+    loading: itemsLoading,
+    refreshItems,
+  } = useItems();
+  const {
+    activeQuests,
+    loading: questsLoading,
+    refreshQuests,
+  } = useQuestsContext();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
-  const [rewardItem, setRewardItem] = useState<Item | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [completionMessage, setCompletionMessage] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
-    if (selectedUser?.id) {
-      loadQuestData();
-    }
-  }, [id, selectedUser?.id]);
+    loadQuestData();
+  }, [id, activeQuests]);
 
   const loadQuestData = async () => {
-    if (!selectedUser?.id) return;
-
     try {
-      setLoading(true);
-
-      // Fetch active quests
-      const activeQuests = await fetchActiveQuests(selectedUser.id);
-
-      // Find the quest by ID
+      // Find the quest by ID from context
       const quest = activeQuests.find((q) => q.id === id);
 
       if (quest) {
         setUserQuest(quest);
-
-        // Fetch reward item if exists
-        if (quest.quest?.reward_item_id) {
-          try {
-            const item = await fetchItemById(quest.quest.reward_item_id);
-            setRewardItem(item);
-          } catch (error) {
-            console.error("Error loading reward item:", error);
-          }
-        }
+      } else {
+        setUserQuest(null);
       }
-
-      // Fetch user items for count
-      const items = await fetchUserItems(selectedUser.id);
-      setUserItemCount(items.length);
     } catch (error) {
       console.error("Error loading quest data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (userLoading || loading) {
+  if (userLoading || questsLoading) {
     return (
       <div className="game-container flex items-center justify-center min-h-screen">
-        <div className="text-gray-400 text-lg">Loading...</div>
+        <LoadingIcon size="large" />
       </div>
     );
   }
@@ -113,15 +97,33 @@ function QuestDetailsPage() {
       });
 
       // Complete the quest
-      await completeQuest(selectedUser.id, userQuest.id);
+      const response: QuestCompletionResponse = await completeQuest(
+        selectedUser.id,
+        userQuest.id
+      );
 
       console.log("Quest completed successfully");
 
-      // Refresh user data to show updated glory, XP, and items
-      await refreshUser();
+      // Set completion message based on whether item was awarded
+      if (response.awarded_item) {
+        setCompletionMessage(
+          `Quest completed! You received: ${response.awarded_item.item.name}`
+        );
+      } else {
+        setCompletionMessage(
+          "Quest completed! (You already own all items from this tier)"
+        );
+      }
 
-      // Navigate back to quests page
-      navigate("/quests");
+      // Refresh user data to show updated glory, XP, items, and quests
+      await refreshUser();
+      await refreshItems();
+      await refreshQuests();
+
+      // Navigate back to quests page after brief delay
+      setTimeout(() => {
+        navigate("/quests");
+      }, 2000);
     } catch (err) {
       console.error("Error completing quest:", err);
       const errorMessage =
@@ -145,6 +147,7 @@ function QuestDetailsPage() {
         totalXP={selectedUser.total_xp}
         totalGlory={selectedUser.total_glory}
         totalItems={userItemCount}
+        isLoadingItems={itemsLoading}
       />
 
       {/* Back button header */}
@@ -169,15 +172,14 @@ function QuestDetailsPage() {
           </div>
         )}
 
-        <QuestDetailsView
-          userQuest={userQuest}
-          rewardItem={rewardItem}
-          showActionButtons={true}
-          onComplete={handleComplete}
-          onAbandon={handleAbandon}
-          isCompleting={isCompleting}
-          showStartedInfo={true}
-        />
+        {/* Completion Message */}
+        {completionMessage && (
+          <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center mb-6">
+            {completionMessage}
+          </div>
+        )}
+
+        <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
       </div>
 
       {/* Bottom Navigation */}

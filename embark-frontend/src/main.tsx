@@ -4,12 +4,18 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import { UserProvider } from "./contexts/UserContext";
+import { ItemsProvider } from "./contexts/ItemsContext";
+import { QuestsProvider } from "./contexts/QuestsContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <UserProvider>
-        <App />
+        <ItemsProvider>
+          <QuestsProvider>
+            <App />
+          </QuestsProvider>
+        </ItemsProvider>
       </UserProvider>
     </BrowserRouter>
   </StrictMode>

@@ -63,6 +63,12 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
           <div className="text-slate-200 font-bold">{item.rarity_tier}</div>
         </div>
         <div className="bg-slate-900 rounded p-2 col-span-2">
+          <div className="text-slate-400 text-xs">Price</div>
+          <div className="text-amber-500 font-bold">
+            {item.price.toLocaleString()} Glory
+          </div>
+        </div>
+        <div className="bg-slate-900 rounded p-2 col-span-2">
           <div className="text-slate-400 text-xs">ID</div>
           <div className="text-slate-300 font-mono text-xs truncate">
             {item.id}

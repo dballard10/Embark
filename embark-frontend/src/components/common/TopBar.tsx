@@ -3,17 +3,25 @@ import {
   getLevelProgress,
   getCurrentLevelXP,
 } from "../../utils/levelCalculator";
-import { IconTrophy, IconDiamond, IconSettings } from "@tabler/icons-react";
+import { IconTrophy, IconSettings, IconBox } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import LoadingIcon from "./LoadingIcon";
 
 interface TopBarProps {
   username: string;
   totalXP: number;
   totalGlory: number;
   totalItems: number;
+  isLoadingItems?: boolean;
 }
 
-function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
+function TopBar({
+  username,
+  totalXP,
+  totalGlory,
+  totalItems,
+  isLoadingItems = false,
+}: TopBarProps) {
   const navigate = useNavigate();
   const level = calculateLevel(totalXP);
   const levelProgress = getLevelProgress(totalXP);
@@ -84,7 +92,7 @@ function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
               onClick={() => navigate("/shop")}
               className="flex items-center gap-2 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 border border-yellow-600/50 rounded-full px-4 py-2 shadow-lg cursor-pointer transition-transform hover:scale-105"
             >
-              <IconTrophy size={24} className="text-yellow-400" />
+              <IconTrophy size={24} className="text-yellow-400" stroke={2} />
               <span className="font-bold text-yellow-300 text-lg">
                 {totalGlory.toLocaleString()}
               </span>
@@ -95,15 +103,21 @@ function TopBar({ username, totalXP, totalGlory, totalItems }: TopBarProps) {
               onClick={() => navigate("/vault")}
               className="flex items-center gap-2 bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-600/50 rounded-full px-4 py-2 shadow-lg cursor-pointer transition-transform hover:scale-105"
             >
-              <IconDiamond size={24} className="text-green-400" />
-              <span className="font-bold text-green-300 text-lg">
-                {totalItems}
-              </span>
+              <IconBox size={24} className="text-green-400" stroke={2} />
+              {isLoadingItems ? (
+                <span className="font-bold text-green-300 text-lg">
+                  <LoadingIcon size="small" />
+                </span>
+              ) : (
+                <span className="font-bold text-green-300 text-lg">
+                  {totalItems}
+                </span>
+              )}
             </button>
 
             {/* Settings */}
             <button className="w-12 h-12 rounded-full bg-slate-800/80 border border-white/20 flex items-center justify-center hover:bg-slate-700/80 transition-colors shadow-lg">
-              <IconSettings size={24} className="text-gray-300" />
+              <IconSettings size={24} className="text-gray-300" stroke={2} />
             </button>
           </div>
         </div>

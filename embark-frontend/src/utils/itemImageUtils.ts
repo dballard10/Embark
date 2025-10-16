@@ -71,6 +71,56 @@ const itemImageMap: Record<string, string> = {
   "Titan's Crushing Gauntlets": "titans-crushing-gauntlets.png",
   "Eldritch Horror Tentacles": "eldritch-horror-tentacles.png",
   "World Eater Dragon Tooth": "world-eater-dragon-tooth.png",
+
+  // === NEW ELEMENTAL ITEMS (37-72) ===
+
+  // Tier 1 (Common) - Elemental Basics
+  "Stone Hammer": "stone-hammer.png",
+  "Ember Charm": "ember-charm.png",
+  "Stream Crystal": "stream-crystal.png",
+  "Wind-Woven Bracers": "wind-woven-bracers.png",
+  "Magma Pebble": "magma-pebble.png",
+  "Gale Feather Quill": "gale-feather-quill.png",
+
+  // Tier 2 (Uncommon) - Quality Elemental Gear
+  "Salamander Scale Gloves": "salamander-scale-gloves.png",
+  "Zephyr Cloak": "zephyr-cloak.png",
+  "Coral Branch Trident": "coral-branch-trident.png",
+  "Ash Wood Shield": "ash-wood-shield.png",
+  "Granite Gauntlets": "granite-gauntlets.png",
+  "Storm Petrel Feather Charm": "storm-petrel-feather-charm.png",
+
+  // Tier 3 (Rare) - Magical Elemental Items
+  "Phoenix Feather Mantle": "phoenix-feather-mantle.png",
+  "Undine Pearl Staff": "undine-pearl-staff.png",
+  "Gargoyle Stone Shield": "gargoyle-stone-shield.png",
+  "Djinn Scimitar": "djinn-scimitar.png",
+  "Volcanic Fury Axe": "volcanic-fury-axe.png",
+  "Tempest Rider Boots": "tempest-rider-boots.png",
+
+  // Tier 4 (Epic) - Powerful Elemental Artifacts
+  "Ifrit Flame Sword": "ifrit-flame-sword.png",
+  "Leviathan Tide Armor": "leviathan-tide-armor.png",
+  "Roc Talon Gauntlets": "roc-talon-gauntlets.png",
+  "Earth Golem Fists": "earth-golem-fists.png",
+  "Wildfire Phoenix Crown": "wildfire-phoenix-crown.png",
+  "Maelstrom Trident": "maelstrom-trident.png",
+
+  // Tier 5 (Legendary) - Elemental Mastery
+  "World Storm Avatar Wings": "world-storm-avatar-wings.png",
+  "Tidal Leviathan Crown": "tidal-leviathan-crown.png",
+  "Tempest Elemental Core": "tempest-elemental-core.png",
+  "Primordial Earth Titan Armor": "primordial-earth-titan-armor.png",
+  "Searing Solar Wings": "searing-solar-wings.png",
+  "Abyssal Pressure Gauntlets": "abyssal-pressure-gauntlets.png",
+
+  // Tier 6 (Mythic) - Elemental Transcendence
+  "Primordial Flame Mace": "primordial-flame-mace.png",
+  "Volcanic Dragon Skull": "volcanic-dragon-skull.png",
+  "Planetary Core Hammer": "planetary-core-hammer.png",
+  "Infinite Ocean Amulet": "infinite-ocean-amulet.png",
+  "Cosmic Wind Scepter": "cosmic-wind-scepter.png",
+  "Elemental Chaos Throne": "elemental-chaos-throne.png",
 };
 
 /**

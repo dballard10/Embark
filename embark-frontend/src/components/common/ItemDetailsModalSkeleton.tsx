@@ -1,3 +1,5 @@
+import LoadingIcon from "./LoadingIcon";
+
 interface ItemDetailsModalSkeletonProps {
   tierBorderColor?: string;
 }
@@ -6,7 +8,7 @@ function ItemDetailsModalSkeleton({
   tierBorderColor = "border-purple-500/50",
 }: ItemDetailsModalSkeletonProps) {
   return (
-    <div className="p-6 space-y-6 animate-pulse">
+    <div className="p-6 space-y-6">
       {/* Item Image and Title Section */}
       <div
         className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
@@ -14,8 +16,8 @@ function ItemDetailsModalSkeleton({
         {/* Image Placeholder */}
         <div className="h-64 relative bg-transparent backdrop-blur-md">
           <div className="w-full h-full flex items-center justify-center p-8">
-            {/* Centered image skeleton */}
-            <div className="w-48 h-48 bg-white/5 rounded-lg"></div>
+            {/* Centered loading icon */}
+            <LoadingIcon size="large" />
           </div>
 
           {/* Tier Badge Skeleton */}

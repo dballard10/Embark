@@ -55,13 +55,39 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
           {navItems.map((item) => {
             const isActive = activePage === item.id;
             const Icon = item.icon;
+            const isVault = item.id === "vault";
+            const isShop = item.id === "shop";
+            const isQuests = item.id === "quests";
+
+            // Determine active color based on item type
+            let activeColor = "text-gray-400 hover:text-white";
+            if (isActive) {
+              if (isVault) activeColor = "text-green-400";
+              else if (isShop) activeColor = "text-orange-400";
+              else if (isQuests) activeColor = "text-blue-400";
+              else activeColor = "text-cyan-400";
+            }
+
+            // Determine label color
+            let labelColor = "text-gray-400";
+            if (isActive) {
+              if (isVault) labelColor = "text-green-400";
+              else if (isShop) labelColor = "text-orange-400";
+              else if (isQuests) labelColor = "text-blue-400";
+              else labelColor = "text-cyan-400";
+            }
+
+            // Determine gradient bar color
+            let gradientColor = "from-cyan-500 to-blue-500";
+            if (isVault) gradientColor = "from-green-500 to-emerald-500";
+            else if (isShop) gradientColor = "from-orange-500 to-amber-500";
+            else if (isQuests) gradientColor = "from-blue-500 to-blue-600";
+
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${
-                  isActive ? "text-cyan-400" : "text-gray-400 hover:text-white"
-                }`}
+                className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${activeColor}`}
               >
                 <div
                   className={`mb-1 transition-transform duration-200 ${
@@ -75,15 +101,13 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                       : { stroke: 2 })}
                   />
                 </div>
-                <div
-                  className={`text-xs font-semibold ${
-                    isActive ? "text-cyan-400" : "text-gray-400"
-                  }`}
-                >
+                <div className={`text-xs font-semibold ${labelColor}`}>
                   {item.label}
                 </div>
                 {isActive && (
-                  <div className="absolute bottom-0 h-1 w-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-t-full"></div>
+                  <div
+                    className={`absolute bottom-0 h-1 w-16 bg-gradient-to-r ${gradientColor} rounded-t-full`}
+                  ></div>
                 )}
               </button>
             );

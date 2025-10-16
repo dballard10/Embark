@@ -156,15 +156,19 @@ async def get_active_quests(user_id: UUID):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/users/{user_id}/quests/{user_quest_id}/complete", response_model=UserQuestResponse)
+@router.post("/users/{user_id}/quests/{user_quest_id}/complete")
 async def complete_quest(user_id: UUID, user_quest_id: UUID):
     """
     Complete a specific user quest and award rewards
     
     - **user_id**: UUID of the user
     - **user_quest_id**: UUID of the user_completed_quest entry to complete
+    
+    Returns: { user_quest, awarded_item (or null if already owned) }
     """
     try:
+        import random
+        
         quest_service = get_quest_service()
         user_service = get_user_service()
         item_service = get_item_service()
@@ -180,39 +184,74 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
         )
         await user_service.update_user_stats(user_id, stats_update)
         
-        # Award item if quest has item reward
-        if completed_quest.quest.reward_item_id:
-            await item_service.award_item_to_user(
-                user_id, completed_quest.quest.reward_item_id
+        # Award a random item from the quest's tier
+        awarded_item = None
+        try:
+            # Get all items from the quest's tier
+            tier_items = await item_service.list_items(
+                rarity_tier=completed_quest.quest.tier,
+                limit=100
             )
+            
+            if tier_items:
+                # Get user's current items to filter out owned ones
+                user_items = await item_service.get_user_items(user_id)
+                owned_item_ids = {str(ui.item_id) for ui in user_items}
+                
+                # Filter to items user doesn't own
+                available_items = [
+                    item for item in tier_items 
+                    if str(item.id) not in owned_item_ids
+                ]
+                
+                # Select a random item (from available or all tier items if all owned)
+                items_to_choose_from = available_items if available_items else tier_items
+                random_item = random.choice(items_to_choose_from)
+                
+                # Try to award the item (returns None if already owned)
+                awarded_item = await item_service.award_item_to_user(
+                    user_id, random_item.id
+                )
+                
+        except Exception as item_error:
+            # Log the error but don't fail the quest completion
+            print(f"Warning: Failed to award item: {item_error}")
         
-        # Return just the user quest response (without nested quest details for consistency)
-        return UserQuestResponse(
-            id=completed_quest.id,
-            user_id=completed_quest.user_id,
-            quest_id=completed_quest.quest_id,
-            started_at=completed_quest.started_at,
-            completed_at=completed_quest.completed_at,
-            deadline_at=completed_quest.deadline_at,
-            is_active=completed_quest.is_active,
-        )
+        # Return quest completion info with awarded item details
+        return {
+            "user_quest": UserQuestResponse(
+                id=completed_quest.id,
+                user_id=completed_quest.user_id,
+                quest_id=completed_quest.quest_id,
+                started_at=completed_quest.started_at,
+                completed_at=completed_quest.completed_at,
+                deadline_at=completed_quest.deadline_at,
+                is_active=completed_quest.is_active,
+            ),
+            "awarded_item": awarded_item
+        }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Catch any other unexpected errors
+        print(f"Error completing quest: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.delete("/users/{user_id}/quests/active", status_code=204)
-async def abandon_quest(user_id: UUID):
+@router.delete("/users/{user_id}/quests/{user_quest_id}/abandon", status_code=204)
+async def abandon_quest(user_id: UUID, user_quest_id: UUID):
     """
-    Abandon user's active quest
+    Abandon a specific user quest
     
     - **user_id**: UUID of the user
+    - **user_quest_id**: UUID of the user_completed_quest entry to abandon
     """
     try:
         service = get_quest_service()
-        success = await service.abandon_quest(user_id)
+        success = await service.abandon_quest(user_id, user_quest_id)
         
         if not success:
-            raise HTTPException(status_code=404, detail="No active quest found")
+            raise HTTPException(status_code=404, detail="Active quest not found")
         
         return None
     except ValueError as e:

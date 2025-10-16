@@ -4,8 +4,7 @@ import QuestCard from "./QuestCard";
 import QuestDetailsView from "./QuestDetailsView";
 import CardSkeleton from "./CardSkeleton";
 import type { Quest, UserCompletedQuest } from "../../types/quest.types";
-import type { Item } from "../../types/item.types";
-import { fetchAllQuests, startQuest, fetchItemById } from "../../services/api";
+import { fetchAllQuests, startQuest } from "../../services/api";
 
 interface QuestSelectionModalProps {
   isOpen: boolean;
@@ -30,23 +29,13 @@ function QuestSelectionModal({
   const [startingQuestId, setStartingQuestId] = useState<string | null>(null);
   const [selectedQuestForDetails, setSelectedQuestForDetails] =
     useState<Quest | null>(null);
-  const [rewardItem, setRewardItem] = useState<Item | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       loadQuests();
       setSelectedQuestForDetails(null);
-      setRewardItem(null);
     }
   }, [isOpen, activeQuests, completedQuests]);
-
-  useEffect(() => {
-    if (selectedQuestForDetails?.reward_item_id) {
-      loadRewardItem(selectedQuestForDetails.reward_item_id);
-    } else {
-      setRewardItem(null);
-    }
-  }, [selectedQuestForDetails]);
 
   const loadQuests = async () => {
     try {
@@ -73,23 +62,12 @@ function QuestSelectionModal({
     }
   };
 
-  const loadRewardItem = async (itemId: string) => {
-    try {
-      const item = await fetchItemById(itemId);
-      setRewardItem(item);
-    } catch (err) {
-      console.error("Error loading reward item:", err);
-      setRewardItem(null);
-    }
-  };
-
   const handleQuestClick = (quest: Quest) => {
     setSelectedQuestForDetails(quest);
   };
 
   const handleBackToList = () => {
     setSelectedQuestForDetails(null);
-    setRewardItem(null);
   };
 
   const handleStartQuest = async () => {
@@ -115,7 +93,13 @@ function QuestSelectionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-slate-800 rounded-xl shadow-2xl border-2 border-slate-600 max-w-6xl w-full my-8 max-h-[90vh] flex flex-col">
+      <div
+        className="rounded-xl shadow-2xl border-2 border-slate-600 max-w-6xl w-full my-8 max-h-[90vh] flex flex-col"
+        style={{
+          backgroundColor: "#0a2847",
+          backgroundImage: `radial-gradient(ellipse at center, #0a2847 0%, #003d5c 100%)`,
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
           <div className="flex items-center gap-3">
@@ -169,8 +153,6 @@ function QuestSelectionModal({
                 deadline_at: "",
                 is_active: false,
               }}
-              rewardItem={rewardItem}
-              showActionButtons={false}
               showStartedInfo={false}
             />
           ) : loading ? (

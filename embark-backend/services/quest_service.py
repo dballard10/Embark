@@ -112,6 +112,21 @@ class QuestService:
     async def start_quest(self, user_id: UUID, quest_data: UserQuestCreate) -> UserQuestResponse:
         """Start a quest for a user"""
         try:
+            # Check if user has already completed this quest (quests are one-time only)
+            quest_history = (
+                self.supabase.table("user_completed_quests")
+                .select("id, completed_at")
+                .eq("user_id", str(user_id))
+                .eq("quest_id", str(quest_data.quest_id))
+                .execute()
+            )
+            
+            if quest_history.data:
+                # Check if any record has a completed_at timestamp
+                for record in quest_history.data:
+                    if record.get("completed_at"):
+                        raise ValueError("This quest has already been completed and cannot be repeated")
+            
             # Check if user already has 4 active quests (maximum)
             active_quests = await self.get_active_quests(user_id)
             if len(active_quests) >= 4:
@@ -180,7 +195,7 @@ class QuestService:
         except Exception as e:
             raise ValueError(f"Error fetching active quest: {str(e)}")
 
-    async def complete_quest(self, user_id: UUID, user_quest_id: UUID) -> ActiveQuestResponse:
+    async def complete_quest(self, user_id: UUID, user_quest_id: UUID) -> CompletedQuestResponse:
         """Complete a specific user quest and return full details including quest data"""
         try:
             # Get the specific user quest to verify it exists and is active
@@ -223,27 +238,35 @@ class QuestService:
                 raise ValueError("Failed to complete quest")
 
             # Return full quest details for reward processing
-            return ActiveQuestResponse(**update_response.data[0], quest=quest)
+            return CompletedQuestResponse(**update_response.data[0], quest=quest)
         except Exception as e:
             raise ValueError(f"Error completing quest: {str(e)}")
 
-    async def abandon_quest(self, user_id: UUID) -> bool:
-        """Abandon user's active quest"""
+    async def abandon_quest(self, user_id: UUID, user_quest_id: UUID) -> bool:
+        """Abandon a specific user quest"""
         try:
-            # Get active quest
-            active_quest = await self.get_active_quest(user_id)
-            if not active_quest:
-                raise ValueError("No active quest found")
-
-            # Delete the quest entry
+            # Verify the quest exists, belongs to user, and is active
             response = (
                 self.supabase.table("user_completed_quests")
-                .delete()
-                .eq("id", str(active_quest.id))
+                .select("*")
+                .eq("id", str(user_quest_id))
+                .eq("user_id", str(user_id))
+                .eq("is_active", True)
                 .execute()
             )
 
-            return len(response.data) > 0
+            if not response.data:
+                raise ValueError("Active quest not found or does not belong to user")
+
+            # Delete the quest entry
+            delete_response = (
+                self.supabase.table("user_completed_quests")
+                .delete()
+                .eq("id", str(user_quest_id))
+                .execute()
+            )
+
+            return len(delete_response.data) > 0
         except Exception as e:
             raise ValueError(f"Error abandoning quest: {str(e)}")
 
