@@ -32,6 +32,7 @@ function ShopPage() {
     type: "success" | "error";
   } | null>(null);
   const [purchasingItemId, setPurchasingItemId] = useState<string | null>(null);
+  const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -94,6 +95,11 @@ function ShopPage() {
     }
   };
 
+  // Filter and sort items by tier (descending - T6 first)
+  const filteredItems = items
+    .filter((item) => tierFilter === "all" || item.rarity_tier === tierFilter)
+    .sort((a, b) => b.rarity_tier - a.rarity_tier);
+
   if (userLoading || !selectedUser) {
     return (
       <div className="game-container flex items-center justify-center min-h-screen">
@@ -136,7 +142,7 @@ function ShopPage() {
       {/* Shop Header */}
       <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 fixed top-[72px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-600 to-orange-600 flex items-center justify-center shadow-lg">
                 <IoStorefrontOutline size={32} className="text-white" />
@@ -145,8 +151,42 @@ function ShopPage() {
                 <h1 className="text-3xl font-bold text-amber-100">
                   Glory Shop
                 </h1>
+                <p className="text-sm text-amber-300/80">
+                  {filteredItems.length} / {items.length} items
+                  {tierFilter !== "all" && ` (Tier ${tierFilter})`}
+                </p>
               </div>
             </div>
+
+            {/* Tier Filter */}
+            {items.length > 0 && (
+              <div className="flex gap-1 items-center bg-amber-950/50 backdrop-blur-sm rounded-lg p-1 border border-amber-700/30">
+                <button
+                  onClick={() => setTierFilter("all")}
+                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                    tierFilter === "all"
+                      ? "bg-amber-600 text-white shadow-md"
+                      : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30"
+                  }`}
+                >
+                  All
+                </button>
+                {[1, 2, 3, 4, 5, 6].map((tier) => (
+                  <button
+                    key={tier}
+                    onClick={() => setTierFilter(tier)}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === tier
+                        ? "bg-amber-600 text-white shadow-md"
+                        : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30"
+                    }`}
+                  >
+                    T{tier}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-yellow-600/30 to-amber-600/30 border-2 border-yellow-500/40">
               <IconTrophy size={28} className="text-yellow-400" stroke={2} />
               <div>
@@ -174,9 +214,15 @@ function ShopPage() {
           <div className="text-center py-12 bg-slate-800/30 border border-slate-700/50 rounded-xl">
             <p className="text-gray-400">No items available in the shop yet!</p>
           </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-12 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+            <p className="text-gray-400">
+              No items found for Tier {tierFilter}
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {items.map((item) => {
+            {filteredItems.map((item) => {
               const isOwned = isOwnedItem(item.id);
               const canAfford = selectedUser.total_glory >= item.price;
               const isPurchasing = purchasingItemId === item.id;

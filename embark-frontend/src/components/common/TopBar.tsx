@@ -52,7 +52,7 @@ function TopBar({
                   cy="28"
                   r="26"
                   fill="none"
-                  stroke="rgba(34, 211, 238, 0.15)"
+                  stroke="rgba(0, 0, 0, 1)"
                   strokeWidth="2"
                 />
                 {/* Progress ring - only shows completed portion */}

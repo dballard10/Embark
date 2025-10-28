@@ -179,7 +179,11 @@ function QuestDetailsPage() {
           </div>
         )}
 
-        <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
+        <QuestDetailsView
+          userQuest={userQuest}
+          userId={selectedUser.id}
+          showStartedInfo={true}
+        />
       </div>
 
       {/* Bottom Navigation */}

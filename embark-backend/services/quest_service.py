@@ -53,10 +53,16 @@ class QuestService:
             raise ValueError(f"Error fetching quest: {str(e)}")
 
     async def list_quests(
-        self, tier: Optional[int] = None, limit: int = 100, offset: int = 0
+        self, tier: Optional[int] = None, limit: int = 500, offset: int = 0
     ) -> list[QuestResponse]:
         """List quests with optional tier filter"""
         try:
+            # Validate limit to prevent excessive queries
+            if limit > 500:
+                limit = 500
+            if limit < 1:
+                limit = 1
+                
             query = self.supabase.table("quests").select("*")
 
             if tier:

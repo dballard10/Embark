@@ -8,11 +8,16 @@ class QuestBase(BaseModel):
     """Base quest model with common attributes"""
     title: str = Field(..., min_length=1, max_length=200)
     description: str = Field(..., min_length=1, max_length=1000)
+    topic: str = Field(..., min_length=1, max_length=100)
     tier: int = Field(..., ge=1, le=6)
     glory_reward: int = Field(default=0, ge=0)
     xp_reward: int = Field(default=0, ge=0)
     time_limit_hours: int = Field(default=24, ge=1)
     reward_item_id: Optional[UUID] = None
+    enemy_name: str = Field(..., min_length=1, max_length=100)
+    enemy_type: str = Field(..., min_length=1, max_length=50)
+    enemy_description: str = Field(..., min_length=1, max_length=1000)
+    enemy_image_url: Optional[str] = None
 
 
 class QuestCreate(QuestBase):
@@ -24,11 +29,16 @@ class QuestUpdate(BaseModel):
     """Model for updating quest attributes"""
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = Field(None, min_length=1, max_length=1000)
+    topic: Optional[str] = Field(None, min_length=1, max_length=100)
     tier: Optional[int] = Field(None, ge=1, le=6)
     glory_reward: Optional[int] = Field(None, ge=0)
     xp_reward: Optional[int] = Field(None, ge=0)
     time_limit_hours: Optional[int] = Field(None, ge=1)
     reward_item_id: Optional[UUID] = None
+    enemy_name: Optional[str] = Field(None, min_length=1, max_length=100)
+    enemy_type: Optional[str] = Field(None, min_length=1, max_length=50)
+    enemy_description: Optional[str] = Field(None, min_length=1, max_length=1000)
+    enemy_image_url: Optional[str] = None
 
 
 class QuestResponse(QuestBase):
@@ -92,4 +102,21 @@ class CompletedQuestResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ChatMessage(BaseModel):
+    """Model for a chat message"""
+    role: str  # "user" or "assistant"
+    content: str
+
+
+class QuestChatRequest(BaseModel):
+    """Model for quest chat request"""
+    message: str = Field(..., min_length=1, max_length=2000)
+    chat_history: list[ChatMessage] = Field(default_factory=list)
+
+
+class QuestChatResponse(BaseModel):
+    """Model for quest chat response"""
+    response: str
 

@@ -18,7 +18,7 @@ const api = axios.create({
 export const fetchAllQuests = async (): Promise<Quest[]> => {
   try {
     const response = await api.get<Quest[]>("/quests", {
-      params: { limit: 100 },
+      params: { limit: 500 },
     });
     return response.data;
   } catch (error) {
@@ -130,7 +130,7 @@ export const abandonQuest = async (
 export const fetchAllItems = async (): Promise<Item[]> => {
   try {
     const response = await api.get<Item[]>("/items", {
-      params: { limit: 100 },
+      params: { limit: 500 },
     });
     return response.data;
   } catch (error) {
@@ -313,5 +313,8 @@ export const deleteUser = async (userId: string): Promise<void> => {
     throw new Error("Failed to delete user");
   }
 };
+
+// Export chat service
+export { sendQuestChatMessage } from "./api/questChatService";
 
 export default api;

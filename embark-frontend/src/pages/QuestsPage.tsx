@@ -20,6 +20,7 @@ function QuestsPage() {
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
+  const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   const handleAddQuest = () => {
     setIsQuestModalOpen(true);
@@ -29,6 +30,17 @@ function QuestsPage() {
     // Reload quests after a quest is added
     refreshQuests();
   };
+
+  // Filter and sort completed quests by tier
+  const filteredCompletedQuests = completedQuests
+    .filter((quest) => {
+      if (!quest.quest) return false;
+      return tierFilter === "all" || quest.quest.tier === tierFilter;
+    })
+    .sort((a, b) => {
+      if (!a.quest || !b.quest) return 0;
+      return a.quest.tier - b.quest.tier;
+    });
 
   if (userLoading || !selectedUser) {
     return (
@@ -94,12 +106,44 @@ function QuestsPage() {
 
         {/* Completed Quests Section */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            Completed Quests
-            <span className="text-sm font-normal text-gray-400">
-              ({completedQuests.length})
-            </span>
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              Completed Quests
+              <span className="text-sm font-normal text-gray-400">
+                ({filteredCompletedQuests.length} / {completedQuests.length}
+                {tierFilter !== "all" && ` - Tier ${tierFilter}`})
+              </span>
+            </h2>
+
+            {/* Tier Filter */}
+            {completedQuests.length > 0 && (
+              <div className="flex gap-1 items-center bg-slate-900 rounded-lg p-1">
+                <button
+                  onClick={() => setTierFilter("all")}
+                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                    tierFilter === "all"
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  All
+                </button>
+                {[1, 2, 3, 4, 5, 6].map((tier) => (
+                  <button
+                    key={tier}
+                    onClick={() => setTierFilter(tier)}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === tier
+                        ? "bg-blue-600 text-white"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    T{tier}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -116,9 +160,15 @@ function QuestsPage() {
                 No completed quests yet. Complete a quest to see it here!
               </p>
             </div>
+          ) : filteredCompletedQuests.length === 0 ? (
+            <div className="text-center py-12 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <p className="text-gray-400">
+                No completed quests found for Tier {tierFilter}
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {completedQuests.map((quest) => (
+              {filteredCompletedQuests.map((quest) => (
                 <QuestCard
                   key={quest.id}
                   userQuest={quest}

@@ -5,6 +5,7 @@ import {
   getTierGradientColor,
   getTierTextColor,
 } from "../../utils/tierUtils";
+import { getEnemyImage } from "../../utils/enemyImageUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import type { Item } from "../../types/item.types";
 import {
@@ -30,6 +31,7 @@ function QuestCard({
   onClick,
 }: QuestCardProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [enemyImageLoading, setEnemyImageLoading] = useState(true);
 
   useEffect(() => {
     if (variant === "active" && userQuest?.deadline_at) {
@@ -114,6 +116,12 @@ function QuestCard({
   const tierGradient = getTierGradientColor(questTier);
   const tierBadgeColor = getTierColor(questTier);
 
+  // Get enemy image
+  const enemyImage = getEnemyImage(
+    userQuest.quest.enemy_name,
+    userQuest.quest.enemy_image_url
+  );
+
   return (
     <div
       onClick={handleCardClick}
@@ -125,7 +133,7 @@ function QuestCard({
           : ""
       }`}
     >
-      {/* Tier Badge */}
+      {/* Tier Badge - Top Right */}
       <div className="absolute top-2 right-2 z-10">
         <div
           className={`flex items-center gap-0.5 px-2 py-1 rounded-lg bg-gradient-to-r ${tierBadgeColor} border border-white/30 text-xs font-bold text-white shadow-lg`}
@@ -134,19 +142,64 @@ function QuestCard({
         </div>
       </div>
 
-      {/* Timer */}
+      {/* Time Limit Badge - Top Left (Only for non-active quests) */}
+      {variant !== "active" && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-slate-700/90 to-slate-800/90 border border-slate-500/50 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
+            <IconClock size={14} stroke={2.5} />
+            {userQuest.quest.time_limit_hours}h
+          </div>
+        </div>
+      )}
+
+      {/* Active Quest Countdown Timer - Top Left (Only for active quests) */}
       {variant === "active" && timeRemaining && (
         <div className="absolute top-2 left-2 z-10">
-          <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-green-600/80 to-emerald-600/80 border border-green-400/50 text-sm font-bold text-white shadow-lg">
-            <IconClock size={16} stroke={2.5} />
+          <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-green-600/80 to-emerald-600/80 border border-green-400/50 text-xs font-bold text-white shadow-lg">
+            <IconClock size={14} stroke={2.5} />
             {timeRemaining}
           </div>
         </div>
       )}
 
-      {/* Quest Icon/Image */}
-      <div className="flex items-center justify-center h-40 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-t-xl">
-        <IconTarget size={80} className="text-white/40" stroke={1.5} />
+      {/* Enemy Image */}
+      <div className="relative flex items-center justify-center h-40 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-t-xl overflow-hidden">
+        {enemyImage ? (
+          <>
+            {enemyImageLoading && (
+              <IconTarget
+                size={80}
+                className="text-white/40 animate-pulse"
+                stroke={1.5}
+              />
+            )}
+            <img
+              src={enemyImage}
+              alt={userQuest.quest.enemy_name}
+              className="h-full w-full object-contain p-4"
+              onLoad={() => setEnemyImageLoading(false)}
+              style={{ opacity: enemyImageLoading ? 0 : 1 }}
+            />
+          </>
+        ) : (
+          <IconTarget size={80} className="text-white/40" stroke={1.5} />
+        )}
+
+        {/* Topic Badge - Bottom Left */}
+        <div className="absolute bottom-2 left-2 z-10 max-w-[45%]">
+          <div
+            className={`flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r ${tierBadgeColor} border border-white/30 text-xs font-bold text-white shadow-lg`}
+          >
+            <span className="truncate">{userQuest.quest.topic}</span>
+          </div>
+        </div>
+
+        {/* Enemy Name Badge - Bottom Right */}
+        <div className="absolute bottom-2 right-2 z-10 max-w-[45%]">
+          <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-red-700/90 to-red-800/90 border border-red-500/50 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
+            <span className="truncate">{userQuest.quest.enemy_name}</span>
+          </div>
+        </div>
       </div>
 
       {/* Quest Info */}

@@ -54,14 +54,14 @@ async def get_item(item_id: UUID):
 @router.get("/items", response_model=list[ItemResponse])
 async def list_items(
     rarity_tier: Optional[int] = Query(default=None, ge=1, le=6),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=500, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ):
     """
     List items with optional rarity filter
     
     - **rarity_tier**: Filter by rarity tier (1-6)
-    - **limit**: Maximum number of items to return (1-100)
+    - **limit**: Maximum number of items to return (1-500, default 500)
     - **offset**: Number of items to skip
     """
     try:

@@ -47,6 +47,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterText, setFilterText] = useState("");
+  const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   // Modal states
   const [questModalOpen, setQuestModalOpen] = useState(false);
@@ -117,6 +118,7 @@ function AdminPage() {
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     setFilterText("");
+    setTierFilter("all");
   };
 
   // Create handlers
@@ -232,20 +234,37 @@ function AdminPage() {
     }
   };
 
-  // Filter logic
-  const filteredQuests = quests.filter(
-    (q) =>
-      q.title.toLowerCase().includes(filterText.toLowerCase()) ||
-      q.description.toLowerCase().includes(filterText.toLowerCase()) ||
-      q.tier.toString().includes(filterText)
-  );
+  // Filter and sort logic
+  const filteredQuests = quests
+    .filter((q) => {
+      // Text filter
+      const matchesText =
+        q.title.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.description.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.topic.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.tier.toString().includes(filterText);
 
-  const filteredItems = items.filter(
-    (i) =>
-      i.name.toLowerCase().includes(filterText.toLowerCase()) ||
-      i.description.toLowerCase().includes(filterText.toLowerCase()) ||
-      i.rarity_tier.toString().includes(filterText)
-  );
+      // Tier filter
+      const matchesTier = tierFilter === "all" || q.tier === tierFilter;
+
+      return matchesText && matchesTier;
+    })
+    .sort((a, b) => a.tier - b.tier); // Sort by tier ascending
+
+  const filteredItems = items
+    .filter((i) => {
+      // Text filter
+      const matchesText =
+        i.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        i.description.toLowerCase().includes(filterText.toLowerCase()) ||
+        i.rarity_tier.toString().includes(filterText);
+
+      // Tier filter
+      const matchesTier = tierFilter === "all" || i.rarity_tier === tierFilter;
+
+      return matchesText && matchesTier;
+    })
+    .sort((a, b) => a.rarity_tier - b.rarity_tier); // Sort by tier ascending
 
   const filteredUsers = users.filter(
     (u) =>
@@ -254,11 +273,16 @@ function AdminPage() {
   );
 
   const getDataCount = () => {
+    const tierText =
+      tierFilter !== "all" && activeTab !== "users"
+        ? ` (Tier ${tierFilter})`
+        : "";
+
     switch (activeTab) {
       case "quests":
-        return `${filteredQuests.length} / ${quests.length}`;
+        return `${filteredQuests.length} / ${quests.length}${tierText}`;
       case "items":
-        return `${filteredItems.length} / ${items.length}`;
+        return `${filteredItems.length} / ${items.length}${tierText}`;
       case "users":
         return `${filteredUsers.length} / ${users.length}`;
     }
@@ -352,6 +376,36 @@ function AdminPage() {
                   className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
+              {/* Tier Filter - Only show for quests and items */}
+              {activeTab !== "users" && (
+                <div className="flex gap-1 items-center bg-slate-900 rounded-lg p-1">
+                  <button
+                    onClick={() => setTierFilter("all")}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === "all"
+                        ? "bg-blue-600 text-white"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setTierFilter(tier)}
+                      className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                        tierFilter === tier
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      T{tier}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <button
                 onClick={
                   activeTab === "quests"

@@ -5,6 +5,7 @@ import {
   getTierColor,
   getTierTextColor,
 } from "../../utils/tierUtils";
+import { getEnemyImage } from "../../utils/enemyImageUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import {
   IconTarget,
@@ -15,19 +16,26 @@ import {
   IconCalendar,
   IconHourglass,
   IconBox,
+  IconSword,
+  IconHelp,
 } from "@tabler/icons-react";
+import QuestHelperChatModal from "./QuestHelperChatModal";
 
 interface QuestDetailsViewProps {
   userQuest: UserCompletedQuest;
+  userId: string;
   showStartedInfo?: boolean;
 }
 
 function QuestDetailsView({
   userQuest,
+  userId,
   showStartedInfo = true,
 }: QuestDetailsViewProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
+  const [enemyImageLoading, setEnemyImageLoading] = useState(true);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   useEffect(() => {
     if (userQuest?.deadline_at) {
@@ -81,6 +89,9 @@ function QuestDetailsView({
   const tierColor = getTierColor(tier);
   const tierBorderColor = "border-blue-500/50";
 
+  // Get enemy image
+  const enemyImage = getEnemyImage(quest.enemy_name, quest.enemy_image_url);
+
   const getChallengeRating = () => {
     if (tier <= 2) return { text: "Easy", color: "text-green-400" };
     if (tier <= 4) return { text: "Medium", color: "text-yellow-400" };
@@ -120,9 +131,18 @@ function QuestDetailsView({
             </div>
           </div>
 
-          {/* Status Badge */}
+          {/* Quest Topic Badge - Top Left */}
+          <div className="absolute top-4 left-4 max-w-[45%]">
+            <div
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg bg-gradient-to-r ${tierColor} border border-white/30 text-sm font-bold text-white shadow-lg`}
+            >
+              <span className="truncate">{quest.topic}</span>
+            </div>
+          </div>
+
+          {/* Expiring Soon Status Badge - Below Enemy Type */}
           {isExpiringSoon && showStartedInfo && (
-            <div className="absolute top-4 left-4">
+            <div className="absolute top-16 left-4">
               <div className="flex items-center gap-1 px-3 py-2 rounded-lg bg-gradient-to-r from-red-600/90 to-red-700/90 border border-red-400/50 text-sm font-bold text-white shadow-lg animate-pulse">
                 <IconAlertTriangle size={18} stroke={2.5} />
                 Expiring Soon!
@@ -139,19 +159,97 @@ function QuestDetailsView({
           </p>
         </div>
       </div>
+
+      {/* Enemy Battle Section */}
+      <div
+        className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
+      >
+        <div className="p-4 bg-gradient-to-r from-red-900/30 to-orange-900/30 border-b border-red-500/30">
+          <div className="flex items-center gap-2">
+            <IconSword size={24} className="text-red-400" stroke={2} />
+            <h2 className="text-xl font-bold text-white">Enemy Encounter</h2>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Enemy Image */}
+            <div className="md:w-1/3">
+              <div className="relative h-64 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-xl overflow-hidden">
+                {enemyImage ? (
+                  <>
+                    {enemyImageLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <IconTarget
+                          size={80}
+                          className="text-white/40 animate-pulse"
+                          stroke={1.5}
+                        />
+                      </div>
+                    )}
+                    <img
+                      src={enemyImage}
+                      alt={quest.enemy_name}
+                      className="h-full w-full object-contain p-4"
+                      onLoad={() => setEnemyImageLoading(false)}
+                      style={{ opacity: enemyImageLoading ? 0 : 1 }}
+                    />
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <IconTarget
+                      size={80}
+                      className="text-white/40"
+                      stroke={1.5}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Enemy Details */}
+            <div className="md:w-2/3 space-y-4">
+              <div>
+                <h3 className="text-2xl font-bold text-red-400 mb-1">
+                  {quest.enemy_name}
+                </h3>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm font-semibold text-gray-300 bg-red-900/30 px-3 py-1 rounded-full border border-red-500/30">
+                    {quest.enemy_type}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${challengeRating.color} bg-black/30 px-3 py-1 rounded-full border border-current/30`}
+                  >
+                    {challengeRating.text}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-gray-100 text-lg leading-relaxed">
+                {quest.enemy_description}
+              </p>
+
+              <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 mt-4">
+                <p className="text-sm text-gray-300 italic">
+                  "Defeat this foe to complete your quest and claim victory!"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Timer Display - Only show if quest has started */}
       {showStartedInfo && userQuest.deadline_at && (
         <div
           className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <IconClock size={32} className="" stroke={2} />
-              <div>
-                <div className="text-sm font-semibold">Time Remaining</div>
-                <div className="text-2xl font-bold text-white">
-                  {timeRemaining}
-                </div>
+          <div className="flex items-center gap-3">
+            <IconClock size={32} className="" stroke={2} />
+            <div>
+              <div className="text-sm font-semibold">Time Remaining</div>
+              <div className="text-2xl font-bold text-white">
+                {timeRemaining}
               </div>
             </div>
           </div>
@@ -197,9 +295,7 @@ function QuestDetailsView({
 
         {/* Time Commitment */}
         <div
-          className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5 ${
-            !showStartedInfo ? "md:col-span-2" : ""
-          }`}
+          className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
         >
           <div className="flex items-center gap-3">
             <IconHourglass size={28} className="" stroke={2} />
@@ -211,6 +307,28 @@ function QuestDetailsView({
             </div>
           </div>
         </div>
+
+        {/* Quest Helper - Only show if quest has started */}
+        {showStartedInfo && (
+          <button
+            onClick={() => setIsChatModalOpen(true)}
+            className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5 hover:bg-purple-900/20 hover:border-purple-500/50 transition-all duration-200 cursor-pointer group`}
+          >
+            <div className="flex items-center gap-3">
+              <IconHelp
+                size={28}
+                className="text-purple-400 group-hover:text-purple-300"
+                stroke={2}
+              />
+              <div>
+                <div className="text-sm font-semibold">Need Help?</div>
+                <div className="text-xl font-bold text-white group-hover:text-purple-200">
+                  Get Quest Guidance
+                </div>
+              </div>
+            </div>
+          </button>
+        )}
       </div>
       {/* Rewards Section */}
       <div
@@ -267,6 +385,15 @@ function QuestDetailsView({
           </div>
         </div>
       </div>
+
+      {/* Quest Helper Chat Modal */}
+      <QuestHelperChatModal
+        isOpen={isChatModalOpen}
+        onClose={() => setIsChatModalOpen(false)}
+        quest={quest}
+        userId={userId}
+        userQuestId={userQuest.id}
+      />
     </div>
   );
 }
