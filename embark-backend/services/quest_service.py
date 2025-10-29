@@ -11,6 +11,7 @@ from models.quest import (
     ActiveQuestResponse,
     CompletedQuestResponse,
 )
+from services.achievement_service import AchievementService
 
 
 class QuestService:
@@ -18,6 +19,7 @@ class QuestService:
 
     def __init__(self, supabase: Client):
         self.supabase = supabase
+        self.achievement_service = AchievementService()
 
     async def create_quest(self, quest_data: QuestCreate) -> QuestResponse:
         """Create a new quest"""
@@ -242,6 +244,26 @@ class QuestService:
 
             if not update_response.data:
                 raise ValueError("Failed to complete quest")
+
+            # Check and award achievements
+            try:
+                # Award quest-specific achievement (instant)
+                await self.achievement_service.check_and_award_quest_achievement(
+                    user_id, quest.id
+                )
+                
+                # Award tier achievement (only if ALL quests in tier are complete)
+                await self.achievement_service.check_and_award_tier_achievement(
+                    user_id, quest.tier
+                )
+                
+                # Check for questline achievement (only if ALL quests in topic are complete)
+                await self.achievement_service.check_and_award_questline_achievement(
+                    user_id, quest.topic
+                )
+            except Exception as achievement_error:
+                # Log the error but don't fail the quest completion
+                print(f"Error awarding achievements: {str(achievement_error)}")
 
             # Return full quest details for reward processing
             return CompletedQuestResponse(**update_response.data[0], quest=quest)

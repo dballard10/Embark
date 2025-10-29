@@ -15,7 +15,10 @@ class UserService:
         try:
             response = (
                 self.supabase.table("users")
-                .insert({"username": user_data.username})
+                .insert({
+                    "username": user_data.username,
+                    "email": user_data.email
+                })
                 .execute()
             )
 
@@ -50,6 +53,23 @@ class UserService:
                 self.supabase.table("users")
                 .select("*")
                 .eq("username", username)
+                .execute()
+            )
+
+            if not response.data:
+                return None
+
+            return UserResponse(**response.data[0])
+        except Exception as e:
+            raise ValueError(f"Error fetching user: {str(e)}")
+
+    async def get_user_by_email(self, email: str) -> Optional[UserResponse]:
+        """Get a user by email"""
+        try:
+            response = (
+                self.supabase.table("users")
+                .select("*")
+                .eq("email", email)
                 .execute()
             )
 

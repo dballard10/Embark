@@ -22,7 +22,7 @@ function VaultPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
-  // Filter and sort items by tier
+  // Filter and sort items by tier (descending - T6 first)
   const filteredItems = userItems
     .filter((userItem) => {
       if (!userItem.item) return false;
@@ -30,7 +30,7 @@ function VaultPage() {
     })
     .sort((a, b) => {
       if (!a.item || !b.item) return 0;
-      return a.item.rarity_tier - b.item.rarity_tier;
+      return b.item.rarity_tier - a.item.rarity_tier;
     });
 
   if (userLoading || !selectedUser) {
@@ -53,7 +53,7 @@ function VaultPage() {
       />
 
       {/* Vault Header */}
-      <div className="bg-gradient-to-r from-green-900/90 via-emerald-900/90 to-green-900/90 border-b-2 border-green-600 fixed top-[72px] left-0 right-0 z-20">
+      <div className="bg-gradient-to-r from-green-900/90 via-emerald-900/90 to-green-900/90 border-b-2 border-green-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -116,7 +116,7 @@ function VaultPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
         {/* Item Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

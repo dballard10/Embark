@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconStar, IconSparkles } from "@tabler/icons-react";
 import QuestDetailsView from "./QuestDetailsView";
 import LoadingIcon from "./LoadingIcon";
 import { useUser } from "../../contexts/UserContext";
 import { useItems } from "../../contexts/ItemsContext";
 import { useQuestsContext } from "../../contexts/QuestsContext";
+import { useAchievements } from "../../contexts/AchievementsContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
+import type { UserItem } from "../../types/item.types";
 import {
   completeQuest,
   abandonQuest,
   type QuestCompletionResponse,
 } from "../../services/api";
 import QuestDetailsModalSkeleton from "./QuestDetailsModalSkeleton";
+import {
+  getTierColor,
+  getTierStars,
+  getTierGradientColor,
+} from "../../utils/tierUtils";
+import { getItemImage } from "../../utils/itemImageUtils";
 
 interface QuestDetailsModalProps {
   isOpen: boolean;
@@ -27,6 +35,7 @@ function QuestDetailsModal({
   const { selectedUser, refreshUser } = useUser();
   const { refreshItems } = useItems();
   const { activeQuests, refreshQuests } = useQuestsContext();
+  const { refetchUserAchievements } = useAchievements();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -35,12 +44,22 @@ function QuestDetailsModal({
   const [completionMessage, setCompletionMessage] = useState<string | null>(
     null
   );
+  const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
 
   useEffect(() => {
-    if (isOpen && questId) {
+    if (isOpen && questId && !completionMessage) {
       loadQuestData();
     }
   }, [isOpen, questId, activeQuests]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCompletionMessage(null);
+      setAwardedItem(null);
+      setError(null);
+    }
+  }, [isOpen]);
 
   // ESC key handler
   useEffect(() => {
@@ -73,7 +92,11 @@ function QuestDetailsModal({
       if (quest) {
         setUserQuest(quest);
       } else {
-        setError("Quest not found");
+        // Don't show error if we just completed the quest
+        // (quest is removed from activeQuests after completion)
+        if (!completionMessage) {
+          setError("Quest not found");
+        }
       }
     } catch (error) {
       console.error("Error loading quest data:", error);
@@ -95,27 +118,22 @@ function QuestDetailsModal({
         userQuest.id
       );
 
-      // Set completion message based on whether item was awarded
+      // Set completion message and awarded item based on whether item was awarded
       if (response.awarded_item) {
-        setCompletionMessage(
-          `Quest completed! You received: ${response.awarded_item.item.name}`
-        );
+        setCompletionMessage("Quest completed!");
+        setAwardedItem(response.awarded_item);
       } else {
         setCompletionMessage(
           "Quest completed! (You already own all items from this tier)"
         );
+        setAwardedItem(null);
       }
 
-      // Refresh user data, items, and quests
+      // Refresh user data, items, quests, and achievements
       await refreshUser();
       await refreshItems();
       await refreshQuests();
-
-      // Close modal after a brief delay to show the message
-      setTimeout(() => {
-        onClose();
-        setCompletionMessage(null);
-      }, 2000);
+      await refetchUserAchievements();
     } catch (error: any) {
       console.error("Error completing quest:", error);
       setError(error.message || "Failed to complete quest");
@@ -204,15 +222,79 @@ function QuestDetailsModal({
             </div>
           )}
 
-          {/* Completion Message */}
+          {/* Completion Message with Item Card */}
           {completionMessage && (
-            <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center mb-4">
-              {completionMessage}
+            <div className="space-y-4 mb-4">
+              <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center">
+                <div className="flex items-center justify-center gap-2 text-xl font-bold">
+                  <IconSparkles size={24} className="text-yellow-400" />
+                  {completionMessage}
+                  <IconSparkles size={24} className="text-yellow-400" />
+                </div>
+              </div>
+
+              {/* Awarded Item Card */}
+              {awardedItem?.item && (
+                <div className="animate-fade-in">
+                  <p className="text-center text-white text-lg font-semibold mb-3">
+                    You received:
+                  </p>
+                  <div className="flex justify-center">
+                    <div
+                      className={`relative w-80 flex flex-col bg-gradient-to-br ${getTierGradientColor(
+                        awardedItem.item.rarity_tier
+                      )} border-2 rounded-xl overflow-hidden shadow-2xl animate-pulse-subtle`}
+                    >
+                      {/* Rarity Stars Badge */}
+                      <div className="absolute top-3 right-3 z-10">
+                        <div
+                          className={`flex items-center gap-0.5 px-3 py-1.5 rounded-lg bg-gradient-to-r ${getTierColor(
+                            awardedItem.item.rarity_tier
+                          )} border border-white/30 text-sm font-bold text-white shadow-lg`}
+                        >
+                          {getTierStars(awardedItem.item.rarity_tier)}
+                        </div>
+                      </div>
+
+                      {/* Item Image */}
+                      <div className="h-48 bg-gradient-to-br from-slate-700/30 to-slate-800/30 flex items-center justify-center relative overflow-hidden">
+                        {getItemImage(
+                          awardedItem.item.name,
+                          awardedItem.item.image_url
+                        ) ? (
+                          <img
+                            src={
+                              getItemImage(
+                                awardedItem.item.name,
+                                awardedItem.item.image_url
+                              ) || ""
+                            }
+                            alt={awardedItem.item.name}
+                            className="h-full w-full object-contain p-6"
+                          />
+                        ) : (
+                          <IconStar size={80} className="text-white/20" />
+                        )}
+                      </div>
+
+                      {/* Item Info */}
+                      <div className="p-5 flex flex-col">
+                        <h3 className="font-bold text-2xl text-white text-center mb-2">
+                          {awardedItem.item.name}
+                        </h3>
+                        <p className="text-sm text-gray-300 text-center line-clamp-2">
+                          {awardedItem.item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* Quest Details */}
-          {!loading && !error && userQuest && (
+          {!loading && !error && userQuest && !completionMessage && (
             <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
           )}
         </div>
@@ -220,22 +302,39 @@ function QuestDetailsModal({
         {/* Footer */}
         {!loading && !error && userQuest && (
           <div className="flex justify-end gap-3 p-6 border-t border-slate-700">
-            <button
-              onClick={handleAbandon}
-              disabled={isCompleting || isAbandoning}
-              className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
-            >
-              {isAbandoning && <LoadingIcon size="small" />}
-              <span>{isAbandoning ? "Abandoning..." : "Abandon Quest"}</span>
-            </button>
-            <button
-              onClick={handleComplete}
-              disabled={isCompleting || isAbandoning}
-              className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
-            >
-              {isCompleting && <LoadingIcon size="small" />}
-              <span>{isCompleting ? "Completing..." : "Complete Quest"}</span>
-            </button>
+            {completionMessage ? (
+              // Show Continue button after completion
+              <button
+                onClick={onClose}
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg flex items-center gap-2"
+              >
+                <span>Continue</span>
+              </button>
+            ) : (
+              // Show Complete and Abandon buttons before completion
+              <>
+                <button
+                  onClick={handleAbandon}
+                  disabled={isCompleting || isAbandoning}
+                  className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                >
+                  {isAbandoning && <LoadingIcon size="small" />}
+                  <span>
+                    {isAbandoning ? "Abandoning..." : "Abandon Quest"}
+                  </span>
+                </button>
+                <button
+                  onClick={handleComplete}
+                  disabled={isCompleting || isAbandoning}
+                  className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+                >
+                  {isCompleting && <LoadingIcon size="small" />}
+                  <span>
+                    {isCompleting ? "Completing..." : "Complete Quest"}
+                  </span>
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

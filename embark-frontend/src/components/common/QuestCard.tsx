@@ -116,6 +116,20 @@ function QuestCard({
   const tierGradient = getTierGradientColor(questTier);
   const tierBadgeColor = getTierColor(questTier);
 
+  // Format time limit for non-active quests
+  const formatTimeLimit = (hours: number): string => {
+    const days = Math.floor(hours / 24);
+    const remainingHours = hours % 24;
+
+    if (days > 0 && remainingHours > 0) {
+      return `${days}d ${remainingHours}h`;
+    } else if (days > 0) {
+      return days === 1 ? "1 day" : `${days} days`;
+    } else {
+      return `${hours}h`;
+    }
+  };
+
   // Get enemy image
   const enemyImage = getEnemyImage(
     userQuest.quest.enemy_name,
@@ -128,7 +142,9 @@ function QuestCard({
       className={`relative flex flex-col bg-gradient-to-br ${tierGradient} border-2 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
         variant === "active" ? "quest-card-active" : ""
       } ${
-        variant === "active" || variant === "available"
+        variant === "active" ||
+        variant === "available" ||
+        variant === "completed"
           ? "cursor-pointer hover:scale-105 hover:shadow-2xl"
           : ""
       }`}
@@ -147,7 +163,7 @@ function QuestCard({
         <div className="absolute top-2 left-2 z-10">
           <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-slate-700/90 to-slate-800/90 border border-slate-500/50 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
             <IconClock size={14} stroke={2.5} />
-            {userQuest.quest.time_limit_hours}h
+            {formatTimeLimit(userQuest.quest.time_limit_hours)}
           </div>
         </div>
       )}

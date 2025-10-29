@@ -6,6 +6,7 @@ import QuestCard from "../components/common/QuestCard";
 import CardSkeleton from "../components/common/CardSkeleton";
 import QuestSelectionModal from "../components/common/QuestSelectionModal";
 import QuestDetailsModal from "../components/common/QuestDetailsModal";
+import CompletedQuestDetailsModal from "../components/common/CompletedQuestDetailsModal";
 import LoadingIcon from "../components/common/LoadingIcon";
 import { useUser } from "../contexts/UserContext";
 import { useItems } from "../contexts/ItemsContext";
@@ -20,6 +21,11 @@ function QuestsPage() {
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
+  const [selectedCompletedQuestId, setSelectedCompletedQuestId] = useState<
+    string | null
+  >(null);
+  const [isCompletedQuestModalOpen, setIsCompletedQuestModalOpen] =
+    useState(false);
   const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   const handleAddQuest = () => {
@@ -31,7 +37,7 @@ function QuestsPage() {
     refreshQuests();
   };
 
-  // Filter and sort completed quests by tier
+  // Filter and sort completed quests by tier (T6 first)
   const filteredCompletedQuests = completedQuests
     .filter((quest) => {
       if (!quest.quest) return false;
@@ -39,7 +45,7 @@ function QuestsPage() {
     })
     .sort((a, b) => {
       if (!a.quest || !b.quest) return 0;
-      return a.quest.tier - b.quest.tier;
+      return b.quest.tier - a.quest.tier; // Descending order: T6, T5, T4, T3, T2, T1
     });
 
   if (userLoading || !selectedUser) {
@@ -62,7 +68,7 @@ function QuestsPage() {
       />
 
       {/* Quest Board Header */}
-      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[72px] left-0 right-0 z-20">
+      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -91,7 +97,7 @@ function QuestsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
         {/* Active Quests Section */}
         <ActiveQuestsGrid
           activeQuests={activeQuests}
@@ -106,7 +112,7 @@ function QuestsPage() {
 
         {/* Completed Quests Section */}
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center flex-row gap-12 mb-4">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               Completed Quests
               <span className="text-sm font-normal text-gray-400">
@@ -173,6 +179,10 @@ function QuestsPage() {
                   key={quest.id}
                   userQuest={quest}
                   variant="completed"
+                  onClick={() => {
+                    setSelectedCompletedQuestId(quest.id);
+                    setIsCompletedQuestModalOpen(true);
+                  }}
                 />
               ))}
             </div>
@@ -204,6 +214,18 @@ function QuestsPage() {
             refreshQuests();
           }}
           questId={selectedQuestId}
+        />
+      )}
+
+      {/* Completed Quest Details Modal */}
+      {selectedCompletedQuestId && (
+        <CompletedQuestDetailsModal
+          isOpen={isCompletedQuestModalOpen}
+          onClose={() => {
+            setIsCompletedQuestModalOpen(false);
+            setSelectedCompletedQuestId(null);
+          }}
+          completedQuestId={selectedCompletedQuestId}
         />
       )}
     </div>

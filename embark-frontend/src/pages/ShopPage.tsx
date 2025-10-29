@@ -16,6 +16,7 @@ import { IoStorefrontOutline } from "react-icons/io5";
 import { getItemImage } from "../utils/itemImageUtils";
 import ItemIcon from "../components/common/ItemIcon";
 import CardSkeleton from "../components/common/CardSkeleton";
+import ShopItemDetailsModal from "../components/common/ShopItemDetailsModal";
 
 function ShopPage() {
   const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
@@ -33,6 +34,10 @@ function ShopPage() {
   } | null>(null);
   const [purchasingItemId, setPurchasingItemId] = useState<string | null>(null);
   const [tierFilter, setTierFilter] = useState<number | "all">("all");
+  const [selectedItemForModal, setSelectedItemForModal] = useState<Item | null>(
+    null
+  );
+  const [isShopItemModalOpen, setIsShopItemModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedUser?.id) {
@@ -140,7 +145,7 @@ function ShopPage() {
       )}
 
       {/* Shop Header */}
-      <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 fixed top-[72px] left-0 right-0 z-20">
+      <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -203,7 +208,7 @@ function ShopPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -232,6 +237,13 @@ function ShopPage() {
               return (
                 <div
                   key={item.id}
+                  onClick={(e) => {
+                    // Only open modal if clicking card (not button)
+                    if (!isOwned && canAfford && e.currentTarget === e.target) {
+                      setSelectedItemForModal(item);
+                      setIsShopItemModalOpen(true);
+                    }
+                  }}
                   className={`relative flex flex-col bg-gradient-to-br ${getTierGradientColor(
                     item.rarity_tier
                   )} border-2 rounded-xl overflow-hidden shadow-lg transition-all duration-200 ${
@@ -313,7 +325,10 @@ function ShopPage() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => handlePurchase(item)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            handlePurchase(item);
+                          }}
                           disabled={!canAfford || isPurchasing}
                           className={`w-full py-3 font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                             canAfford && !isPurchasing
@@ -344,6 +359,17 @@ function ShopPage() {
 
       {/* Bottom Navigation */}
       <BottomNav currentPage="shop" />
+
+      {/* Shop Item Details Modal */}
+      <ShopItemDetailsModal
+        isOpen={isShopItemModalOpen}
+        onClose={() => {
+          setIsShopItemModalOpen(false);
+          setSelectedItemForModal(null);
+        }}
+        item={selectedItemForModal}
+        onPurchase={handlePurchase}
+      />
     </div>
   );
 }

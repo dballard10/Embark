@@ -77,7 +77,7 @@ const enemyImageMap: Record<string, string> = {
   "Wanderlust Worg": "wanderlust-worg.png",
   "Expedition Beast": "expedition-beast.png",
   "Legendary Pathfinder": "legendary-pathfinder.png",
-  "Primordial Wanderer": "primordial-wanderer.png",
+  "Galactic Wanderer": "galactic-wanderer.png",
 
   // SWIMMING - Sea Serpent Lineage
   "Water Snake": "water-snake.png",
@@ -85,7 +85,7 @@ const enemyImageMap: Record<string, string> = {
   "Ocean Wyrm": "ocean-wyrm.png",
   "Deep Sea Serpent": "deep-sea-serpent.png",
   Leviathan: "leviathan.png",
-  "Primordial Sea Dragon": "primordial-sea-dragon.png",
+  "Abyssal Sea Dragon": "abyssal-sea-dragon.png",
 
   // NUTRITION - Nature Spirit Lineage
   "Herb Sprite": "herb-sprite.png",
@@ -93,7 +93,7 @@ const enemyImageMap: Record<string, string> = {
   "Harvest Guardian": "harvest-guardian.png",
   "Vitality Dryad": "vitality-dryad.png",
   "Ancient Life Treant": "ancient-life-treant.png",
-  "Primordial Nature Titan": "primordial-nature-titan.png",
+  "Elder Nature Titan": "elder-nature-titan.png",
 
   // DATING/RELATIONSHIPS - Cupid/Angel Lineage
   "Anxious Cherub": "anxious-cherub.png",

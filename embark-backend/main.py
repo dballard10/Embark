@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from routers import health, users, quests, items
+from routers import health, users, quests, items, auth, achievements
 from config.settings import settings
 from middleware import (
     LoggingMiddleware,
@@ -46,9 +46,11 @@ app.add_exception_handler(Exception, general_exception_handler)
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api", tags=["users"])
 app.include_router(quests.router, prefix="/api", tags=["quests"])
 app.include_router(items.router, prefix="/api", tags=["items"])
+app.include_router(achievements.router, prefix="/api", tags=["achievements"])
 
 
 @app.get("/")

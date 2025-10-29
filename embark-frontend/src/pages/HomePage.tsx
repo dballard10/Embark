@@ -28,6 +28,8 @@ import {
 import { useUser } from "../contexts/UserContext";
 import { useItems } from "../contexts/ItemsContext";
 import { useQuestsContext } from "../contexts/QuestsContext";
+import { useAchievements } from "../contexts/AchievementsContext";
+import TitleBadge from "../components/common/TitleBadge";
 
 function HomePage() {
   const { selectedUser, isLoading: userLoading } = useUser();
@@ -43,6 +45,7 @@ function HomePage() {
     loading: questsLoading,
     refreshQuests,
   } = useQuestsContext();
+  const { activeTitle, userAchievements } = useAchievements();
   const navigate = useNavigate();
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
@@ -80,18 +83,6 @@ function HomePage() {
     (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  // Get level color based on level (using tier-like colors)
-  const getLevelColor = (level: number): string => {
-    if (level >= 50) return "from-red-600 to-pink-600";
-    if (level >= 40) return "from-orange-500 to-red-600";
-    if (level >= 30) return "from-purple-500 to-purple-600";
-    if (level >= 20) return "from-blue-500 to-blue-600";
-    if (level >= 10) return "from-green-500 to-green-600";
-    return "from-gray-500 to-gray-600";
-  };
-
-  const levelColor = getLevelColor(currentLevel);
-
   return (
     <div className="game-container">
       {/* Top Stats Bar */}
@@ -103,13 +94,70 @@ function HomePage() {
         isLoadingItems={itemsLoading}
       />
 
+      {/* Profile Header */}
+      <div className="bg-gradient-to-r from-purple-900/90 via-teal-900/90 to-purple-900/90 border-b-2 border-purple-600 fixed top-[80px] left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {/* Avatar Container */}
+              <div className="relative p-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full border-4 border-purple-500/60 shadow-2xl">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 flex items-center justify-center shadow-inner">
+                  <IconShield
+                    size={40}
+                    className="text-white drop-shadow-lg"
+                    stroke={2.5}
+                  />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-purple-100">
+                  {selectedUser.username}
+                </h1>
+                {activeTitle && (
+                  <div className="mt-1 mb-2">
+                    <TitleBadge
+                      achievement={activeTitle}
+                      size="md"
+                      onClick={() => navigate("/achievements")}
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-sm text-teal-300/80">
+                  <IconCalendar size={16} stroke={2} />
+                  <span>
+                    Member since {formatDateFriendly(selectedUser.created_at)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-purple-600/30 to-teal-600/30 border-2 border-purple-500/40">
+              <IconStar
+                size={28}
+                className="text-purple-300"
+                fill="currentColor"
+                stroke={2}
+              />
+              <div>
+                <div className="text-xs text-purple-300/80 font-semibold">
+                  Current Level
+                </div>
+                <div className="text-2xl font-bold text-purple-100">
+                  {currentLevel}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 pt-[96px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-28 pt-[160px]">
         {/* Profile Header - Enhanced Hero Section */}
         <div className="mb-10 animate-slide-up">
           <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
             {/* Enhanced Background Pattern with Animation */}
-            <div className="h-32 sm:h-36 bg-gradient-to-r from-purple-600/30 via-blue-600/30 to-cyan-500/30 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/30 via-blue-600/30 to-cyan-500/30 overflow-hidden z-0">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.2),transparent_50%)]"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(34,211,238,0.15),transparent_50%)]"></div>
               {/* Animated Gradient Overlay */}
@@ -117,62 +165,7 @@ function HomePage() {
             </div>
 
             {/* Profile Info */}
-            <div className="px-6 sm:px-8 pb-8 -mt-16 relative">
-              {/* Enhanced Avatar with Animated Border */}
-              <div className="inline-block relative mb-4">
-                {/* Animated Glow Ring */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-cyan-400 to-purple-500 rounded-full blur-lg opacity-60 animate-pulse-subtle"></div>
-                {/* Avatar Container */}
-                <div className="relative p-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full border-4 border-purple-500/60 shadow-2xl">
-                  <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 flex items-center justify-center shadow-inner">
-                    <IconShield
-                      size={56}
-                      className="text-white drop-shadow-lg"
-                      stroke={2.5}
-                    />
-                  </div>
-                </div>
-                {/* Level Badge - Floating Position */}
-                <div className="absolute -bottom-2 -right-2 sm:-right-3">
-                  <div
-                    className={`relative px-4 py-2 rounded-xl bg-gradient-to-r ${levelColor} border-2 border-white/40 shadow-xl`}
-                  >
-                    {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl"></div>
-                    <div className="relative flex items-center gap-1.5">
-                      <IconStar
-                        size={18}
-                        className="text-white drop-shadow"
-                        fill="currentColor"
-                        stroke={1.5}
-                      />
-                      <div className="text-center">
-                        <div className="text-2xl font-black text-white drop-shadow leading-none">
-                          {currentLevel}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Username and Member Info */}
-              <div className="mb-6">
-                <h1 className="text-3xl sm:text-4xl font-black text-white mb-2 tracking-tight">
-                  {selectedUser.username}
-                </h1>
-                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                  <IconCalendar
-                    size={16}
-                    stroke={2}
-                    className="text-cyan-400"
-                  />
-                  <span className="font-medium">
-                    Member since {formatDateFriendly(selectedUser.created_at)}
-                  </span>
-                </div>
-              </div>
-
+            <div className="px-6 sm:px-8 pb-8 pt-6 relative z-10">
               {/* Enhanced Stats Grid - 3 columns on larger screens */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {/* Total Glory */}
@@ -418,7 +411,10 @@ function HomePage() {
             </div>
 
             {/* Achievements */}
-            <div className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-amber-500/30 rounded-2xl p-6 text-center hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 hover:scale-[1.03]">
+            <div
+              onClick={() => navigate("/achievements")}
+              className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-amber-500/30 rounded-2xl p-6 text-center hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 hover:scale-[1.03] cursor-pointer"
+            >
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -432,7 +428,7 @@ function HomePage() {
                   />
                 </div>
                 <div className="text-3xl font-black text-white mb-2 drop-shadow">
-                  0
+                  {userAchievements.length}
                 </div>
                 <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
                   Achievements

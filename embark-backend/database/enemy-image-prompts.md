@@ -438,11 +438,11 @@ Vitality Dryad, horrifying forest corruption spirit, nightmarish dryad with twis
 
 Ancient Life Treant, cataclysmic elder tree demon, massive world-ending treant who lived millennia consuming all nutrition, bark skin crackling with primordial life force turned destructive, roots and branches of god-slaying vitality crushing civilizations, unstoppable ancient terror, reality-warping presence draining all life, eyes burning with endless hunger, overwhelming scale, legendary tier enemy boss, fantasy RPG game enemy portrait, apocalyptic nature horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, ancient corrupted wood with sickly green life glow, cosmic dread, timeless parasitic health
 
-### 66. Primordial Nature Titan (Tier 6)
+### 66. Elder Nature Titan (Tier 6)
 
 **Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
 
-Primordial Nature Titan, universe-ending first nature god, colossal omnipotent titan embodying all natural nutrition turned to absolute destruction, reality itself consumed and withering in presence, perfect health made divine annihilation, eternal vitality draining all existence, infinite parasitic power, eyes like voids of endless consumption, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, cosmic green with corrupted golden eldritch life energy, death incarnate feeding on reality, ultimate terror wellness, incomprehensible power
+Elder Nature Titan, universe-ending first nature god, colossal omnipotent titan embodying all natural nutrition turned to absolute destruction, reality itself consumed and withering in presence, perfect health made divine annihilation, eternal vitality draining all existence, infinite parasitic power, eyes like voids of endless consumption, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, cosmic green with corrupted golden eldritch life energy, death incarnate feeding on reality, ultimate terror wellness, incomprehensible power
 
 ---
 

@@ -6,6 +6,8 @@ import {
 import { IconTrophy, IconSettings, IconBox } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import LoadingIcon from "../common/LoadingIcon";
+import TitleBadge from "../common/TitleBadge";
+import { useAchievements } from "../../contexts/AchievementsContext";
 
 interface TopBarProps {
   username: string;
@@ -23,6 +25,7 @@ export function TopBar({
   isLoadingItems = false,
 }: TopBarProps) {
   const navigate = useNavigate();
+  const { activeTitle } = useAchievements();
   const level = calculateLevel(totalXP);
   const levelProgress = getLevelProgress(totalXP);
   const currentLevelXP = getCurrentLevelXP(totalXP);
@@ -73,9 +76,16 @@ export function TopBar({
               </svg>
             </button>
             <div className="hidden sm:block">
-              <div className="text-xl font-bold text-white mb-1">
-                {username}
-              </div>
+              <div className="text-xl font-bold text-white">{username}</div>
+              {activeTitle && (
+                <div className="mt-0.5 mb-1">
+                  <TitleBadge 
+                    achievement={activeTitle} 
+                    size="sm" 
+                    onClick={() => navigate('/achievements')}
+                  />
+                </div>
+              )}
               {/* XP Progress Text */}
               <div>
                 <div className="text-sm font-semibold text-gray-400">
