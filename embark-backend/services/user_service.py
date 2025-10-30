@@ -2,6 +2,7 @@ from uuid import UUID
 from typing import Optional
 from supabase import Client
 from models.user import UserCreate, UserUpdate, UserResponse, UserStatsUpdate
+from utils.level_calculator import calculate_level
 
 
 class UserService:
@@ -132,8 +133,8 @@ class UserService:
             new_glory = user.total_glory + stats_update.glory_delta
             new_xp = user.total_xp + stats_update.xp_delta
 
-            # Calculate new level (every 10000 XP = 1 level)
-            new_level = 1 + (new_xp // 10000)
+            # Calculate new level using progressive XP system
+            new_level = calculate_level(new_xp)
 
             # Update user
             response = (

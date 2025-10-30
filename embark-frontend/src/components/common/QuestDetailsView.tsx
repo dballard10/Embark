@@ -92,6 +92,15 @@ function QuestDetailsView({
   // Get enemy image
   const enemyImage = getEnemyImage(quest.enemy_name, quest.enemy_image_url);
 
+  // Debug logging
+  if (!enemyImage) {
+    console.warn(`[QuestDetailsView] No image found for enemy: "${quest.enemy_name}"`, {
+      questTitle: quest.title,
+      enemyName: quest.enemy_name,
+      databaseImageUrl: quest.enemy_image_url,
+    });
+  }
+
   const getChallengeRating = () => {
     if (tier <= 2) return { text: "Easy", color: "text-green-400" };
     if (tier <= 4) return { text: "Medium", color: "text-yellow-400" };

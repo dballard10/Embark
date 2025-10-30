@@ -180,7 +180,7 @@ function SettingsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[168px]">
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 pt-[132px]">
         <div className="max-w-2xl mx-auto">
           {/* Success Message */}
           {successMessage && (

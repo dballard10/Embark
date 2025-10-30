@@ -592,17 +592,17 @@ Melody Siren, terrifying ocean songstress demon, classic nightmarish siren on ja
 
 Symphony Banshee, horrifying orchestral spirit demon, ethereal devastating banshee whose wail creates apocalyptic symphonies of destruction, ghostly form with orchestra elements as weapons, soul-crushing powerful vocal presence shattering reality, dark aura of sonic devastation, demonic spectral conductor, epic tier enemy boss, fantasy RPG game enemy portrait, nightmare incarnate, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, ghostly white with corrupted musical notation, devastating symphonic power, dramatic ominous shadows
 
-### 89. Orchestra Siren Queen (Tier 5)
+### 89. Orchestra Siren Princess (Tier 5)
 
 **Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
 
 Orchestra Siren Queen, cataclysmic queen of all sirens, majestic world-ending underwater siren queen conducting ocean currents like apocalyptic orchestra crushing ships, crown of cursed pearls and destructive music, god-slaying vocal force, primordial terror of the depths, reality-warping presence, eyes burning with ancient melody of doom, overwhelming scale, legendary tier enemy boss, fantasy RPG game enemy portrait, apocalyptic ocean horror queen, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, regal aquatic with corrupted golden music, cosmic dread, devastating conductor supreme
 
-### 90. Eternal Song Primordial (Tier 6)
+### 90. Brilliant Song Queen (Tier 6)
 
 **Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
 
-Eternal Song Primordial, universe-ending first music entity god, primordial siren whose omnipotent voice created and destroys all music, cosmic songstress of annihilation, reality singing in destructive harmony then shattering, transcendent musical presence consuming existence, sound made manifest as weapon of obliteration, infinite sonic power, eyes like voids of eternal screaming, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, cosmic translucent with reality-distorting sound wave form, death incarnate, music terror incarnate, incomprehensible power
+Eternal Song Queen, universe-ending first music entity god, primordial siren whose omnipotent voice created and destroys all music, cosmic songstress of annihilation, reality singing in destructive harmony then shattering, transcendent musical presence consuming existence, sound made manifest as weapon of obliteration, infinite sonic power, eyes like voids of eternal screaming, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, cosmic translucent with reality-distorting sound wave form, death incarnate, music terror incarnate, incomprehensible power
 
 ---
 

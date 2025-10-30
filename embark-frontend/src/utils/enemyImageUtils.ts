@@ -84,7 +84,7 @@ const enemyImageMap: Record<string, string> = {
   "Sea Serpent": "sea-serpent.png",
   "Ocean Wyrm": "ocean-wyrm.png",
   "Deep Sea Serpent": "deep-sea-serpent.png",
-  Leviathan: "leviathan.png",
+  "Leviathan Prime": "leviathan-prime.png",
   "Abyssal Sea Dragon": "abyssal-sea-dragon.png",
 
   // NUTRITION - Nature Spirit Lineage
@@ -124,8 +124,8 @@ const enemyImageMap: Record<string, string> = {
   "Harmony Harpy": "harmony-harpy.png",
   "Melody Siren": "melody-siren.png",
   "Symphony Banshee": "symphony-banshee.png",
-  "Orchestra Siren Queen": "orchestra-siren-queen.png",
-  "Eternal Song Primordial": "eternal-song-primordial.png",
+  "Orchestra Siren Princess": "orchestra-siren-princess.png",
+  "Brilliant Song Queen": "brilliant-song-queen.png",
 };
 
 /**
@@ -136,6 +136,12 @@ const enemyImageMap: Record<string, string> = {
 export function getEnemyImagePath(enemyName: string): string | null {
   const filename = enemyImageMap[enemyName];
   if (!filename) {
+    console.warn(
+      `[enemyImageUtils] No image mapping found for enemy: "${enemyName}"`,
+      {
+        availableKeys: Object.keys(enemyImageMap).slice(0, 10), // Show first 10 for reference
+      }
+    );
     return null;
   }
   return `/enemies/${filename}`;
@@ -159,4 +165,21 @@ export function getEnemyImage(
 
   // Fall back to local image
   return getEnemyImagePath(enemyName);
+}
+
+/**
+ * Gets all enemy names that have image mappings
+ * @returns Array of all enemy names in the mapping
+ */
+export function getAllMappedEnemyNames(): string[] {
+  return Object.keys(enemyImageMap);
+}
+
+/**
+ * Checks if an enemy name has an image mapping
+ * @param enemyName - The name of the enemy to check
+ * @returns True if the enemy has an image mapping
+ */
+export function hasEnemyImage(enemyName: string): boolean {
+  return enemyName in enemyImageMap;
 }

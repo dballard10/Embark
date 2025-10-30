@@ -17,6 +17,7 @@ const colorStyles: Record<
   {
     border: string;
     bg: string;
+    cardBg: string;
     iconBg: string;
     iconColor: string;
     shadow: string;
@@ -25,42 +26,48 @@ const colorStyles: Record<
   green: {
     border: "border-green-500/30 hover:border-green-400/60",
     bg: "from-green-500/5",
-    iconBg: "from-green-900/40 to-green-800/40",
+    cardBg: "from-green-900/50 to-green-950/50",
+    iconBg: "from-green-700/40 to-green-800/40",
     iconColor: "text-green-400",
     shadow: "hover:shadow-green-500/20",
   },
   blue: {
     border: "border-blue-500/30 hover:border-blue-400/60",
     bg: "from-blue-500/5",
-    iconBg: "from-blue-900/40 to-blue-800/40",
+    cardBg: "from-blue-900/50 to-blue-950/50",
+    iconBg: "from-blue-700/40 to-blue-800/40",
     iconColor: "text-blue-400",
     shadow: "hover:shadow-blue-500/20",
   },
   amber: {
     border: "border-amber-500/30 hover:border-amber-400/60",
     bg: "from-amber-500/5",
-    iconBg: "from-amber-900/40 to-amber-800/40",
+    cardBg: "from-amber-900/50 to-amber-950/50",
+    iconBg: "from-amber-700/40 to-amber-800/40",
     iconColor: "text-amber-400",
     shadow: "hover:shadow-amber-500/20",
   },
   purple: {
     border: "border-purple-500/30 hover:border-purple-400/60",
     bg: "from-purple-500/5",
-    iconBg: "from-purple-900/40 to-purple-800/40",
+    cardBg: "from-purple-900/50 to-purple-950/50",
+    iconBg: "from-purple-700/40 to-purple-800/40",
     iconColor: "text-purple-400",
     shadow: "hover:shadow-purple-500/20",
   },
   red: {
     border: "border-red-500/30 hover:border-red-400/60",
     bg: "from-red-500/5",
-    iconBg: "from-red-900/40 to-red-800/40",
+    cardBg: "from-red-900/50 to-red-950/50",
+    iconBg: "from-red-700/40 to-red-800/40",
     iconColor: "text-red-400",
     shadow: "hover:shadow-red-500/20",
   },
   cyan: {
     border: "border-cyan-500/30 hover:border-cyan-400/60",
     bg: "from-cyan-500/5",
-    iconBg: "from-cyan-900/40 to-cyan-800/40",
+    cardBg: "from-cyan-900/50 to-cyan-950/50",
+    iconBg: "from-cyan-700/40 to-cyan-800/40",
     iconColor: "text-cyan-400",
     shadow: "hover:shadow-cyan-500/20",
   },
@@ -80,7 +87,7 @@ export function StatCard({
 
   return (
     <div
-      className={`group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 ${
+      className={`group relative bg-gradient-to-br ${styles.cardBg} backdrop-blur-xl border-2 ${
         styles.border
       } rounded-2xl p-6 text-center ${
         styles.shadow

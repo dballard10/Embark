@@ -100,6 +100,15 @@ function CompletedQuestDetailsModal({
     ? getEnemyImage(quest.enemy_name, quest.enemy_image_url)
     : null;
 
+  // Debug logging
+  if (quest && !enemyImage) {
+    console.warn(`[CompletedQuestDetailsModal] No image found for enemy: "${quest.enemy_name}"`, {
+      questTitle: quest.title,
+      enemyName: quest.enemy_name,
+      databaseImageUrl: quest.enemy_image_url,
+    });
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"

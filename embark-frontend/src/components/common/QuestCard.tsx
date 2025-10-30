@@ -136,6 +136,15 @@ function QuestCard({
     userQuest.quest.enemy_image_url
   );
 
+  // Debug logging
+  if (!enemyImage) {
+    console.warn(`[QuestCard] No image found for enemy: "${userQuest.quest.enemy_name}"`, {
+      questTitle: userQuest.quest.title,
+      enemyName: userQuest.quest.enemy_name,
+      databaseImageUrl: userQuest.quest.enemy_image_url,
+    });
+  }
+
   return (
     <div
       onClick={handleCardClick}

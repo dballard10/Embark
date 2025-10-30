@@ -19,9 +19,10 @@ function AchievementCard({
   onClick,
 }: AchievementCardProps) {
   const isUnlocked = !!userAchievement;
-  
+
   // Tier 6 and questline achievements get special styling
-  const isSpecial = achievement.tier === 6 || achievement.achievement_type === "questline";
+  const isSpecial =
+    achievement.tier === 6 || achievement.achievement_type === "questline";
 
   // Special achievements get tier 6 conqueror color
   const gradientClass = isSpecial
@@ -58,16 +59,11 @@ function AchievementCard({
         </div>
       )}
 
-      {/* Special sparkle effect for tier 6 and questline */}
-      {isSpecial && isUnlocked && (
-        <div className="absolute -top-1 -left-1">
-          <span className="text-2xl">✨</span>
-        </div>
-      )}
-
       {/* Title */}
       <div
-        className={`inline-block text-sm font-bold px-3 py-1 rounded-full bg-gradient-to-r ${gradientClass} text-white mb-2 shadow-lg ${isSpecial ? "relative overflow-hidden" : ""}`}
+        className={`inline-block text-sm font-bold px-3 py-1 rounded-full bg-gradient-to-r ${gradientClass} text-white mb-2 shadow-lg ${
+          isSpecial ? "relative overflow-hidden" : ""
+        }`}
       >
         {isSpecial && (
           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />

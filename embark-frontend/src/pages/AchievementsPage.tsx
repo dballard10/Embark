@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import TopBar from "../components/common/TopBar";
 import BottomNav from "../components/common/BottomNav";
 import AchievementCard from "../components/common/AchievementCard";
@@ -7,10 +6,9 @@ import LoadingIcon from "../components/common/LoadingIcon";
 import { useUser } from "../contexts/UserContext";
 import { useItems } from "../contexts/ItemsContext";
 import { useAchievements } from "../contexts/AchievementsContext";
-import { IconTrophy, IconFilter } from "@tabler/icons-react";
+import { IconTrophy } from "@tabler/icons-react";
 
 function AchievementsPage() {
-  const navigate = useNavigate();
   const { selectedUser, isLoading: userLoading } = useUser();
   const { itemCount: userItemCount, loading: itemsLoading } = useItems();
   const {
@@ -22,7 +20,6 @@ function AchievementsPage() {
   } = useAchievements();
 
   const [tierFilter, setTierFilter] = useState<number | "all">("all");
-  const [topicFilter, setTopicFilter] = useState<string>("all");
   const [isUpdating, setIsUpdating] = useState(false);
 
   if (userLoading || !selectedUser) {
@@ -60,9 +57,6 @@ function AchievementsPage() {
     if (tierFilter !== "all" && achievement.tier !== tierFilter) {
       return false;
     }
-    if (topicFilter !== "all" && achievement.topic !== topicFilter) {
-      return false;
-    }
     return true;
   };
 
@@ -88,16 +82,6 @@ function AchievementsPage() {
     );
   }
 
-  // Get unique topics for filter
-  const allTopics = Array.from(
-    new Set(
-      allAchievements
-        .filter((a) => a.topic)
-        .map((a) => a.topic)
-        .filter((t): t is string => t !== null)
-    )
-  ).sort();
-
   // Count unlocked achievements
   const unlockedCount = userAchievements.length;
   const totalCount = allAchievements.length;
@@ -116,8 +100,9 @@ function AchievementsPage() {
       {/* Achievements Header */}
       <div className="bg-gradient-to-r from-yellow-900/90 via-amber-900/90 to-yellow-900/90 border-b-2 border-yellow-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-row gap-4">
+            {/* Title Row */}
+            <div className="flex items-center justify-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-600 to-amber-600 flex items-center justify-center shadow-lg">
                 <IconTrophy size={32} className="text-white" stroke={2} />
               </div>
@@ -133,40 +118,32 @@ function AchievementsPage() {
 
             {/* Filter Controls */}
             <div className="flex items-center gap-2">
-              <IconFilter size={20} className="text-yellow-300" stroke={2} />
-
               {/* Tier Filter */}
-              <select
-                value={tierFilter}
-                onChange={(e) =>
-                  setTierFilter(
-                    e.target.value === "all" ? "all" : Number(e.target.value)
-                  )
-                }
-                className="px-3 py-2 bg-slate-800/90 border border-yellow-600/50 rounded-lg text-white text-sm font-semibold cursor-pointer hover:bg-slate-700/90 transition-colors"
-              >
-                <option value="all">All Tiers</option>
-                <option value="1">Tier 1</option>
-                <option value="2">Tier 2</option>
-                <option value="3">Tier 3</option>
-                <option value="4">Tier 4</option>
-                <option value="5">Tier 5</option>
-                <option value="6">Tier 6</option>
-              </select>
-
-              {/* Topic Filter */}
-              <select
-                value={topicFilter}
-                onChange={(e) => setTopicFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-800/90 border border-yellow-600/50 rounded-lg text-white text-sm font-semibold cursor-pointer hover:bg-slate-700/90 transition-colors"
-              >
-                <option value="all">All Topics</option>
-                {allTopics.map((topic) => (
-                  <option key={topic} value={topic}>
-                    {topic}
-                  </option>
+              <div className="flex gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30">
+                <button
+                  onClick={() => setTierFilter("all")}
+                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                    tierFilter === "all"
+                      ? "bg-yellow-600 text-white shadow-md"
+                      : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30"
+                  }`}
+                >
+                  All Tiers
+                </button>
+                {[1, 2, 3, 4, 5, 6].map((tier) => (
+                  <button
+                    key={tier}
+                    onClick={() => setTierFilter(tier)}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === tier
+                        ? "bg-yellow-600 text-white shadow-md"
+                        : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30"
+                    }`}
+                  >
+                    T{tier}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
         </div>
@@ -239,7 +216,7 @@ function AchievementsPage() {
                 <div>
                   <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
-                      ✨ Quest Line Achievements
+                      Quest Line Achievements
                     </span>
                     <span className="text-sm text-gray-400 font-normal">
                       (Complete all quests in a topic to unlock)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
 import type { Quest } from "../../types/quest.types";
+import { QUEST_REWARDS } from "../../utils/constants/gameConfig";
 
 interface QuestFormModalProps {
   isOpen: boolean;
@@ -169,9 +170,16 @@ function QuestFormModal({
               <input
                 type="number"
                 value={formData.tier}
-                onChange={(e) =>
-                  setFormData({ ...formData, tier: parseInt(e.target.value) })
-                }
+                onChange={(e) => {
+                  const newTier = parseInt(e.target.value);
+                  const rewards = QUEST_REWARDS[newTier] || { glory: 0, xp: 0 };
+                  setFormData({
+                    ...formData,
+                    tier: newTier,
+                    glory_reward: rewards.glory,
+                    xp_reward: rewards.xp,
+                  });
+                }}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 min={1}

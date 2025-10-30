@@ -18,7 +18,6 @@ import {
   IconSparkles,
   IconFlame,
 } from "@tabler/icons-react";
-import { formatDateFriendly } from "../utils/dateUtils";
 import {
   calculateLevel,
   xpToNextLevel,
@@ -114,7 +113,7 @@ function HomePage() {
                   {selectedUser.username}
                 </h1>
                 {activeTitle && (
-                  <div className="mt-1 mb-2">
+                  <div className="mt-1">
                     <TitleBadge
                       achievement={activeTitle}
                       size="md"
@@ -122,12 +121,6 @@ function HomePage() {
                     />
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-sm text-teal-300/80">
-                  <IconCalendar size={16} stroke={2} />
-                  <span>
-                    Member since {formatDateFriendly(selectedUser.created_at)}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -152,7 +145,7 @@ function HomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-28 pt-[160px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-4 pt-[160px]">
         {/* Profile Header - Enhanced Hero Section */}
         <div className="mb-10 animate-slide-up">
           <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
@@ -348,116 +341,6 @@ function HomePage() {
               setIsItemModalOpen(true);
             }}
           />
-        </div>
-
-        {/* Enhanced Statistics Section */}
-        <div className="animate-slide-up" style={{ animationDelay: "0.3s" }}>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-2xl font-black text-white tracking-tight">
-              Statistics
-            </h2>
-            <div className="h-1 flex-1 ml-6 bg-gradient-to-r from-purple-500/50 to-transparent rounded-full"></div>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Quests Completed */}
-            <div
-              className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-green-500/30 rounded-2xl p-6 text-center hover:border-green-400/60 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 hover:scale-[1.03] cursor-pointer"
-              onClick={() => navigate("/quests")}
-            >
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <div className="relative">
-                <div className="inline-flex p-3 bg-gradient-to-br from-green-900/40 to-green-800/40 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  <IconTarget
-                    size={32}
-                    className="text-green-400 drop-shadow-glow"
-                    stroke={2.5}
-                  />
-                </div>
-                <div className="text-3xl font-black text-white mb-2 drop-shadow">
-                  {completedQuestCount}
-                </div>
-                <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                  Quests Done
-                </div>
-              </div>
-            </div>
-
-            {/* Active Quests */}
-            <div
-              className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-blue-500/30 rounded-2xl p-6 text-center hover:border-blue-400/60 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 hover:scale-[1.03] cursor-pointer"
-              onClick={() => navigate("/quests")}
-            >
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <div className="relative">
-                <div className="inline-flex p-3 bg-gradient-to-br from-blue-900/40 to-blue-800/40 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  <IconFlame
-                    size={32}
-                    className="text-blue-400 drop-shadow-glow animate-pulse-subtle"
-                    stroke={2.5}
-                  />
-                </div>
-                <div className="text-3xl font-black text-white mb-2 drop-shadow">
-                  {activeQuests.length}
-                </div>
-                <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                  Active Quests
-                </div>
-              </div>
-            </div>
-
-            {/* Achievements */}
-            <div
-              onClick={() => navigate("/achievements")}
-              className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-amber-500/30 rounded-2xl p-6 text-center hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 hover:scale-[1.03] cursor-pointer"
-            >
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <div className="relative">
-                <div className="inline-flex p-3 bg-gradient-to-br from-amber-900/40 to-amber-800/40 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  <IconStar
-                    size={32}
-                    className="text-amber-400 drop-shadow-glow"
-                    fill="currentColor"
-                    stroke={2}
-                  />
-                </div>
-                <div className="text-3xl font-black text-white mb-2 drop-shadow">
-                  {userAchievements.length}
-                </div>
-                <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                  Achievements
-                </div>
-              </div>
-            </div>
-
-            {/* Days Active */}
-            <div className="group relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/30 rounded-2xl p-6 text-center hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.03]">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <div className="relative">
-                <div className="inline-flex p-3 bg-gradient-to-br from-purple-900/40 to-purple-800/40 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  <IconCalendar
-                    size={32}
-                    className="text-purple-400 drop-shadow-glow"
-                    stroke={2.5}
-                  />
-                </div>
-                <div className="text-3xl font-black text-white mb-2 drop-shadow">
-                  {daysActive}
-                </div>
-                <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
-                  Days Active
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
