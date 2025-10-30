@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   getTierStars,
   getTierColor,
   getTierGradientColor,
   getTierTextColor,
+  getTierName,
 } from "../../utils/tierUtils";
 import { getEnemyImage } from "../../utils/enemyImageUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
@@ -15,6 +16,8 @@ import {
   IconGift,
   IconPlus,
   IconBox,
+  IconTrophy,
+  IconSparkles,
 } from "@tabler/icons-react";
 
 interface QuestCardProps {
@@ -32,6 +35,8 @@ function QuestCard({
 }: QuestCardProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [enemyImageLoading, setEnemyImageLoading] = useState(true);
+  const [showItemReward, setShowItemReward] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (variant === "active" && userQuest?.deadline_at) {
@@ -67,6 +72,23 @@ function QuestCard({
       return () => clearInterval(interval);
     }
   }, [userQuest?.deadline_at, variant]);
+
+  // Handle clicks outside to close reward popover
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
+        setShowItemReward(false);
+      }
+    };
+
+    if (showItemReward) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showItemReward]);
 
   if (variant === "locked") {
     return (
@@ -112,6 +134,11 @@ function QuestCard({
     }
   };
 
+  const handleItemRewardClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click from firing
+    setShowItemReward(!showItemReward);
+  };
+
   const questTier = userQuest.quest.tier;
   const tierGradient = getTierGradientColor(questTier);
   const tierBadgeColor = getTierColor(questTier);
@@ -147,8 +174,9 @@ function QuestCard({
 
   return (
     <div
+      ref={cardRef}
       onClick={handleCardClick}
-      className={`relative flex flex-col bg-gradient-to-br ${tierGradient} border-2 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
+      className={`relative flex flex-col bg-gradient-to-br ${tierGradient} border-2 rounded-xl shadow-2xl transition-all duration-300 ${
         variant === "active" ? "quest-card-active" : ""
       } ${
         variant === "active" ||
@@ -156,7 +184,7 @@ function QuestCard({
         variant === "completed"
           ? "cursor-pointer hover:scale-105 hover:shadow-2xl"
           : ""
-      }`}
+      } ${showItemReward ? "z-10" : "z-0"}`}
     >
       {/* Tier Badge - Top Right */}
       <div className="absolute top-2 right-2 z-10">
@@ -172,7 +200,7 @@ function QuestCard({
         <div className="absolute top-2 left-2 z-10">
           <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-slate-700/90 to-slate-800/90 border border-slate-500/50 text-xs font-bold text-white shadow-lg backdrop-blur-sm">
             <IconClock size={14} stroke={2.5} />
-            {formatTimeLimit(userQuest.quest.time_limit_hours)}
+            {formatTimeLimit(userQuest.quest.time_limit_hours * 5)}
           </div>
         </div>
       )}
@@ -189,6 +217,7 @@ function QuestCard({
 
       {/* Enemy Image */}
       <div className="relative flex items-center justify-center h-40 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-t-xl overflow-hidden">
+
         {enemyImage ? (
           <>
             {enemyImageLoading && (
@@ -260,27 +289,87 @@ function QuestCard({
 
         {/* Rewards - Only show for active and available quests */}
         {variant !== "completed" && (
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-yellow-600/40 rounded-lg p-2 pt-3 text-center">
-              <div className="text-lg font-bold text-yellow-300">
+          <div className="grid grid-cols-3 gap-2 relative">
+            {/* Glory Reward */}
+            <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-yellow-600/40 rounded-lg p-2 text-center">
+              <IconTrophy
+                size={24}
+                className="text-yellow-300 mx-auto mb-1"
+                stroke={2}
+              />
+              <div className="text-sm font-bold text-yellow-300">
                 {userQuest.quest.glory_reward.toLocaleString()}
               </div>
             </div>
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600/40 rounded-lg p-2 pt-3 text-center">
-              <div className="text-lg font-bold text-blue-300">
+
+            {/* XP Reward */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600/40 rounded-lg p-2 text-center">
+              <IconSparkles
+                size={24}
+                className="text-blue-300 mx-auto mb-1"
+                stroke={2}
+              />
+              <div className="text-sm font-bold text-blue-300">
                 {userQuest.quest.xp_reward.toLocaleString()}
               </div>
             </div>
-            <div
-              className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-2 text-center shadow-lg`}
+
+            {/* Item Reward Button */}
+            <button
+              onClick={handleItemRewardClick}
+              className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-2 text-center shadow-lg hover:scale-105 transition-all duration-200 relative`}
               title={`Random Tier ${questTier} Item Reward`}
             >
               <IconBox
-                size={36}
+                size={32}
                 className={`${getTierTextColor(questTier)} mx-auto`}
                 stroke={2}
               />
-            </div>
+
+              {/* Item Popover - Opens Downward */}
+              {showItemReward && (
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-10 animate-fade-in">
+                  <div
+                    className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-4 shadow-2xl min-w-[140px]`}
+                  >
+                    <IconBox
+                      size={32}
+                      className={`${getTierTextColor(questTier)} mx-auto mb-2`}
+                      stroke={2}
+                    />
+                    <div className="text-xs text-white/90 font-semibold mb-1">
+                      Item Reward
+                    </div>
+                    <div className="text-sm font-semibold text-white">
+                      Random {getTierName(questTier)} Item
+                    </div>
+                    <div className="flex justify-center gap-0.5 mt-2">
+                      {getTierStars(questTier)}
+                    </div>
+                  </div>
+                  {/* Arrow - Pointing Up */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-[-1px]">
+                    <div
+                      className="border-8 border-transparent"
+                      style={{
+                        borderBottomColor:
+                          questTier === 1
+                            ? "#1e40af"
+                            : questTier === 2
+                            ? "#9333ea"
+                            : questTier === 3
+                            ? "#ea580c"
+                            : questTier === 4
+                            ? "#dc2626"
+                            : questTier === 5
+                            ? "#eab308"
+                            : "#06b6d4",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </button>
           </div>
         )}
       </div>

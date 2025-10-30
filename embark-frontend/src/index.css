@@ -155,6 +155,25 @@
     animation: modal-scale 0.2s ease-out;
   }
 
+  /* Confetti backdrop (lightweight) */
+  @keyframes confetti {
+    0% { background-position: 0 0, 0 0, 0 0; opacity: 0.6; }
+    50% { opacity: 0.9; }
+    100% { background-position: 200px 300px, -180px 260px, 160px -220px; opacity: 0.6; }
+  }
+
+  .animate-confetti {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 40%, rgba(255,215,0,0.25) 0 2px, transparent 3px),
+      radial-gradient(circle at 40% 80%, rgba(173,216,230,0.25) 0 2px, transparent 3px);
+    background-size: 40px 40px, 50px 50px, 45px 45px;
+    animation: confetti 6s linear infinite;
+    pointer-events: none;
+  }
+
   /* Drop Shadow Glow Effect */
   .drop-shadow-glow {
     filter: drop-shadow(0 0 8px currentColor);

@@ -208,7 +208,7 @@ function ShopPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pt-[132px]">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -239,7 +239,7 @@ function ShopPage() {
                   key={item.id}
                   onClick={(e) => {
                     // Only open modal if clicking card (not button)
-                    if (!isOwned && canAfford && e.currentTarget === e.target) {
+                    if (!isOwned && canAfford) {
                       setSelectedItemForModal(item);
                       setIsShopItemModalOpen(true);
                     }

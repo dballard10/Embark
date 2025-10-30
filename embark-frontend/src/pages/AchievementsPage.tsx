@@ -100,9 +100,9 @@ function AchievementsPage() {
       {/* Achievements Header */}
       <div className="bg-gradient-to-r from-yellow-900/90 via-amber-900/90 to-yellow-900/90 border-b-2 border-yellow-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-row gap-4">
-            {/* Title Row */}
-            <div className="flex items-center justify-center gap-4">
+          <div className="grid grid-cols-3 items-center gap-4">
+            {/* Title */}
+            <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-600 to-amber-600 flex items-center justify-center shadow-lg">
                 <IconTrophy size={32} className="text-white" stroke={2} />
               </div>
@@ -116,9 +116,8 @@ function AchievementsPage() {
               </div>
             </div>
 
-            {/* Filter Controls */}
-            <div className="flex items-center gap-2">
-              {/* Tier Filter */}
+            {/* Tier Filter - Centered */}
+            <div className="flex justify-center">
               <div className="flex gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30">
                 <button
                   onClick={() => setTierFilter("all")}
@@ -145,6 +144,9 @@ function AchievementsPage() {
                 ))}
               </div>
             </div>
+
+            {/* Empty space to maintain centering */}
+            <div></div>
           </div>
         </div>
       </div>

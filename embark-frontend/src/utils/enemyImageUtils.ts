@@ -51,9 +51,9 @@ const enemyImageMap: Record<string, string> = {
   "Flame Sprite": "flame-sprite.png",
   "Fire Spirit": "fire-spirit.png",
   "Blaze Elemental": "blaze-elemental.png",
-  "Inferno Guardian": "inferno-guardian.png",
   "Volcanic Titan": "volcanic-titan.png",
-  "Eternal Flame Primordial": "eternal-flame-primordial.png",
+  "Inferno Guardian": "inferno-guardian.png",
+  "Hellfire Demon": "hellfire-demon.png",
 
   // LANGUAGE LEARNING - Babel Construct Lineage
   "Word Golem": "word-golem.png",

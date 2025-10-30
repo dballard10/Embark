@@ -58,9 +58,9 @@ UPDATE quests SET enemy_name = 'Primordial Wealth Dragon' WHERE topic = 'Finance
 UPDATE quests SET enemy_name = 'Flame Sprite' WHERE topic = 'Cooking' AND tier = 1;
 UPDATE quests SET enemy_name = 'Fire Spirit' WHERE topic = 'Cooking' AND tier = 2;
 UPDATE quests SET enemy_name = 'Blaze Elemental' WHERE topic = 'Cooking' AND tier = 3;
-UPDATE quests SET enemy_name = 'Inferno Guardian' WHERE topic = 'Cooking' AND tier = 4;
-UPDATE quests SET enemy_name = 'Volcanic Titan' WHERE topic = 'Cooking' AND tier = 5;
-UPDATE quests SET enemy_name = 'Eternal Flame Primordial' WHERE topic = 'Cooking' AND tier = 6;
+UPDATE quests SET enemy_name = 'Volcanic Titan' WHERE topic = 'Cooking' AND tier = 4;
+UPDATE quests SET enemy_name = 'Inferno Guardian' WHERE topic = 'Cooking' AND tier = 5;
+UPDATE quests SET enemy_name = 'Hellfire Demon' WHERE topic = 'Cooking' AND tier = 6;
 
 -- ============================================================================
 -- LANGUAGE LEARNING - Babel Construct Lineage

@@ -145,9 +145,9 @@ class QuestService:
             if not quest:
                 raise ValueError("Quest not found")
 
-            # Calculate deadline
+            # Calculate deadline (extended: 5x original quest time limit)
             started_at = datetime.now(timezone.utc)
-            deadline_at = started_at + timedelta(hours=quest.time_limit_hours)
+            deadline_at = started_at + timedelta(hours=quest.time_limit_hours * 5)
 
             # Create user quest entry
             insert_data = {
@@ -246,27 +246,36 @@ class QuestService:
                 raise ValueError("Failed to complete quest")
 
             # Check and award achievements
+            awarded_achievements = []
             try:
                 # Award quest-specific achievement (instant)
-                await self.achievement_service.check_and_award_quest_achievement(
+                quest_achievement = await self.achievement_service.check_and_award_quest_achievement(
                     user_id, quest.id
                 )
+                if quest_achievement:
+                    awarded_achievements.append(quest_achievement)
                 
                 # Award tier achievement (only if ALL quests in tier are complete)
-                await self.achievement_service.check_and_award_tier_achievement(
+                tier_achievement = await self.achievement_service.check_and_award_tier_achievement(
                     user_id, quest.tier
                 )
+                if tier_achievement:
+                    awarded_achievements.append(tier_achievement)
                 
                 # Check for questline achievement (only if ALL quests in topic are complete)
-                await self.achievement_service.check_and_award_questline_achievement(
+                questline_achievement = await self.achievement_service.check_and_award_questline_achievement(
                     user_id, quest.topic
                 )
+                if questline_achievement:
+                    awarded_achievements.append(questline_achievement)
             except Exception as achievement_error:
                 # Log the error but don't fail the quest completion
                 print(f"Error awarding achievements: {str(achievement_error)}")
 
-            # Return full quest details for reward processing
-            return CompletedQuestResponse(**update_response.data[0], quest=quest)
+            # Return full quest details for reward processing along with achievements
+            completed_quest_response = CompletedQuestResponse(**update_response.data[0], quest=quest)
+            completed_quest_response.awarded_achievements = awarded_achievements
+            return completed_quest_response
         except Exception as e:
             raise ValueError(f"Error completing quest: {str(e)}")
 

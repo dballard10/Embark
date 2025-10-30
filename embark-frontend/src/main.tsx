@@ -8,6 +8,7 @@ import { UserProvider } from "./contexts/UserContext";
 import { ItemsProvider } from "./contexts/ItemsContext";
 import { QuestsProvider } from "./contexts/QuestsContext";
 import { AchievementsProvider } from "./contexts/AchievementsContext";
+import { CelebrationOverlayProvider } from "./contexts/CelebrationOverlayContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")!).render(
           <ItemsProvider>
             <QuestsProvider>
               <AchievementsProvider>
-                <App />
+                <CelebrationOverlayProvider>
+                  <App />
+                </CelebrationOverlayProvider>
               </AchievementsProvider>
             </QuestsProvider>
           </ItemsProvider>

@@ -145,7 +145,7 @@ function HomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-4 pt-[160px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pt-[160px]">
         {/* Profile Header - Enhanced Hero Section */}
         <div className="mb-10 animate-slide-up">
           <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
@@ -329,7 +329,7 @@ function HomePage() {
 
         {/* Top Items Section with Animation */}
         <div
-          className="mb-10 animate-slide-up"
+          className="mb-[-24px] animate-slide-up"
           style={{ animationDelay: "0.2s" }}
         >
           <TopItemsGrid

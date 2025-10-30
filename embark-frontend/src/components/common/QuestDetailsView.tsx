@@ -20,6 +20,7 @@ import {
   IconHelp,
 } from "@tabler/icons-react";
 import QuestHelperChatModal from "./QuestHelperChatModal";
+import ImageViewer from "./ImageViewer";
 
 interface QuestDetailsViewProps {
   userQuest: UserCompletedQuest;
@@ -36,6 +37,7 @@ function QuestDetailsView({
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
   const [enemyImageLoading, setEnemyImageLoading] = useState(true);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
   useEffect(() => {
     if (userQuest?.deadline_at) {
@@ -94,11 +96,14 @@ function QuestDetailsView({
 
   // Debug logging
   if (!enemyImage) {
-    console.warn(`[QuestDetailsView] No image found for enemy: "${quest.enemy_name}"`, {
-      questTitle: quest.title,
-      enemyName: quest.enemy_name,
-      databaseImageUrl: quest.enemy_image_url,
-    });
+    console.warn(
+      `[QuestDetailsView] No image found for enemy: "${quest.enemy_name}"`,
+      {
+        questTitle: quest.title,
+        enemyName: quest.enemy_name,
+        databaseImageUrl: quest.enemy_image_url,
+      }
+    );
   }
 
   const getChallengeRating = () => {
@@ -118,27 +123,53 @@ function QuestDetailsView({
     });
   };
 
+  // Format time limit for display
+  const formatTimeLimit = (hours: number): string => {
+    const days = Math.floor(hours / 24);
+    const remainingHours = hours % 24;
+
+    if (days > 0 && remainingHours > 0) {
+      return `${days}d ${remainingHours}h`;
+    } else if (days > 0) {
+      return days === 1 ? "1 day" : `${days} days`;
+    } else {
+      return `${hours}h`;
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Quest Icon and Title Section */}
+      {/* Enemy Battle Section */}
       <div
-        className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
+        className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
       >
-        {/* Quest Icon */}
-        <div className="h-48 relative bg-transparent">
-          <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md">
-            <IconTarget size={96} className="text-blue-400" stroke={1.5} />
-          </div>
-
-          {/* Tier Badge */}
-          <div className="absolute top-4 right-4">
-            <div
-              className={`flex items-center gap-1 px-3 py-2 rounded-lg bg-gradient-to-r ${tierColor} border border-white/30 text-sm font-bold text-white shadow-lg`}
-            >
-              {getTierStars(tier)}
-              <span className="ml-1">{tierName}</span>
+        {/* Enemy Image with Badges */}
+        <div className="relative h-96 bg-gradient-to-br from-slate-700/30 to-slate-800/30">
+          {enemyImage ? (
+            <>
+              {enemyImageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <IconTarget
+                    size={80}
+                    className="text-white/40 animate-pulse"
+                    stroke={1.5}
+                  />
+                </div>
+              )}
+              <img
+                src={enemyImage}
+                alt={quest.enemy_name}
+                className="h-full w-full object-contain p-4 cursor-pointer hover:scale-105 transition-transform duration-200"
+                onLoad={() => setEnemyImageLoading(false)}
+                onClick={() => setIsImageViewerOpen(true)}
+                style={{ opacity: enemyImageLoading ? 0 : 1 }}
+              />
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <IconTarget size={80} className="text-white/40" stroke={1.5} />
             </div>
-          </div>
+          )}
 
           {/* Quest Topic Badge - Top Left */}
           <div className="absolute top-4 left-4 max-w-[45%]">
@@ -149,7 +180,17 @@ function QuestDetailsView({
             </div>
           </div>
 
-          {/* Expiring Soon Status Badge - Below Enemy Type */}
+          {/* Tier Badge - Top Right */}
+          <div className="absolute top-4 right-4">
+            <div
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg bg-gradient-to-r ${tierColor} border border-white/30 text-sm font-bold text-white shadow-lg`}
+            >
+              {getTierStars(tier)}
+              <span className="ml-1">{tierName}</span>
+            </div>
+          </div>
+
+          {/* Expiring Soon Status Badge - Below Topic */}
           {isExpiringSoon && showStartedInfo && (
             <div className="absolute top-16 left-4">
               <div className="flex items-center gap-1 px-3 py-2 rounded-lg bg-gradient-to-r from-red-600/90 to-red-700/90 border border-red-400/50 text-sm font-bold text-white shadow-lg animate-pulse">
@@ -160,19 +201,7 @@ function QuestDetailsView({
           )}
         </div>
 
-        {/* Title and Description */}
-        <div className="p-6 space-y-4 bg-black/20">
-          <h1 className="text-3xl font-bold text-white">{quest.title}</h1>
-          <p className="text-gray-100 text-lg leading-relaxed">
-            {quest.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Enemy Battle Section */}
-      <div
-        className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
-      >
+        {/* Enemy Encounter Header */}
         <div className="p-4 bg-gradient-to-r from-red-900/30 to-orange-900/30 border-b border-red-500/30">
           <div className="flex items-center gap-2">
             <IconSword size={24} className="text-red-400" stroke={2} />
@@ -180,70 +209,32 @@ function QuestDetailsView({
           </div>
         </div>
 
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Enemy Image */}
-            <div className="md:w-1/3">
-              <div className="relative h-64 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-xl overflow-hidden">
-                {enemyImage ? (
-                  <>
-                    {enemyImageLoading && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <IconTarget
-                          size={80}
-                          className="text-white/40 animate-pulse"
-                          stroke={1.5}
-                        />
-                      </div>
-                    )}
-                    <img
-                      src={enemyImage}
-                      alt={quest.enemy_name}
-                      className="h-full w-full object-contain p-4"
-                      onLoad={() => setEnemyImageLoading(false)}
-                      style={{ opacity: enemyImageLoading ? 0 : 1 }}
-                    />
-                  </>
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <IconTarget
-                      size={80}
-                      className="text-white/40"
-                      stroke={1.5}
-                    />
-                  </div>
-                )}
-              </div>
+        {/* Enemy Details */}
+        <div className="p-6 space-y-4">
+          <div>
+            <h3 className="text-2xl font-bold text-red-400 mb-1">
+              {quest.enemy_name}
+            </h3>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-sm font-semibold text-gray-300 bg-red-900/30 px-3 py-1 rounded-full border border-red-500/30">
+                {quest.enemy_type}
+              </span>
+              <span
+                className={`text-sm font-semibold ${challengeRating.color} bg-black/30 px-3 py-1 rounded-full border border-current/30`}
+              >
+                {challengeRating.text}
+              </span>
             </div>
+          </div>
 
-            {/* Enemy Details */}
-            <div className="md:w-2/3 space-y-4">
-              <div>
-                <h3 className="text-2xl font-bold text-red-400 mb-1">
-                  {quest.enemy_name}
-                </h3>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm font-semibold text-gray-300 bg-red-900/30 px-3 py-1 rounded-full border border-red-500/30">
-                    {quest.enemy_type}
-                  </span>
-                  <span
-                    className={`text-sm font-semibold ${challengeRating.color} bg-black/30 px-3 py-1 rounded-full border border-current/30`}
-                  >
-                    {challengeRating.text}
-                  </span>
-                </div>
-              </div>
+          <p className="text-gray-100 text-lg leading-relaxed">
+            {quest.enemy_description}
+          </p>
 
-              <p className="text-gray-100 text-lg leading-relaxed">
-                {quest.enemy_description}
-              </p>
-
-              <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 mt-4">
-                <p className="text-sm text-gray-300 italic">
-                  "Defeat this foe to complete your quest and claim victory!"
-                </p>
-              </div>
-            </div>
+          <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 mt-4">
+            <p className="text-sm text-gray-300 italic">
+              "Defeat this foe to complete your quest and claim victory!"
+            </p>
           </div>
         </div>
       </div>
@@ -311,7 +302,7 @@ function QuestDetailsView({
             <div>
               <div className="text-sm font-semibold">Time Commitment</div>
               <div className="text-xl font-bold text-white">
-                {quest.time_limit_hours} hours
+                {formatTimeLimit(quest.time_limit_hours)}
               </div>
             </div>
           </div>
@@ -403,6 +394,16 @@ function QuestDetailsView({
         userId={userId}
         userQuestId={userQuest.id}
       />
+
+      {/* Image Viewer */}
+      {enemyImage && (
+        <ImageViewer
+          isOpen={isImageViewerOpen}
+          onClose={() => setIsImageViewerOpen(false)}
+          imageUrl={enemyImage}
+          altText={quest.enemy_name}
+        />
+      )}
     </div>
   );
 }

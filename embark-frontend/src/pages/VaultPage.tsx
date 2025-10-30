@@ -55,7 +55,7 @@ function VaultPage() {
       {/* Vault Header */}
       <div className="bg-gradient-to-r from-green-900/90 via-emerald-900/90 to-green-900/90 border-b-2 border-green-600 fixed top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="grid grid-cols-3 items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center shadow-lg">
                 <IconBox size={32} className="text-white" stroke={2} />
@@ -71,36 +71,38 @@ function VaultPage() {
               </div>
             </div>
 
-            {/* Tier Filter */}
-            {userItems.length > 0 && (
-              <div className="flex gap-1 items-center bg-green-950/50 backdrop-blur-sm rounded-lg p-1 border border-green-700/30">
-                <button
-                  onClick={() => setTierFilter("all")}
-                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                    tierFilter === "all"
-                      ? "bg-green-600 text-white shadow-md"
-                      : "text-green-300 hover:text-green-100 hover:bg-green-800/30"
-                  }`}
-                >
-                  All
-                </button>
-                {[1, 2, 3, 4, 5, 6].map((tier) => (
+            {/* Tier Filter - Centered */}
+            <div className="flex justify-center">
+              {userItems.length > 0 && (
+                <div className="flex gap-1 items-center bg-green-950/50 backdrop-blur-sm rounded-lg p-1 border border-green-700/30">
                   <button
-                    key={tier}
-                    onClick={() => setTierFilter(tier)}
+                    onClick={() => setTierFilter("all")}
                     className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                      tierFilter === tier
+                      tierFilter === "all"
                         ? "bg-green-600 text-white shadow-md"
                         : "text-green-300 hover:text-green-100 hover:bg-green-800/30"
                     }`}
                   >
-                    T{tier}
+                    All
                   </button>
-                ))}
-              </div>
-            )}
+                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setTierFilter(tier)}
+                      className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                        tierFilter === tier
+                          ? "bg-green-600 text-white shadow-md"
+                          : "text-green-300 hover:text-green-100 hover:bg-green-800/30"
+                      }`}
+                    >
+                      T{tier}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-green-600/30 to-emerald-600/30 border-2 border-green-500/40">
+            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-green-600/30 to-emerald-600/30 border-2 border-green-500/40 justify-self-end">
               <IconBox size={28} className="text-green-400" stroke={2} />
               <div>
                 <div className="text-xs text-green-300/80 font-semibold">
@@ -116,7 +118,7 @@ function VaultPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pt-[132px]">
         {/* Item Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

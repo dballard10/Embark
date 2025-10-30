@@ -2,6 +2,7 @@ import axios from "axios";
 import type { Quest, UserCompletedQuest } from "../types/quest.types";
 import type { Item } from "../types/item.types";
 import type { User } from "../types/user.types";
+import type { Achievement } from "../types/achievement.types";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -80,6 +81,7 @@ export const startQuest = async (
 export interface QuestCompletionResponse {
   user_quest: UserCompletedQuest;
   awarded_item: UserItem | null;
+  awarded_achievements: Achievement[];
 }
 
 export const completeQuest = async (

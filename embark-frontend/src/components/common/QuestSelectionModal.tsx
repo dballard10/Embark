@@ -120,11 +120,14 @@ function QuestSelectionModal({
             )}
             <div>
               <h2 className="text-2xl font-bold text-white">
-                {selectedQuestForDetails ? "Quest Details" : "Select a Quest"}
+                {selectedQuestForDetails
+                  ? selectedQuestForDetails.title
+                  : "Select a Quest"}
               </h2>
               <p className="text-sm text-gray-400 mt-1">
                 {selectedQuestForDetails
-                  ? "Review quest details and start when ready"
+                  ? selectedQuestForDetails.description ||
+                    "Review quest details and start when ready"
                   : !loading && availableQuests.length > 0
                   ? `${filteredQuests.length} / ${
                       availableQuests.length

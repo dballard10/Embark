@@ -6,6 +6,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useItems } from "../../contexts/ItemsContext";
 import { useQuestsContext } from "../../contexts/QuestsContext";
 import { useAchievements } from "../../contexts/AchievementsContext";
+import { useCelebrationOverlay } from "../../contexts/CelebrationOverlayContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import type { UserItem } from "../../types/item.types";
 import {
@@ -36,6 +37,7 @@ function QuestDetailsModal({
   const { refreshItems } = useItems();
   const { activeQuests, refreshQuests } = useQuestsContext();
   const { refetchUserAchievements } = useAchievements();
+  const { showSpecial, showStandard, showItemThenMaybeSpecial } = useCelebrationOverlay();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -45,6 +47,7 @@ function QuestDetailsModal({
     null
   );
   const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
+  const [awardedAchievements, setAwardedAchievements] = useState<any[]>([]);
 
   useEffect(() => {
     if (isOpen && questId && !completionMessage) {
@@ -57,6 +60,7 @@ function QuestDetailsModal({
     if (!isOpen) {
       setCompletionMessage(null);
       setAwardedItem(null);
+      setAwardedAchievements([]);
       setError(null);
     }
   }, [isOpen]);
@@ -118,15 +122,37 @@ function QuestDetailsModal({
         userQuest.id
       );
 
-      // Set completion message and awarded item based on whether item was awarded
-      if (response.awarded_item) {
-        setCompletionMessage("Quest completed!");
-        setAwardedItem(response.awarded_item);
+      // Store awarded achievements and item
+      setAwardedAchievements(response.awarded_achievements || []);
+      setAwardedItem(response.awarded_item);
+
+      // Only show completion message if there are no achievements to display
+      if ((response.awarded_achievements || []).length === 0) {
+        if (response.awarded_item) {
+          setCompletionMessage("Quest completed!");
+        } else {
+          setCompletionMessage(
+            "Quest completed! (You already own all items from this tier)"
+          );
+        }
       } else {
-        setCompletionMessage(
-          "Quest completed! (You already own all items from this tier)"
+        // Show completion state without the notification message
+        setCompletionMessage("completed");
+      }
+
+      // Begin preloading awarded item image while refreshing state
+      if (response.awarded_item?.item) {
+        const preUrl = getItemImage(
+          response.awarded_item.item.name,
+          response.awarded_item.item.image_url
         );
-        setAwardedItem(null);
+        if (preUrl) {
+          const img = new Image();
+          (img as any).decoding = "async";
+          (img as any).loading = "eager";
+          (img as any).fetchPriority = "high";
+          img.src = preUrl;
+        }
       }
 
       // Refresh user data, items, quests, and achievements
@@ -134,6 +160,26 @@ function QuestDetailsModal({
       await refreshItems();
       await refreshQuests();
       await refetchUserAchievements();
+
+      // After state refresh, close this modal and trigger celebrations
+      const achievements = response.awarded_achievements || [];
+      const hasSpecial = achievements.some(
+        (a: any) => a.achievement_type === "questline" || a.achievement_type === "tier"
+      );
+
+      // Close modal first to avoid stacked UIs
+      onClose();
+
+      if (response.awarded_item) {
+        // Item-first, then special if needed; always shows toast at bottom
+        showItemThenMaybeSpecial(achievements, response.awarded_item, hasSpecial);
+      } else if (achievements.length > 0) {
+        if (hasSpecial) {
+          showSpecial(achievements, null);
+        } else {
+          showStandard(achievements, null);
+        }
+      }
     } catch (error: any) {
       console.error("Error completing quest:", error);
       setError(error.message || "Failed to complete quest");
@@ -188,20 +234,21 @@ function QuestDetailsModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <div>
+          <div className="flex-1 pr-4">
             <h2
               id="quest-modal-title"
               className="text-2xl font-bold text-white"
             >
-              Quest Details
+              {userQuest?.quest?.title || "Quest Details"}
             </h2>
             <p className="text-sm text-gray-400 mt-1">
-              Review quest progress and manage completion
+              {userQuest?.quest?.description ||
+                "Review quest progress and manage completion"}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors flex-shrink-0"
             aria-label="Close modal"
           >
             <IconX size={24} />
@@ -221,120 +268,35 @@ function QuestDetailsModal({
               {error}
             </div>
           )}
-
-          {/* Completion Message with Item Card */}
-          {completionMessage && (
-            <div className="space-y-4 mb-4">
-              <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center">
-                <div className="flex items-center justify-center gap-2 text-xl font-bold">
-                  <IconSparkles size={24} className="text-yellow-400" />
-                  {completionMessage}
-                  <IconSparkles size={24} className="text-yellow-400" />
-                </div>
-              </div>
-
-              {/* Awarded Item Card */}
-              {awardedItem?.item && (
-                <div className="animate-fade-in">
-                  <p className="text-center text-white text-lg font-semibold mb-3">
-                    You received:
-                  </p>
-                  <div className="flex justify-center">
-                    <div
-                      className={`relative w-80 flex flex-col bg-gradient-to-br ${getTierGradientColor(
-                        awardedItem.item.rarity_tier
-                      )} border-2 rounded-xl overflow-hidden shadow-2xl animate-pulse-subtle`}
-                    >
-                      {/* Rarity Stars Badge */}
-                      <div className="absolute top-3 right-3 z-10">
-                        <div
-                          className={`flex items-center gap-0.5 px-3 py-1.5 rounded-lg bg-gradient-to-r ${getTierColor(
-                            awardedItem.item.rarity_tier
-                          )} border border-white/30 text-sm font-bold text-white shadow-lg`}
-                        >
-                          {getTierStars(awardedItem.item.rarity_tier)}
-                        </div>
-                      </div>
-
-                      {/* Item Image */}
-                      <div className="h-48 bg-gradient-to-br from-slate-700/30 to-slate-800/30 flex items-center justify-center relative overflow-hidden">
-                        {getItemImage(
-                          awardedItem.item.name,
-                          awardedItem.item.image_url
-                        ) ? (
-                          <img
-                            src={
-                              getItemImage(
-                                awardedItem.item.name,
-                                awardedItem.item.image_url
-                              ) || ""
-                            }
-                            alt={awardedItem.item.name}
-                            className="h-full w-full object-contain p-6"
-                          />
-                        ) : (
-                          <IconStar size={80} className="text-white/20" />
-                        )}
-                      </div>
-
-                      {/* Item Info */}
-                      <div className="p-5 flex flex-col">
-                        <h3 className="font-bold text-2xl text-white text-center mb-2">
-                          {awardedItem.item.name}
-                        </h3>
-                        <p className="text-sm text-gray-300 text-center line-clamp-2">
-                          {awardedItem.item.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Quest Details */}
-          {!loading && !error && userQuest && !completionMessage && (
-            <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
+          {!loading && !error && userQuest && selectedUser && (
+            <QuestDetailsView
+              userQuest={userQuest}
+              userId={selectedUser.id}
+              showStartedInfo={true}
+            />
           )}
         </div>
 
         {/* Footer */}
         {!loading && !error && userQuest && (
           <div className="flex justify-end gap-3 p-6 border-t border-slate-700">
-            {completionMessage ? (
-              // Show Continue button after completion
-              <button
-                onClick={onClose}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg flex items-center gap-2"
-              >
-                <span>Continue</span>
-              </button>
-            ) : (
-              // Show Complete and Abandon buttons before completion
-              <>
-                <button
-                  onClick={handleAbandon}
-                  disabled={isCompleting || isAbandoning}
-                  className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
-                >
-                  {isAbandoning && <LoadingIcon size="small" />}
-                  <span>
-                    {isAbandoning ? "Abandoning..." : "Abandon Quest"}
-                  </span>
-                </button>
-                <button
-                  onClick={handleComplete}
-                  disabled={isCompleting || isAbandoning}
-                  className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
-                >
-                  {isCompleting && <LoadingIcon size="small" />}
-                  <span>
-                    {isCompleting ? "Completing..." : "Complete Quest"}
-                  </span>
-                </button>
-              </>
-            )}
+            <button
+              onClick={handleAbandon}
+              disabled={isCompleting || isAbandoning}
+              className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+            >
+              {isAbandoning && <LoadingIcon size="small" />}
+              <span>{isAbandoning ? "Abandoning..." : "Abandon Quest"}</span>
+            </button>
+            <button
+              onClick={handleComplete}
+              disabled={isCompleting || isAbandoning}
+              className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
+            >
+              {isCompleting && <LoadingIcon size="small" />}
+              <span>{isCompleting ? "Completing..." : "Complete Quest"}</span>
+            </button>
           </div>
         )}
       </div>

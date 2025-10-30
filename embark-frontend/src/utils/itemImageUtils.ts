@@ -121,6 +121,50 @@ const itemImageMap: Record<string, string> = {
   "Infinite Ocean Amulet": "infinite-ocean-amulet.png",
   "Cosmic Wind Scepter": "cosmic-wind-scepter.png",
   "Elemental Chaos Throne": "elemental-chaos-throne.png",
+
+  // === NEW MYTHOLOGY ITEMS (73-102) ===
+
+  // Tier 1 (Common) - Mythological Basics
+  "Bronze Spartan Dagger": "bronze-spartan-dagger.png",
+  "Wooden Druid's Charm": "wooden-druids-charm.png",
+  "Clay Ra Scarab": "clay-ra-scarab.png",
+  "Jade Dragon Pendant": "jade-dragon-pendant.png",
+  "Iron Viking Armband": "iron-viking-armband.png",
+
+  // Tier 2 (Uncommon) - Quality Mythological Gear
+  "Athena's Owl Wing Cape": "athenas-owl-wing-cape.png",
+  "Anubis Jackal Mask": "anubis-jackal-mask.png",
+  "Yggdrasil Branch Staff": "yggdrasil-branch-staff.png",
+  "Kitsune Tail Sash": "kitsune-tail-sash.png",
+  "Celtic Torc Necklace": "celtic-torc-necklace.png",
+
+  // Tier 3 (Rare) - Magical Mythological Items
+  "Poseidon's Coral Trident": "poseidons-coral-trident.png",
+  "Thor's Hammer Pendant": "thors-hammer-pendant.png",
+  "Isis Wings Cloak": "isis-wings-cloak.png",
+  "Fenrir Fang Blade": "fenrir-fang-blade.png",
+  "Jade Emperor Crown": "jade-emperor-crown.png",
+
+  // Tier 4 (Epic) - Powerful Mythological Artifacts
+  "Medusa's Petrifying Gaze Shield": "medusas-petrifying-gaze-shield.png",
+  "Valkyrie's Soul Reaping Spear": "valkyries-soul-reaping-spear.png",
+  "Ra's Solar Disc Crown": "ras-solar-disc-crown.png",
+  "Susanoo Storm Blade": "susanoo-storm-blade.png",
+  "Excalibur's Divine Scabbard": "excaliburs-divine-scabbard.png",
+
+  // Tier 5 (Legendary) - Mythological Mastery
+  "Zeus Lightning Bolt Spear": "zeus-lightning-bolt-spear.png",
+  "Odin's All-Seeing Eye": "odins-all-seeing-eye.png",
+  "Osiris Resurrection Ankh": "osiris-resurrection-ankh.png",
+  "Amaterasu Sun Mirror": "amaterasu-sun-mirror.png",
+  "Loki's Reality-Bending Mask": "lokis-reality-bending-mask.png",
+
+  // Tier 6 (Mythic) - Ultimate Mythological Power
+  "Kronos Time-Devouring Scythe": "kronos-time-devouring-scythe.png",
+  "Yggdrasil World Tree Heart": "yggdrasil-world-tree-heart.png",
+  "Jörmungandr World Serpent": "jormungandr-world-serpent.png",
+  "Brahma's Creation Lotus": "brahmas-creation-lotus.png",
+  "Ragnarok Twilight Sword": "ragnarok-twilight-sword.png",
 };
 
 /**

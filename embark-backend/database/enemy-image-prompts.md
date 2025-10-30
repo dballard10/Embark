@@ -226,23 +226,23 @@ Fire Spirit, fierce culinary flame being, larger humanoid form snarling with int
 
 Blaze Elemental, terrifying powerful cooking fire elemental, muscular humanoid form of vicious intense flames, chef's hat made of deadly fire on humanoid head, flaming utensils as weapons in hands, monstrous nightmarish culinary humanoid presence, bloodthirsty burning eyes in fire face, glowing with destructive heat, rare tier enemy, fantasy RPG game enemy portrait, nightmarish serious threat, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, deep red-orange roaring flames forming monster humanoid, fearsome professional heat, ominous atmosphere
 
-### 34. Inferno Guardian (Tier 4)
-
-**Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
-
-Inferno Guardian, horrifying master flame demon, massive humanoid fire elemental with devastating culinary destruction, apocalyptic heat waves melting reality from towering form, soul-crushing gourmet fire techniques, merciless humanoid guardian burning all imperfection, dark aura of consuming flames around demonic body, demonic humanoid presence, epic tier enemy boss, fantasy RPG game enemy portrait, nightmare incarnate, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, white-hot flames forming demonic humanoid with blue core, devastating intense power, dramatic ominous shadows
-
-### 35. Volcanic Titan (Tier 5)
+### 34. Volcanic Titan (Tier 4)
 
 **Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
 
 Volcanic Titan, cataclysmic colossal lava and fire god, massive world-ending titan humanoid with apocalyptic volcanic forge body, molten rock skin crackling with primordial terror in giant humanoid form, crater mouth breathing civilization-destroying flames from titan face, god-slaying legendary culinary power, reality-warping heat consuming all from towering humanoid, eyes like burning magma cores, legendary tier enemy boss, fantasy RPG game enemy portrait, apocalyptic horror titan, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, molten orange-red forming titanic humanoid with cosmic fire, overwhelming volcanic majesty, cosmic dread
 
-### 36. Eternal Flame Primordial (Tier 6)
+### 35. Inferno Guardian (Tier 5)
 
 **Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
 
-Eternal Flame Primordial, universe-ending first fire god, primordial flame entity of absolute destruction in godlike humanoid form, cosmic cooking fire consuming galaxies from divine body, reality itself burning with eldritch culinary annihilation, transcendent omnipotent heat erasing existence from cosmic humanoid shape, eyes like dying suns in god face, infinite eternal burning, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, divine white-gold flame forming god-like humanoid with reality distortion, death incarnate, eternal burning terror, incomprehensible power
+Inferno Guardian, horrifying master flame demon, massive humanoid fire elemental with devastating culinary destruction, apocalyptic heat waves melting reality from towering form, soul-crushing gourmet fire techniques, merciless humanoid guardian burning all imperfection, dark aura of consuming flames around demonic body, demonic humanoid presence, epic tier enemy boss, fantasy RPG game enemy portrait, nightmare incarnate, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, white-hot flames forming demonic humanoid with blue core, devastating intense power, dramatic ominous shadows
+
+### 36. Hellfire Demon (Tier 6)
+
+**Prompt:** IMPORTANT: transparent background, 1024x1024 Image Size, No Text
+
+Hellfire Demon, universe-ending demonic fire entity, ultimate hellfire demon of absolute destruction in monstrous humanoid form, cosmic infernal flames consuming all from demonic body, reality itself burning with eldritch culinary annihilation, transcendent demonic heat erasing existence from hellish humanoid shape, eyes like burning hellfire in demon face, infinite eternal burning, mythic tier ultimate final boss, fantasy RPG game enemy portrait, reality-breaking world-ending cosmic horror, centered composition, isolated character, highly detailed, digital art, painterly fantasy style, divine red-gold hellfire forming demon-like humanoid with reality distortion, death incarnate, eternal burning terror, incomprehensible demonic power
 
 ---
 

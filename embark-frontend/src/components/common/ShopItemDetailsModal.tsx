@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  IconX,
-  IconCalendar,
-  IconTrophy,
-  IconCheck,
-  IconStarFilled,
-} from "@tabler/icons-react";
+import { IconX, IconTrophy, IconCheck } from "@tabler/icons-react";
 import { getTierColor, getTierName, getTierStars } from "../../utils/tierUtils";
 import type { Item } from "../../types/item.types";
 import { getItemImage } from "../../utils/itemImageUtils";
@@ -136,7 +130,7 @@ function ShopItemDetailsModal({
               className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
             >
               {/* Item Image - Transparent Gallery View */}
-              <div className="h-64 relative bg-transparent">
+              <div className="h-96 relative bg-transparent">
                 {itemImage ? (
                   <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md relative">
                     {imageLoading && (

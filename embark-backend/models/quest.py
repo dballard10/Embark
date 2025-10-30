@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List, TYPE_CHECKING
 
 
 class QuestBase(BaseModel):
@@ -99,6 +99,7 @@ class CompletedQuestResponse(BaseModel):
     completed_at: Optional[datetime] = None
     is_active: bool
     quest: QuestResponse
+    awarded_achievements: List = Field(default_factory=list)
 
     class Config:
         from_attributes = True

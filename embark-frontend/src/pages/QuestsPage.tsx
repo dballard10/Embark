@@ -79,8 +79,45 @@ function QuestsPage() {
                 <h1 className="text-3xl font-bold text-blue-100">
                   Quest Board
                 </h1>
+                <p className="text-sm text-blue-300/80">
+                  {filteredCompletedQuests.length} / {completedQuests.length}{" "}
+                  completed
+                  {tierFilter !== "all" && ` (Tier ${tierFilter})`}
+                </p>
               </div>
             </div>
+
+            {/* Tier Filter - Centered */}
+            <div className="flex justify-center">
+              {completedQuests.length > 0 && (
+                <div className="flex gap-1 items-center bg-blue-950/50 backdrop-blur-sm rounded-lg p-1 border border-blue-700/30">
+                  <button
+                    onClick={() => setTierFilter("all")}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === "all"
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setTierFilter(tier)}
+                      className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                        tierFilter === tier
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30"
+                      }`}
+                    >
+                      T{tier}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border-2 border-blue-500/40">
               <IconCheck size={28} className="text-blue-400" stroke={2} />
               <div>
@@ -97,7 +134,7 @@ function QuestsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4 pb-24 pt-[132px]">
+      <div className="max-w-7xl mx-auto px-4 py-4 pt-[132px]">
         {/* Active Quests Section */}
         <ActiveQuestsGrid
           activeQuests={activeQuests}
@@ -112,44 +149,9 @@ function QuestsPage() {
 
         {/* Completed Quests Section */}
         <div>
-          <div className="flex items-center flex-row gap-12 mb-4">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              Completed Quests
-              <span className="text-sm font-normal text-gray-400">
-                ({filteredCompletedQuests.length} / {completedQuests.length}
-                {tierFilter !== "all" && ` - Tier ${tierFilter}`})
-              </span>
-            </h2>
-
-            {/* Tier Filter */}
-            {completedQuests.length > 0 && (
-              <div className="flex gap-1 items-center bg-slate-900 rounded-lg p-1">
-                <button
-                  onClick={() => setTierFilter("all")}
-                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                    tierFilter === "all"
-                      ? "bg-blue-600 text-white"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  All
-                </button>
-                {[1, 2, 3, 4, 5, 6].map((tier) => (
-                  <button
-                    key={tier}
-                    onClick={() => setTierFilter(tier)}
-                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                      tierFilter === tier
-                        ? "bg-blue-600 text-white"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    T{tier}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Completed Quests
+          </h2>
 
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -21,6 +21,7 @@ import { useQuestsContext } from "../../contexts/QuestsContext";
 import CompletedQuestDetailsModalSkeleton from "./CompletedQuestDetailsModalSkeleton";
 import LoadingIcon from "./LoadingIcon";
 import { getItemImage } from "../../utils/itemImageUtils";
+import ImageViewer from "./ImageViewer";
 
 interface CompletedQuestDetailsModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ function CompletedQuestDetailsModal({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enemyImageLoading, setEnemyImageLoading] = useState(true);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen && completedQuestId) {
@@ -171,7 +173,7 @@ function CompletedQuestDetailsModal({
                 className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
               >
                 {/* Enemy Image - Transparent Gallery View */}
-                <div className="h-64 relative bg-transparent">
+                <div className="h-96 relative bg-transparent">
                   {enemyImage ? (
                     <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md relative">
                       {enemyImageLoading && (
@@ -182,8 +184,9 @@ function CompletedQuestDetailsModal({
                       <img
                         src={enemyImage}
                         alt={quest.enemy_name}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain cursor-pointer hover:scale-105 transition-transform duration-200"
                         onLoad={() => setEnemyImageLoading(false)}
+                        onClick={() => setIsImageViewerOpen(true)}
                         style={{ opacity: enemyImageLoading ? 0 : 1 }}
                       />
                     </div>
@@ -402,6 +405,16 @@ function CompletedQuestDetailsModal({
           </button>
         </div>
       </div>
+
+      {/* Image Viewer */}
+      {enemyImage && (
+        <ImageViewer
+          isOpen={isImageViewerOpen}
+          onClose={() => setIsImageViewerOpen(false)}
+          imageUrl={enemyImage}
+          altText={quest?.enemy_name || "Enemy"}
+        />
+      )}
     </div>
   );
 }

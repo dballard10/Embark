@@ -18,6 +18,7 @@ import {
   getTierGradientColor,
 } from "../utils/tierUtils";
 import { getItemImage } from "../utils/itemImageUtils";
+import { useCelebrationOverlay } from "../contexts/CelebrationOverlayContext";
 
 function QuestDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,7 @@ function QuestDetailsPage() {
     refreshQuests,
   } = useQuestsContext();
   const { refetchUserAchievements } = useAchievements();
+  const { showSpecial, showStandard, showItemThenMaybeSpecial } = useCelebrationOverlay();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +43,7 @@ function QuestDetailsPage() {
     null
   );
   const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
+  const [awardedAchievements, setAwardedAchievements] = useState<any[]>([]);
 
   useEffect(() => {
     loadQuestData();
@@ -114,22 +117,63 @@ function QuestDetailsPage() {
 
       console.log("Quest completed successfully");
 
-      // Set completion message and awarded item based on whether item was awarded
-      if (response.awarded_item) {
-        setCompletionMessage("Quest completed!");
-        setAwardedItem(response.awarded_item);
+      // Store awarded achievements and item
+      setAwardedAchievements(response.awarded_achievements || []);
+      setAwardedItem(response.awarded_item);
+
+      // Only show completion message if there are no achievements to display
+      if ((response.awarded_achievements || []).length === 0) {
+        if (response.awarded_item) {
+          setCompletionMessage("Quest completed!");
+        } else {
+          setCompletionMessage(
+            "Quest completed! (You already own all items from this tier)"
+          );
+        }
       } else {
-        setCompletionMessage(
-          "Quest completed! (You already own all items from this tier)"
-        );
-        setAwardedItem(null);
+        // Show completion state without the notification message
+        setCompletionMessage("completed");
       }
 
       // Refresh user data to show updated glory, XP, items, quests, and achievements
+      // Begin preloading awarded item image while refreshing state
+      if (response.awarded_item?.item) {
+        const preUrl = getItemImage(
+          response.awarded_item.item.name,
+          response.awarded_item.item.image_url
+        );
+        if (preUrl) {
+          const img = new Image();
+          (img as any).decoding = "async";
+          (img as any).loading = "eager";
+          (img as any).fetchPriority = "high";
+          img.src = preUrl;
+        }
+      }
+
       await refreshUser();
       await refreshItems();
       await refreshQuests();
       await refetchUserAchievements();
+
+      // Decide celebration type and navigate away before showing
+      const achievements = response.awarded_achievements || [];
+      const hasSpecial = achievements.some(
+        (a: any) => a.achievement_type === "questline" || a.achievement_type === "tier"
+      );
+
+      // Navigate away to close details page
+      navigate("/quests");
+
+      if (response.awarded_item) {
+        showItemThenMaybeSpecial(achievements, response.awarded_item, hasSpecial);
+      } else if (achievements.length > 0) {
+        if (hasSpecial) {
+          showSpecial(achievements, null);
+        } else {
+          showStandard(achievements, null);
+        }
+      }
     } catch (err) {
       console.error("Error completing quest:", err);
       const errorMessage =
@@ -181,13 +225,60 @@ function QuestDetailsPage() {
         {/* Completion Message with Item Card */}
         {completionMessage && (
           <div className="space-y-4 mb-6">
-            <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center">
-              <div className="flex items-center justify-center gap-2 text-xl font-bold">
-                <IconSparkles size={24} className="text-yellow-400" />
-                {completionMessage}
-                <IconSparkles size={24} className="text-yellow-400" />
+            {/* Awarded Achievements - moved to top */}
+            {awardedAchievements.length > 0 && (
+              <div className="animate-fade-in">
+                <p className="text-center text-white text-lg font-semibold mb-3">
+                  {awardedAchievements.length === 1
+                    ? "Achievement Unlocked!"
+                    : "Achievements Unlocked!"}
+                </p>
+                <div className="space-y-3">
+                  {awardedAchievements.map((achievement, index) => {
+                    const isSpecial =
+                      achievement.tier === 6 ||
+                      achievement.achievement_type === "questline";
+                    const gradientClass = isSpecial
+                      ? "from-red-600 to-pink-600"
+                      : `${getTierColor(achievement.color_tier)}`;
+                    return (
+                      <div
+                        key={index}
+                        className={`bg-gradient-to-r ${gradientClass} border-2 border-white/30 rounded-xl p-4 animate-pulse-subtle`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                            <IconSparkles
+                              size={32}
+                              className="text-yellow-400"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-xl text-white mb-1">
+                              {achievement.title}
+                            </h3>
+                            <p className="text-sm text-gray-200">
+                              {achievement.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Only show quest completed notification if there are no achievements */}
+            {completionMessage !== "completed" && (
+              <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center">
+                <div className="flex items-center justify-center gap-2 text-xl font-bold">
+                  <IconSparkles size={24} className="text-yellow-400" />
+                  {completionMessage}
+                  <IconSparkles size={24} className="text-yellow-400" />
+                </div>
+              </div>
+            )}
 
             {/* Awarded Item Card */}
             {awardedItem?.item && (
@@ -246,6 +337,8 @@ function QuestDetailsPage() {
                 </div>
               </div>
             )}
+
+            {/* (Achievements are now displayed at the top of this section) */}
 
             {/* Continue Button */}
             <div className="flex justify-center mt-6">

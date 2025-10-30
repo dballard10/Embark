@@ -230,7 +230,7 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
             # Log the error but don't fail the quest completion
             print(f"Warning: Failed to award item: {item_error}")
         
-        # Return quest completion info with awarded item details
+        # Return quest completion info with awarded item and achievements
         return {
             "user_quest": UserQuestResponse(
                 id=completed_quest.id,
@@ -241,7 +241,8 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
                 deadline_at=completed_quest.deadline_at,
                 is_active=completed_quest.is_active,
             ),
-            "awarded_item": awarded_item
+            "awarded_item": awarded_item,
+            "awarded_achievements": completed_quest.awarded_achievements
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

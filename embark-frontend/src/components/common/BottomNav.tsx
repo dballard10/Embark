@@ -61,11 +61,15 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
 
             // Determine active color based on item type
             let activeColor = "text-gray-400 hover:text-white";
+            let useGradient = false;
             if (isActive) {
               if (isVault) activeColor = "text-green-400";
               else if (isShop) activeColor = "text-orange-400";
               else if (isQuests) activeColor = "text-blue-400";
-              else activeColor = "text-cyan-400";
+              else {
+                // Show Home icon over a gradient background for active state
+                activeColor = "text-purple-400";
+              }
             }
 
             // Determine label color
@@ -74,11 +78,11 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
               if (isVault) labelColor = "text-green-400";
               else if (isShop) labelColor = "text-orange-400";
               else if (isQuests) labelColor = "text-blue-400";
-              else labelColor = "text-cyan-400";
+              else labelColor = "text-purple-400";
             }
 
             // Determine gradient bar color
-            let gradientColor = "from-cyan-500 to-blue-500";
+            let gradientColor = "from-purple-500 to-teal-500";
             if (isVault) gradientColor = "from-green-500 to-emerald-500";
             else if (isShop) gradientColor = "from-orange-500 to-amber-500";
             else if (isQuests) gradientColor = "from-blue-500 to-blue-600";
@@ -92,6 +96,10 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                 <div
                   className={`mb-1 transition-transform duration-200 ${
                     isActive ? "scale-110" : "hover:scale-105"
+                  } ${
+                    useGradient
+                      ? "bg-gradient-to-r from-purple-400 to-teal-400 p-1 rounded-full"
+                      : ""
                   }`}
                 >
                   <Icon
