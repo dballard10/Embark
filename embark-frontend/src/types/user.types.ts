@@ -5,6 +5,7 @@ export interface User {
   total_glory: number;
   total_xp: number;
   level: number;
+  lifetime_glory_gained?: number;
   created_at: string;
 }
 

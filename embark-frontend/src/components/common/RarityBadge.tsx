@@ -1,5 +1,6 @@
 import { IconStar } from "@tabler/icons-react";
 import { getTierColor } from "../../utils/tierUtils";
+import type { QuestTier } from "../../types/quest.types";
 
 interface RarityBadgeProps {
   rarityStars: number;
@@ -29,14 +30,14 @@ function RarityBadge({
       className={`flex items-center ${
         sizeClasses[size]
       } rounded-lg bg-gradient-to-r ${getTierColor(
-        rarityTier
+        rarityTier as QuestTier
       )} border border-white/30 text-xs font-bold text-white shadow-lg`}
     >
       {Array.from({ length: rarityStars }, (_, i) => (
         <IconStar
           key={i}
           size={starSizes[size]}
-          className="text-yellow-400"
+          className={rarityTier === 6 ? "text-yellow-300" : "text-white"}
           fill="currentColor"
           stroke={1.5}
         />

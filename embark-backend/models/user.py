@@ -34,6 +34,7 @@ class UserResponse(UserBase):
     total_glory: int
     total_xp: int
     level: int
+    lifetime_glory_gained: int = 0
     active_title_id: Optional[UUID] = None
     created_at: datetime
 
