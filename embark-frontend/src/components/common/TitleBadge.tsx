@@ -1,5 +1,6 @@
 import { getTierColor } from "../../utils/tierUtils";
 import type { Achievement } from "../../types/achievement.types";
+import type { QuestTier } from "../../types/quest.types";
 
 interface TitleBadgeProps {
   achievement: Achievement;
@@ -21,7 +22,7 @@ function TitleBadge({ achievement, size = "md", onClick }: TitleBadgeProps) {
   // Special achievements get tier 6 conqueror color with shine effect
   const gradientClass = isSpecial
     ? "from-red-600 to-pink-600"
-    : `${getTierColor(achievement.color_tier)}`;
+    : `${getTierColor(achievement.color_tier as QuestTier)}`;
 
   const Component = onClick ? "button" : "span";
   const clickableClasses = onClick

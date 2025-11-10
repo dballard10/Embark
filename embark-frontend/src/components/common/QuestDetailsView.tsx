@@ -17,9 +17,9 @@ import {
   IconHourglass,
   IconBox,
   IconSword,
-  IconHelp,
+  // IconHelp,
 } from "@tabler/icons-react";
-import QuestHelperChatModal from "./QuestHelperChatModal";
+// import QuestHelperChatModal from "./QuestHelperChatModal";
 import ImageViewer from "./ImageViewer";
 
 interface QuestDetailsViewProps {
@@ -36,7 +36,7 @@ function QuestDetailsView({
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
   const [enemyImageLoading, setEnemyImageLoading] = useState(true);
-  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  // const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
   useEffect(() => {
@@ -293,7 +293,7 @@ function QuestDetailsView({
           </div>
         )}
 
-        {/* Time Commitment */}
+        {/* Time Commitment
         <div
           className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
         >
@@ -306,10 +306,10 @@ function QuestDetailsView({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Quest Helper - Only show if quest has started */}
-        {showStartedInfo && (
+        {/* {showStartedInfo && (
           <button
             onClick={() => setIsChatModalOpen(true)}
             className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5 hover:bg-purple-900/20 hover:border-purple-500/50 transition-all duration-200 cursor-pointer group`}
@@ -328,7 +328,7 @@ function QuestDetailsView({
               </div>
             </div>
           </button>
-        )}
+        )} */}
       </div>
       {/* Rewards Section */}
       <div
@@ -387,13 +387,13 @@ function QuestDetailsView({
       </div>
 
       {/* Quest Helper Chat Modal */}
-      <QuestHelperChatModal
+      {/* <QuestHelperChatModal
         isOpen={isChatModalOpen}
         onClose={() => setIsChatModalOpen(false)}
         quest={quest}
         userId={userId}
         userQuestId={userQuest.id}
-      />
+      /> */}
 
       {/* Image Viewer */}
       {enemyImage && (

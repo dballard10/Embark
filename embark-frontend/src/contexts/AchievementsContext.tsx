@@ -1,9 +1,9 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  type ReactNode,
 } from "react";
 import type { Achievement, UserAchievement } from "../types/achievement.types";
 import * as achievementService from "../services/achievementService";

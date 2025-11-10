@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
-import type { Item } from "../../types/item.types";
+
+import type { Item, RarityTier } from "../../types/item.types";
 import { ITEM_PRICES } from "../../utils/constants/gameConfig";
 
 interface ItemFormModalProps {

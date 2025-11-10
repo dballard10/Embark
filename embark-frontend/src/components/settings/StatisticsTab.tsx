@@ -3,7 +3,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useQuestsContext } from "../../contexts/QuestsContext";
 import { useItems } from "../../contexts/ItemsContext";
 import { fetchAllQuests, fetchAllItems } from "../../services/api";
-import type { Quest } from "../../types/quest.types";
+import type { Quest, QuestTier } from "../../types/quest.types";
 import type { Item } from "../../types/item.types";
 import LoadingIcon from "../common/LoadingIcon";
 import {
@@ -324,7 +324,7 @@ function StatisticsTab() {
                         <span
                           className={`font-semibold flex items-center gap-2 ${tierColors[tier]}`}
                         >
-                          <RarityBadge rarityTier={tier} rarityStars={tier} />
+                          <RarityBadge rarityTier={tier as QuestTier} rarityStars={tier} />
                           {tierNames[tier]}
                         </span>
                       </div>
@@ -418,7 +418,7 @@ function StatisticsTab() {
                         <span
                           className={`font-semibold flex items-center gap-2 ${tierColors[tier]}`}
                         >
-                          <RarityBadge rarityTier={tier} rarityStars={tier} />
+                          <RarityBadge rarityTier={tier as QuestTier} rarityStars={tier} />
                           {tierNames[tier]}
                         </span>
                       </div>

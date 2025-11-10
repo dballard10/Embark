@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IconX, IconStar, IconSparkles } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import QuestDetailsView from "./QuestDetailsView";
 import LoadingIcon from "./LoadingIcon";
 import { useUser } from "../../contexts/UserContext";
@@ -8,19 +8,12 @@ import { useQuestsContext } from "../../contexts/QuestsContext";
 import { useAchievements } from "../../contexts/AchievementsContext";
 import { useCelebrationOverlay } from "../../contexts/CelebrationOverlayContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
-import type { UserItem } from "../../types/item.types";
 import {
   completeQuest,
   abandonQuest,
   type QuestCompletionResponse,
 } from "../../services/api";
 import QuestDetailsModalSkeleton from "./QuestDetailsModalSkeleton";
-import {
-  getTierColor,
-  getTierStars,
-  getTierGradientColor,
-} from "../../utils/tierUtils";
-import { getItemImage } from "../../utils/itemImageUtils";
 
 interface QuestDetailsModalProps {
   isOpen: boolean;
@@ -46,8 +39,6 @@ function QuestDetailsModal({
   const [completionMessage, setCompletionMessage] = useState<string | null>(
     null
   );
-  const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
-  const [awardedAchievements, setAwardedAchievements] = useState<any[]>([]);
 
   useEffect(() => {
     if (isOpen && questId && !completionMessage) {
@@ -59,8 +50,6 @@ function QuestDetailsModal({
   useEffect(() => {
     if (!isOpen) {
       setCompletionMessage(null);
-      setAwardedItem(null);
-      setAwardedAchievements([]);
       setError(null);
     }
   }, [isOpen]);
@@ -122,10 +111,6 @@ function QuestDetailsModal({
         userQuest.id
       );
 
-      // Store awarded achievements and item
-      setAwardedAchievements(response.awarded_achievements || []);
-      setAwardedItem(response.awarded_item);
-
       // Only show completion message if there are no achievements to display
       if ((response.awarded_achievements || []).length === 0) {
         if (response.awarded_item) {
@@ -138,21 +123,6 @@ function QuestDetailsModal({
       } else {
         // Show completion state without the notification message
         setCompletionMessage("completed");
-      }
-
-      // Begin preloading awarded item image while refreshing state
-      if (response.awarded_item?.item) {
-        const preUrl = getItemImage(
-          response.awarded_item.item.name,
-          response.awarded_item.item.image_url
-        );
-        if (preUrl) {
-          const img = new Image();
-          (img as any).decoding = "async";
-          (img as any).loading = "eager";
-          (img as any).fetchPriority = "high";
-          img.src = preUrl;
-        }
       }
 
       // Refresh user data, items, quests, and achievements
