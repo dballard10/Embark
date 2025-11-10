@@ -4,7 +4,6 @@ import { getTierColor, getTierName, getTierStars } from "../../utils/tierUtils";
 import type { UserItem } from "../../types/item.types";
 import { getItemImage } from "../../utils/itemImageUtils";
 import ItemIcon from "./ItemIcon";
-import { formatDateFriendly } from "../../utils/dateUtils";
 import { useUser } from "../../contexts/UserContext";
 import { useItems } from "../../contexts/ItemsContext";
 import ItemDetailsModalSkeleton from "./ItemDetailsModalSkeleton";
