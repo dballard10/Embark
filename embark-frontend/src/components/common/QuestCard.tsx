@@ -289,27 +289,27 @@ function QuestCard({
 
         {/* Rewards - Only show for active and available quests */}
         {variant !== "completed" && (
-          <div className="grid grid-cols-3 gap-2 relative">
+          <div className="grid grid-cols-3 gap-2 relative min-w-0">
             {/* Glory Reward */}
-            <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-yellow-600/40 rounded-lg p-2 text-center">
+            <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-yellow-600/40 rounded-lg p-2 text-center min-w-0 overflow-hidden">
               <IconTrophy
-                size={24}
-                className="text-yellow-300 mx-auto mb-1"
+                size={20}
+                className="sm:w-6 sm:h-6 text-yellow-300 mx-auto mb-1 flex-shrink-0"
                 stroke={2}
               />
-              <div className="text-sm font-bold text-yellow-300">
+              <div className="text-xs sm:text-sm font-bold text-yellow-300 truncate px-1">
                 {userQuest.quest.glory_reward.toLocaleString()}
               </div>
             </div>
 
             {/* XP Reward */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600/40 rounded-lg p-2 text-center">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600/40 rounded-lg p-2 text-center min-w-0 overflow-hidden">
               <IconSparkles
-                size={24}
-                className="text-blue-300 mx-auto mb-1"
+                size={20}
+                className="sm:w-6 sm:h-6 text-blue-300 mx-auto mb-1 flex-shrink-0"
                 stroke={2}
               />
-              <div className="text-sm font-bold text-blue-300">
+              <div className="text-xs sm:text-sm font-bold text-blue-300 truncate px-1">
                 {userQuest.quest.xp_reward.toLocaleString()}
               </div>
             </div>
@@ -317,12 +317,12 @@ function QuestCard({
             {/* Item Reward Button */}
             <button
               onClick={handleItemRewardClick}
-              className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-2 text-center shadow-lg hover:scale-105 transition-all duration-200 relative`}
+              className={`bg-gradient-to-r ${tierBadgeColor} border-2 border-white/30 rounded-lg p-2 text-center shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 relative min-w-0 overflow-hidden`}
               title={`Random Tier ${questTier} Item Reward`}
             >
               <IconBox
-                size={32}
-                className={`${getTierTextColor(questTier)} mx-auto`}
+                size={24}
+                className={`sm:w-8 sm:h-8 ${getTierTextColor(questTier)} mx-auto`}
                 stroke={2}
               />
 

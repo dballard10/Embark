@@ -201,23 +201,23 @@ function QuestDetailsPage() {
       />
 
       {/* Back button header */}
-      <div className="bg-gradient-to-r from-slate-800/95 to-slate-900/95 border-b-2 border-purple-500/30 sticky top-[72px] z-10 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 py-3">
+      <div className="bg-gradient-to-r from-slate-800/95 to-slate-900/95 border-b-2 border-purple-500/30 sticky top-[64px] sm:top-[72px] z-10 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           <button
             onClick={() => navigate("/quests")}
-            className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors duration-200"
+            className="flex items-center gap-2 text-white hover:text-purple-400 active:text-purple-300 transition-colors duration-200 min-h-[44px]"
           >
-            <IconArrowLeft size={24} stroke={2} />
-            <span className="font-semibold">Back to Quests</span>
+            <IconArrowLeft size={20} className="sm:w-6 sm:h-6" stroke={2} />
+            <span className="font-semibold text-sm sm:text-base">Back to Quests</span>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Error Message */}
         {error && (
-          <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-red-300 text-sm mb-6">
+          <div className="bg-red-900/30 border border-red-500 rounded-lg p-3 sm:p-4 text-red-300 text-sm mb-4 sm:mb-6">
             {error}
           </div>
         )}
@@ -283,12 +283,12 @@ function QuestDetailsPage() {
             {/* Awarded Item Card */}
             {awardedItem?.item && (
               <div className="animate-fade-in">
-                <p className="text-center text-white text-lg font-semibold mb-3">
+                <p className="text-center text-white text-base sm:text-lg font-semibold mb-3">
                   You received:
                 </p>
                 <div className="flex justify-center">
                   <div
-                    className={`relative w-80 flex flex-col bg-gradient-to-br ${getTierGradientColor(
+                    className={`relative w-full max-w-[320px] sm:w-80 flex flex-col bg-gradient-to-br ${getTierGradientColor(
                       awardedItem.item.rarity_tier
                     )} border-2 rounded-xl overflow-hidden shadow-2xl animate-pulse-subtle`}
                   >
@@ -325,8 +325,8 @@ function QuestDetailsPage() {
                     </div>
 
                     {/* Item Info */}
-                    <div className="p-5 flex flex-col">
-                      <h3 className="font-bold text-2xl text-white text-center mb-2">
+                    <div className="p-4 sm:p-5 flex flex-col">
+                      <h3 className="font-bold text-xl sm:text-2xl text-white text-center mb-2">
                         {awardedItem.item.name}
                       </h3>
                       <p className="text-sm text-gray-300 text-center line-clamp-2">
@@ -341,10 +341,10 @@ function QuestDetailsPage() {
             {/* (Achievements are now displayed at the top of this section) */}
 
             {/* Continue Button */}
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4 sm:mt-6">
               <button
                 onClick={() => navigate("/quests")}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-6 sm:px-8 py-3 min-h-[44px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 active:from-blue-700 active:to-blue-800 text-white rounded-lg font-bold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg flex items-center gap-2"
               >
                 <span>Continue</span>
               </button>

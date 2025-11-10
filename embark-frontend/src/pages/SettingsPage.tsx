@@ -166,17 +166,17 @@ function SettingsPage() {
       />
 
       {/* Settings Header */}
-      <div className="bg-gradient-to-r from-slate-900/90 via-gray-900/90 to-slate-900/90 border-b-2 border-slate-600 fixed top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-3 items-center gap-4">
-            {/* Title Section - Left */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-600 to-gray-600 flex items-center justify-center shadow-lg">
-                <IconSettings size={32} className="text-white" stroke={2} />
+      <div className="bg-gradient-to-r from-slate-900/90 via-gray-900/90 to-slate-900/90 border-b-2 border-slate-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            {/* Title Section */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-slate-600 to-gray-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                <IconSettings size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" stroke={2} />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-slate-100">Settings</h1>
-                <p className="text-sm text-slate-300/80">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-100">Settings</h1>
+                <p className="text-xs sm:text-sm text-slate-300/80">
                   {activeTab === "settings"
                     ? "Manage your account information"
                     : "View your progress and statistics"}
@@ -184,15 +184,15 @@ function SettingsPage() {
               </div>
             </div>
 
-            {/* Tabs - Centered */}
-            <div className="flex justify-center">
-              <div className="flex gap-1 items-center bg-slate-950/50 backdrop-blur-sm rounded-lg p-1 border border-slate-700/30">
+            {/* Tabs */}
+            <div className="flex justify-center sm:justify-start">
+              <div className="flex gap-1 items-center bg-slate-950/50 backdrop-blur-sm rounded-lg p-1 border border-slate-700/30 w-full sm:w-auto">
                 <button
                   onClick={() => setActiveTab("settings")}
-                  className={`px-3 py-1 rounded font-medium text-sm transition-all flex items-center gap-2 ${
+                  className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
                     activeTab === "settings"
                       ? "bg-gray-600 text-white shadow-md"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/30"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
                   }`}
                 >
                   <IconSettings size={16} stroke={2} />
@@ -200,10 +200,10 @@ function SettingsPage() {
                 </button>
                 <button
                   onClick={() => setActiveTab("statistics")}
-                  className={`px-3 py-1 rounded font-medium text-sm transition-all flex items-center gap-2 ${
+                  className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
                     activeTab === "statistics"
                       ? "bg-gray-600 text-white shadow-md"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/30"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
                   }`}
                 >
                   <IconChartBar size={16} stroke={2} />
@@ -211,19 +211,16 @@ function SettingsPage() {
                 </button>
               </div>
             </div>
-
-            {/* Empty space to maintain centering */}
-            <div></div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pt-[132px]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 pt-[140px] sm:pt-[150px] md:pt-[132px]">
         <div className="max-w-2xl mx-auto">
           {/* Success Message */}
           {successMessage && activeTab === "settings" && (
-            <div className="mb-6 bg-green-500/10 border border-green-500/50 rounded-xl p-4 animate-slide-up">
+            <div className="mb-4 sm:mb-6 bg-green-500/10 border border-green-500/50 rounded-xl p-3 sm:p-4 animate-slide-up">
               <div className="flex items-center gap-2">
                 <IconCheck size={20} className="text-green-400" stroke={2.5} />
                 <p className="text-green-400 font-semibold">{successMessage}</p>
@@ -235,13 +232,13 @@ function SettingsPage() {
           {activeTab === "settings" ? (
             <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
               {/* Account Information Section */}
-              <div className="p-6 border-b border-slate-700/50">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <div className="p-4 sm:p-6 border-b border-slate-700/50">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
                   <IconUser size={24} className="text-blue-400" stroke={2} />
                   Account Information
                 </h2>
 
-                <form onSubmit={handleSave} className="space-y-5">
+                <form onSubmit={handleSave} className="space-y-4 sm:space-y-5">
                   {/* Username Field */}
                   <div>
                     <label
@@ -272,7 +269,7 @@ function SettingsPage() {
                         maxLength={50}
                         required
                         placeholder="Enter username"
-                        className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-4 py-3 text-base bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -308,7 +305,7 @@ function SettingsPage() {
                         }}
                         required
                         placeholder="your.email@example.com"
-                        className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-4 py-3 text-base bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -360,8 +357,8 @@ function SettingsPage() {
               </div>
 
               {/* Account Actions Section */}
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-white mb-4">
+              <div className="p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
                   Account Actions
                 </h2>
 
@@ -376,7 +373,7 @@ function SettingsPage() {
               </div>
 
               {/* Account Info Footer */}
-              <div className="p-6 bg-slate-900/50 border-t border-slate-700/50">
+              <div className="p-4 sm:p-6 bg-slate-900/50 border-t border-slate-700/50">
                 <div className="text-sm text-gray-400 space-y-1">
                   <p>
                     <span className="font-semibold text-gray-300">

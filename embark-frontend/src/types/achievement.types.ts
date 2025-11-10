@@ -1,4 +1,4 @@
-export type AchievementType = "default" | "tier" | "questline" | "quest";
+export type AchievementType = "default" | "tier" | "questline" | "quest" | "collection";
 
 export interface Achievement {
   id: string;

@@ -193,6 +193,82 @@ class AchievementService:
             )
             raise
 
+    async def check_and_award_collection_achievement(
+        self, user_id: UUID
+    ) -> Optional[AchievementResponse]:
+        """Check and award collection achievement based on user's item count
+        
+        Returns the achievement if newly awarded, None otherwise
+        """
+        try:
+            supabase = get_supabase_client()
+            
+            # Count user's total items
+            user_items_response = (
+                supabase.table("user_items")
+                .select("id", count="exact")
+                .eq("user_id", str(user_id))
+                .execute()
+            )
+            
+            item_count = user_items_response.count or 0
+            
+            # Get all collection achievements, ordered by tier
+            collection_achievements_response = (
+                supabase.table(self.table)
+                .select("*")
+                .eq("achievement_type", "collection")
+                .order("tier")
+                .execute()
+            )
+            
+            if not collection_achievements_response.data:
+                return None
+            
+            # Find the highest tier achievement that matches the item count
+            matching_achievement = None
+            for ach in collection_achievements_response.data:
+                ach_tier = ach.get("tier")
+                if ach_tier is not None and ach_tier <= item_count:
+                    matching_achievement = ach
+            
+            if not matching_achievement:
+                return None
+            
+            achievement = AchievementResponse(**matching_achievement)
+            
+            # Check if user already has this achievement
+            user_achievement_response = (
+                supabase.table(self.user_achievements_table)
+                .select("*")
+                .eq("user_id", str(user_id))
+                .eq("achievement_id", str(achievement.id))
+                .execute()
+            )
+            
+            if user_achievement_response.data:
+                # User already has this achievement
+                return None
+            
+            # Award the achievement
+            from datetime import datetime, timezone
+            supabase.table(self.user_achievements_table).insert({
+                "user_id": str(user_id),
+                "achievement_id": str(achievement.id),
+                "unlocked_at": datetime.now(timezone.utc).isoformat()
+            }).execute()
+            
+            self.logger.info(
+                f"Awarded collection achievement {achievement.id} to user {user_id} for {item_count} items"
+            )
+            
+            return achievement
+        except Exception as e:
+            self.logger.error(
+                f"Error checking collection achievement for user {user_id}: {str(e)}"
+            )
+            raise
+
     async def set_active_title(
         self, user_id: UUID, achievement_id: Optional[UUID]
     ) -> bool:

@@ -68,7 +68,7 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
               else if (isQuests) activeColor = "text-blue-400";
               else {
                 // Show Home icon over a gradient background for active state
-                activeColor = "text-purple-400";
+                activeColor = "text-cyan-400";
               }
             }
 
@@ -78,11 +78,11 @@ function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
               if (isVault) labelColor = "text-green-400";
               else if (isShop) labelColor = "text-orange-400";
               else if (isQuests) labelColor = "text-blue-400";
-              else labelColor = "text-purple-400";
+              else labelColor = "text-cyan-400";
             }
 
             // Determine gradient bar color
-            let gradientColor = "from-purple-500 to-teal-500";
+            let gradientColor = "from-cyan-500 to-cyan-600";
             if (isVault) gradientColor = "from-green-500 to-emerald-500";
             else if (isShop) gradientColor = "from-orange-500 to-amber-500";
             else if (isQuests) gradientColor = "from-blue-500 to-blue-600";

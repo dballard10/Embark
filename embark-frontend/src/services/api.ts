@@ -172,6 +172,7 @@ export const purchaseItem = async (
   user_item: import("../types/item.types").UserItem;
   new_glory: number;
   item_price: number;
+  awarded_achievements?: Achievement[];
 }> => {
   try {
     const response = await api.post(

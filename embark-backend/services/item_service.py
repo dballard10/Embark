@@ -1,8 +1,9 @@
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 from supabase import Client
 from models.item import ItemCreate, ItemUpdate, ItemResponse, UserItemResponse
+from services.achievement_service import AchievementService
 
 
 class ItemService:
@@ -10,6 +11,7 @@ class ItemService:
 
     def __init__(self, supabase: Client):
         self.supabase = supabase
+        self.achievement_service = AchievementService()
 
     async def create_item(self, item_data: ItemCreate) -> ItemResponse:
         """Create a new item"""
@@ -269,10 +271,24 @@ class ItemService:
             # 6. Award item to user
             user_item = await self.award_item_to_user(user_id, item_id)
 
+            # 7. Check and award achievements
+            awarded_achievements = []
+            try:
+                # Check for collection achievement
+                collection_achievement = await self.achievement_service.check_and_award_collection_achievement(
+                    user_id
+                )
+                if collection_achievement:
+                    awarded_achievements.append(collection_achievement)
+            except Exception as achievement_error:
+                # Log the error but don't fail the purchase
+                print(f"Warning: Failed to check achievements: {achievement_error}")
+
             return {
                 "user_item": user_item,
                 "new_glory": new_glory,
-                "item_price": item.price
+                "item_price": item.price,
+                "awarded_achievements": awarded_achievements
             }
         except Exception as e:
             raise ValueError(f"Error purchasing item: {str(e)}")

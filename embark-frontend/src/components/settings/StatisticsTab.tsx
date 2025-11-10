@@ -9,7 +9,7 @@ import LoadingIcon from "../common/LoadingIcon";
 import {
   IconCalendar,
   IconTrophy,
-  IconFlame,
+  IconSparkles,
   IconMap,
   IconBox,
   IconTrendingUp,
@@ -178,7 +178,7 @@ function StatisticsTab() {
     2: "text-green-400",
     3: "text-blue-400",
     4: "text-purple-400",
-    5: "text-yellow-400",
+    5: "text-orange-400",
     6: "text-red-400",
   };
 
@@ -208,7 +208,7 @@ function StatisticsTab() {
       <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 border-b border-slate-700/50">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <IconCalendar size={24} className="text-blue-400" stroke={2} />
+            <IconCalendar size={24} className="text-purple-400" stroke={2} />
             Profile Information
           </h2>
           <div className="space-y-3">
@@ -232,7 +232,7 @@ function StatisticsTab() {
       <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 border-b border-slate-700/50">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <IconTrendingUp size={24} className="text-green-400" stroke={2} />
+            <IconTrendingUp size={24} className="text-purple-400" stroke={2} />
             Lifetime Progress
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -251,12 +251,12 @@ function StatisticsTab() {
             </div>
             <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
               <div className="flex items-center gap-2 mb-2">
-                <IconFlame size={20} className="text-orange-400" stroke={2} />
+                <IconSparkles size={20} className="text-cyan-400" stroke={2} />
                 <span className="text-sm text-gray-400">
                   Lifetime XP Gained
                 </span>
               </div>
-              <p className="text-2xl font-bold text-orange-400">
+              <p className="text-2xl font-bold text-cyan-400">
                 {selectedUser.total_xp.toLocaleString()}
               </p>
             </div>
@@ -344,7 +344,7 @@ function StatisticsTab() {
                             : tier === 4
                             ? "bg-purple-500"
                             : tier === 5
-                            ? "bg-yellow-500"
+                            ? "bg-orange-500"
                             : "bg-red-500"
                         }`}
                         style={{ width: `${percentage}%` }}
@@ -438,7 +438,7 @@ function StatisticsTab() {
                             : tier === 4
                             ? "bg-purple-500"
                             : tier === 5
-                            ? "bg-yellow-500"
+                            ? "bg-orange-500"
                             : "bg-red-500"
                         }`}
                         style={{ width: `${percentage}%` }}

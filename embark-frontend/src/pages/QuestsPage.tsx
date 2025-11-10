@@ -68,64 +68,73 @@ function QuestsPage() {
       />
 
       {/* Quest Board Header */}
-      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                <IconTarget size={32} className="text-white" stroke={2} />
+      <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-row gap-3 sm:gap-4">
+            {/* Top Row: Title and Active Quests */}
+            <div className="flex flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                  <IconTarget
+                    size={24}
+                    className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
+                    stroke={2}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-100 truncate">
+                    Quest Board
+                  </h1>
+                  <p className="text-xs sm:text-sm text-blue-300/80">
+                    {filteredCompletedQuests.length} / {completedQuests.length}{" "}
+                    completed
+                    {tierFilter !== "all" && ` (Tier ${tierFilter})`}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-blue-100">
-                  Quest Board
-                </h1>
-                <p className="text-sm text-blue-300/80">
-                  {filteredCompletedQuests.length} / {completedQuests.length}{" "}
-                  completed
-                  {tierFilter !== "all" && ` (Tier ${tierFilter})`}
-                </p>
-              </div>
-            </div>
-
-            {/* Tier Filter - Centered */}
-            <div className="flex justify-center">
+              {/* Tier Filter - Full width on mobile */}
               {completedQuests.length > 0 && (
-                <div className="flex gap-1 items-center bg-blue-950/50 backdrop-blur-sm rounded-lg p-1 border border-blue-700/30">
-                  <button
-                    onClick={() => setTierFilter("all")}
-                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                      tierFilter === "all"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                <div className="flex items-center justify-center sm:justify-start">
+                  <div className="flex flex-wrap gap-1 items-center bg-blue-950/50 backdrop-blur-sm rounded-lg p-1 border border-blue-700/30">
                     <button
-                      key={tier}
-                      onClick={() => setTierFilter(tier)}
-                      className={`px-3 py-1 rounded font-medium text-sm transition-all ${
-                        tierFilter === tier
+                      onClick={() => setTierFilter("all")}
+                      className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                        tierFilter === "all"
                           ? "bg-blue-600 text-white shadow-md"
-                          : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30"
+                          : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30 active:bg-blue-800/50"
                       }`}
                     >
-                      T{tier}
+                      All
                     </button>
-                  ))}
+                    {[1, 2, 3, 4, 5, 6].map((tier) => (
+                      <button
+                        key={tier}
+                        onClick={() => setTierFilter(tier)}
+                        className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                          tierFilter === tier
+                            ? "bg-blue-600 text-white shadow-md"
+                            : "text-blue-300 hover:text-blue-100 hover:bg-blue-800/30 active:bg-blue-800/50"
+                        }`}
+                      >
+                        T{tier}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
-
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border-2 border-blue-500/40">
-              <IconCheck size={28} className="text-blue-400" stroke={2} />
-              <div>
-                <div className="text-xs text-blue-300/80 font-semibold">
-                  Active Quests
-                </div>
-                <div className="text-2xl font-bold text-blue-200">
-                  {activeQuests.length} / 4
+              <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border-2 border-blue-500/40 flex-shrink-0">
+                <IconCheck
+                  size={20}
+                  className="sm:w-7 sm:h-7 text-blue-400"
+                  stroke={2}
+                />
+                <div>
+                  <div className="text-xs text-blue-300/80 font-semibold">
+                    Active Quests
+                  </div>
+                  <div className="text-xl sm:text-2xl font-bold text-blue-200">
+                    {activeQuests.length} / 4
+                  </div>
                 </div>
               </div>
             </div>
@@ -134,7 +143,7 @@ function QuestsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4 pt-[132px]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 pt-[140px] sm:pt-[150px] md:pt-[132px]">
         {/* Active Quests Section */}
         <ActiveQuestsGrid
           activeQuests={activeQuests}
@@ -149,12 +158,12 @@ function QuestsPage() {
 
         {/* Completed Quests Section */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
             Completed Quests
           </h2>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[...Array(8)].map((_, index) => (
                 <CardSkeleton
                   key={`skeleton-completed-${index}`}
@@ -175,7 +184,7 @@ function QuestsPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {filteredCompletedQuests.map((quest) => (
                 <QuestCard
                   key={quest.id}

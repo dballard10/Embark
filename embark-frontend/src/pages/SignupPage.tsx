@@ -35,31 +35,31 @@ function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
+      <div className="w-full max-w-md z-10">
         {/* Logo/Brand Section */}
-        <div className="text-center mb-8 animate-slide-up">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 rounded-full mb-4 shadow-2xl">
-            <IconShield size={48} className="text-white" stroke={2.5} />
+        <div className="text-center mb-6 sm:mb-8 animate-slide-up">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 rounded-full mb-3 sm:mb-4 shadow-2xl">
+            <IconShield size={40} className="sm:w-12 sm:h-12 text-white" stroke={2.5} />
           </div>
-          <h1 className="text-4xl font-black text-white mb-2 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-white mb-2 tracking-tight">
             Join Embark
           </h1>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-base sm:text-lg">
             Create your account and start your quest
           </p>
         </div>
 
         {/* Signup Card */}
         <div
-          className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl shadow-2xl p-8 animate-slide-up"
+          className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl shadow-2xl p-6 sm:p-8 animate-slide-up"
           style={{ animationDelay: "0.1s" }}
         >
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-5 sm:mb-6 text-center">
             Sign Up
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             {/* Email Field */}
             <div>
               <label
@@ -79,7 +79,7 @@ function SignupPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="your.email@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 text-base bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -105,7 +105,7 @@ function SignupPage() {
                   minLength={3}
                   maxLength={50}
                   placeholder="Choose your username"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 text-base bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1.5">

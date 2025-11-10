@@ -94,26 +94,26 @@ function HomePage() {
       />
 
       {/* Profile Header */}
-      <div className="bg-gradient-to-r from-purple-900/90 via-teal-900/90 to-purple-900/90 border-b-2 border-purple-600 fixed top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+      <div className="bg-gradient-to-r from-purple-900/90 via-teal-900/90 to-purple-900/90 border-b-2 border-purple-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               {/* Avatar Container */}
-              <div className="relative p-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full border-4 border-purple-500/60 shadow-2xl">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 flex items-center justify-center shadow-inner">
+              <div className="relative p-1.5 sm:p-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full border-2 sm:border-4 border-purple-500/60 shadow-2xl flex-shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 flex items-center justify-center shadow-inner">
                   <IconShield
-                    size={40}
-                    className="text-white drop-shadow-lg"
+                    size={28}
+                    className="sm:w-8 sm:h-8 md:w-10 md:h-10 text-white drop-shadow-lg"
                     stroke={2.5}
                   />
                 </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-purple-100">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-100 truncate">
                   {selectedUser.username}
                 </h1>
                 {activeTitle && (
-                  <div className="mt-1">
+                  <div className="mt-1 hidden sm:block">
                     <TitleBadge
                       achievement={activeTitle}
                       size="md"
@@ -124,10 +124,10 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-br from-purple-600/30 to-teal-600/30 border-2 border-purple-500/40">
+            <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-purple-600/30 to-teal-600/30 border-2 border-purple-500/40 flex-shrink-0 w-full sm:w-auto justify-center sm:justify-start">
               <IconStar
-                size={28}
-                className="text-purple-300"
+                size={20}
+                className="sm:w-7 sm:h-7 text-purple-300"
                 fill="currentColor"
                 stroke={2}
               />
@@ -135,7 +135,7 @@ function HomePage() {
                 <div className="text-xs text-purple-300/80 font-semibold">
                   Current Level
                 </div>
-                <div className="text-2xl font-bold text-purple-100">
+                <div className="text-xl sm:text-2xl font-bold text-purple-100">
                   {currentLevel}
                 </div>
               </div>
@@ -145,7 +145,7 @@ function HomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pt-[160px]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 pt-[140px] sm:pt-[150px] md:pt-[160px]">
         {/* Profile Header - Enhanced Hero Section */}
         <div className="mb-10 animate-slide-up">
           <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
@@ -158,27 +158,27 @@ function HomePage() {
             </div>
 
             {/* Profile Info */}
-            <div className="px-6 sm:px-8 pb-8 pt-6 relative z-10">
+            <div className="px-4 sm:px-6 md:px-8 pb-6 sm:pb-8 pt-4 sm:pt-6 relative z-10">
               {/* Enhanced Stats Grid - 3 columns on larger screens */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {/* Total Glory */}
                 <div
-                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-5 border border-yellow-500/30 hover:border-yellow-400/60 shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-yellow-500/30 hover:border-yellow-400/60 shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer min-h-[80px]"
                   onClick={() => navigate("/shop")}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gradient-to-br from-yellow-900/50 to-yellow-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="p-2 sm:p-3 bg-gradient-to-br from-yellow-900/50 to-yellow-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <IconTrophy
-                        size={32}
-                        className="text-yellow-400 drop-shadow-glow"
+                        size={24}
+                        className="sm:w-8 sm:h-8 text-yellow-400 drop-shadow-glow"
                         stroke={2.5}
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
                         Total Glory
                       </div>
-                      <div className="text-2xl font-black text-yellow-300 drop-shadow">
+                      <div className="text-xl sm:text-2xl font-black text-yellow-300 drop-shadow truncate">
                         {selectedUser.total_glory.toLocaleString()}
                       </div>
                     </div>
@@ -187,22 +187,22 @@ function HomePage() {
 
                 {/* Total Items */}
                 <div
-                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-5 border border-green-500/30 hover:border-green-400/60 shadow-lg hover:shadow-green-500/20 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-green-500/30 hover:border-green-400/60 shadow-lg hover:shadow-green-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer min-h-[80px]"
                   onClick={() => navigate("/vault")}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gradient-to-br from-green-900/50 to-green-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="p-2 sm:p-3 bg-gradient-to-br from-green-900/50 to-green-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <IconBox
-                        size={32}
-                        className="text-green-400 drop-shadow-glow"
+                        size={24}
+                        className="sm:w-8 sm:h-8 text-green-400 drop-shadow-glow"
                         stroke={2.5}
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
                         Total Items
                       </div>
-                      <div className="text-2xl font-black text-green-300 drop-shadow">
+                      <div className="text-xl sm:text-2xl font-black text-green-300 drop-shadow">
                         {itemsLoading ? (
                           <LoadingIcon size="small" />
                         ) : (
@@ -214,20 +214,20 @@ function HomePage() {
                 </div>
 
                 {/* Total XP */}
-                <div className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-5 border border-cyan-500/30 hover:border-cyan-400/60 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.02] sm:col-span-2 lg:col-span-1">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <div className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-cyan-500/30 hover:border-cyan-400/60 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:col-span-2 lg:col-span-1 min-h-[80px]">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="p-2 sm:p-3 bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <IconSparkles
-                        size={32}
-                        className="text-cyan-400 drop-shadow-glow"
+                        size={24}
+                        className="sm:w-8 sm:h-8 text-cyan-400 drop-shadow-glow"
                         stroke={2.5}
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
                         Total XP
                       </div>
-                      <div className="text-2xl font-black text-cyan-300 drop-shadow">
+                      <div className="text-xl sm:text-2xl font-black text-cyan-300 drop-shadow truncate">
                         {selectedUser.total_xp.toLocaleString()}
                       </div>
                     </div>
@@ -236,18 +236,18 @@ function HomePage() {
               </div>
 
               {/* Enhanced Level Progress Section */}
-              <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-700/50">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <div className="bg-slate-900/50 backdrop-blur rounded-xl p-4 sm:p-6 border border-slate-700/50">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                     <IconSparkles
-                      size={20}
-                      className="text-cyan-400 animate-pulse-subtle"
+                      size={18}
+                      className="sm:w-5 sm:h-5 text-cyan-400 animate-pulse-subtle"
                       stroke={2.5}
                     />
                     <span>Level Progress</span>
                   </h3>
-                  <div className="px-3 py-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg">
-                    <span className="text-sm font-bold text-blue-300">
+                  <div className="px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg">
+                    <span className="text-xs sm:text-sm font-bold text-blue-300">
                       {Math.round(levelProgressPercent)}%
                     </span>
                   </div>
@@ -283,24 +283,24 @@ function HomePage() {
                 </div>
 
                 {/* XP Details - Enhanced */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-4 border border-slate-700/50">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-3 sm:p-4 border border-slate-700/50">
                     <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
                       Current Level XP
                     </div>
-                    <div className="text-xl font-black text-white">
+                    <div className="text-lg sm:text-xl font-black text-white">
                       {currentLevelXP.toLocaleString()}
-                      <span className="text-sm text-gray-400 font-semibold">
+                      <span className="text-xs sm:text-sm text-gray-400 font-semibold">
                         {" "}
                         / 10,000
                       </span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-4 border border-slate-700/50">
+                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-3 sm:p-4 border border-slate-700/50">
                     <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
                       XP to Next Level
                     </div>
-                    <div className="text-xl font-black text-white">
+                    <div className="text-lg sm:text-xl font-black text-white">
                       {xpToNext.toLocaleString()}
                     </div>
                   </div>

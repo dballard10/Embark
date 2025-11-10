@@ -73,8 +73,8 @@ export function CelebrationOverlayProvider({
 
   const showItemThenMaybeSpecial = useCallback(
     (achievements: Achievement[], item: any, hasSpecialAfter: boolean) => {
-      // Show bottom toast immediately
-      if (achievements?.length) {
+      // Show bottom toast immediately if there are achievements OR an item
+      if (achievements?.length || item) {
         setToasts((prev) => [
           ...prev,
           { id: Date.now(), achievements, item: item ?? null },
@@ -117,7 +117,7 @@ export function CelebrationOverlayProvider({
           <SpecialAchievementOverlay payload={active} onClose={hide} />
         )}
         {/* Toast stack container */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col gap-3 items-center">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col gap-3 items-center z-[110]">
           {toasts.map((t) => (
             <StandardRewardToast
               key={t.id}
@@ -162,7 +162,7 @@ function SpecialAchievementOverlay({
     : `${getTierColor(primary.color_tier as QuestTier)}`;
 
   return (
-    <div className="absolute inset-0 pointer-events-auto">
+    <div className="absolute inset-0 pointer-events-auto z-[105]">
       <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
@@ -289,7 +289,7 @@ function ItemViewerOverlay({
   }, [onClose]);
 
   return (
-    <div className="absolute inset-0 pointer-events-auto">
+    <div className="absolute inset-0 pointer-events-auto z-[105]">
       <div
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
         onClick={onClose}

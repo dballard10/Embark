@@ -84,7 +84,7 @@ function ShopItemDetailsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
       onClick={(e) => {
         if (!isPurchasing) {
           onClose();
@@ -92,10 +92,11 @@ function ShopItemDetailsModal({
       }}
     >
       <div
-        className={`rounded-2xl border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col relative animate-modal-scale`}
+        className={`rounded-none sm:rounded-2xl border-0 sm:border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full h-full sm:h-auto sm:max-h-[90vh] flex flex-col relative animate-modal-scale will-change-transform`}
         style={{
           backgroundColor: baseColor,
           backgroundImage: `radial-gradient(ellipse at center, #0a2847 0%, #003d5c 100%)`,
+          contain: "layout style paint",
         }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -103,10 +104,10 @@ function ShopItemDetailsModal({
         aria-labelledby="shop-item-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Item Details</h2>
-            <p className="text-sm text-gray-400 mt-1">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-700">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Item Details</h2>
+            <p className="text-xs sm:text-sm text-gray-400 mt-1">
               {isOwned
                 ? "You already own this item"
                 : "Review before purchasing"}
@@ -115,7 +116,7 @@ function ShopItemDetailsModal({
           <button
             onClick={onClose}
             disabled={isPurchasing}
-            className="text-slate-400 hover:text-white transition-colors disabled:opacity-50"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-colors disabled:opacity-50 will-change-transform flex-shrink-0 ml-2"
             aria-label="Close modal"
           >
             <IconX size={24} />
@@ -123,16 +124,16 @@ function ShopItemDetailsModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
-          <div className="space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+          <div className="space-y-4 sm:space-y-6">
             {/* Item Image and Title Section */}
             <div
               className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
             >
-              {/* Item Image - Transparent Gallery View */}
-              <div className="h-96 relative bg-transparent">
+              {/* Item Image - Transparent Gallery View - Responsive height */}
+              <div className="h-48 sm:h-64 md:h-96 relative bg-transparent">
                 {itemImage ? (
-                  <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md relative">
+                  <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 backdrop-blur-md relative">
                     {imageLoading && (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <LoadingIcon size="large" />
@@ -141,14 +142,16 @@ function ShopItemDetailsModal({
                     <img
                       src={itemImage}
                       alt={item.name}
-                      className="max-h-full max-w-full object-contain"
+                      className="max-h-full max-w-full object-contain will-change-transform"
                       onLoad={() => setImageLoading(false)}
                       style={{ opacity: imageLoading ? 0 : 1 }}
+                      loading="eager"
+                      decoding="async"
                     />
                   </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-black/10 backdrop-blur-md">
-                    <ItemIcon size={120} className="text-purple-400" />
+                    <ItemIcon size={80} className="sm:w-[120px] sm:h-[120px] text-purple-400" />
                   </div>
                 )}
 
@@ -174,26 +177,26 @@ function ShopItemDetailsModal({
               </div>
 
               {/* Title and Description */}
-              <div className="p-6 space-y-4 bg-black/20">
+              <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 bg-black/20">
                 <h1
                   id="shop-item-modal-title"
-                  className="text-3xl font-bold text-white"
+                  className="text-2xl sm:text-3xl font-bold text-white"
                 >
                   {item.name}
                 </h1>
-                <p className="text-gray-100 text-lg leading-relaxed">
+                <p className="text-gray-100 text-base sm:text-lg leading-relaxed">
                   {item.description}
                 </p>
               </div>
             </div>
 
             {/* Price Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {/* Glory Price */}
               <div
                 className={`bg-black/20 backdrop-blur-sm border-2 ${
                   canAfford ? "border-yellow-500/50" : "border-red-500/50"
-                } rounded-xl p-5`}
+                } rounded-xl p-4 sm:p-5`}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -236,7 +239,7 @@ function ShopItemDetailsModal({
               {/* Your Glory */}
               {selectedUser && (
                 <div
-                  className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-5`}
+                  className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-4 sm:p-5`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 rounded-xl shadow-inner">
@@ -261,9 +264,9 @@ function ShopItemDetailsModal({
 
             {/* Additional Info Section */}
             <div
-              className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
+              className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-4 sm:p-6`}
             >
-              <h2 className="text-xl font-bold text-white mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
                 Item Details
               </h2>
               <div className="space-y-3 text-gray-300">
@@ -294,12 +297,12 @@ function ShopItemDetailsModal({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-slate-700">
+        {/* Footer - Touch-friendly buttons */}
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-slate-700">
           <button
             onClick={onClose}
             disabled={isPurchasing}
-            className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-[44px] px-6 py-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 will-change-transform"
           >
             Close
           </button>
@@ -307,9 +310,9 @@ function ShopItemDetailsModal({
             <button
               onClick={handlePurchaseClick}
               disabled={!canAfford || isPurchasing}
-              className={`px-8 py-2 font-bold rounded-lg transition-all duration-200 flex items-center gap-2 ${
+              className={`min-h-[44px] px-6 sm:px-8 py-2 font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 will-change-transform ${
                 canAfford && !isPurchasing
-                  ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg hover:shadow-xl hover:scale-105"
+                  ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 active:from-amber-700 active:to-orange-700 text-white shadow-lg hover:shadow-xl active:scale-95"
                   : "bg-gradient-to-r from-gray-600 to-gray-700 text-gray-400 cursor-not-allowed opacity-60"
               }`}
             >

@@ -88,26 +88,27 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${activeColor}`}
+                className={`flex flex-col items-center justify-center py-2 sm:py-3 min-h-[64px] transition-all duration-200 ${activeColor} active:scale-95`}
               >
                 <div
-                  className={`mb-1 transition-transform duration-200 ${
+                  className={`mb-0.5 sm:mb-1 transition-transform duration-200 ${
                     isActive ? "scale-110" : "hover:scale-105"
                   }`}
                 >
                   <Icon
-                    size={28}
+                    size={24}
+                    className="sm:w-7 sm:h-7"
                     {...(item.icon === IoStorefrontOutline
                       ? {}
                       : { stroke: 2 })}
                   />
                 </div>
-                <div className={`text-xs font-semibold ${labelColor}`}>
+                <div className={`text-[10px] sm:text-xs font-semibold ${labelColor}`}>
                   {item.label}
                 </div>
                 {isActive && (
                   <div
-                    className={`absolute bottom-0 h-1 w-16 bg-gradient-to-r ${gradientColor} rounded-t-full`}
+                    className={`absolute bottom-0 h-1 w-12 sm:w-16 bg-gradient-to-r ${gradientColor} rounded-t-full`}
                   ></div>
                 )}
               </button>
@@ -118,26 +119,26 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
           {isDev && (
             <button
               onClick={() => navigate(ROUTES.ADMIN)}
-              className={`flex flex-col items-center justify-center py-3 transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center py-2 sm:py-3 min-h-[64px] transition-all duration-200 active:scale-95 ${
                 isDevPage ? "text-amber-400" : "text-gray-400 hover:text-white"
               }`}
             >
               <div
-                className={`mb-1 transition-transform duration-200 ${
+                className={`mb-0.5 sm:mb-1 transition-transform duration-200 ${
                   isDevPage ? "scale-110" : "hover:scale-105"
                 }`}
               >
-                <IconCode size={28} stroke={2} />
+                <IconCode size={24} className="sm:w-7 sm:h-7" stroke={2} />
               </div>
               <div
-                className={`text-xs font-semibold ${
+                className={`text-[10px] sm:text-xs font-semibold ${
                   isDevPage ? "text-amber-400" : "text-gray-400"
                 }`}
               >
                 Admin
               </div>
               {isDevPage && (
-                <div className="absolute bottom-0 h-1 w-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-full"></div>
+                <div className="absolute bottom-0 h-1 w-12 sm:w-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-t-full"></div>
               )}
             </button>
           )}

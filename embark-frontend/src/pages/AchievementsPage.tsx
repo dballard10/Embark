@@ -98,33 +98,33 @@ function AchievementsPage() {
       />
 
       {/* Achievements Header */}
-      <div className="bg-gradient-to-r from-yellow-900/90 via-amber-900/90 to-yellow-900/90 border-b-2 border-yellow-600 fixed top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-3 items-center gap-4">
+      <div className="bg-gradient-to-r from-yellow-900/90 via-amber-900/90 to-yellow-900/90 border-b-2 border-yellow-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {/* Title */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-600 to-amber-600 flex items-center justify-center shadow-lg">
-                <IconTrophy size={32} className="text-white" stroke={2} />
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-yellow-600 to-amber-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                <IconTrophy size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" stroke={2} />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-yellow-100">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-100">
                   Achievements
                 </h1>
-                <p className="text-sm text-yellow-300/80">
+                <p className="text-xs sm:text-sm text-yellow-300/80">
                   {unlockedCount} / {totalCount} Unlocked
                 </p>
               </div>
             </div>
 
-            {/* Tier Filter - Centered */}
-            <div className="flex justify-center">
-              <div className="flex gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30">
+            {/* Tier Filter */}
+            <div className="flex justify-center sm:justify-start">
+              <div className="flex flex-wrap gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30 w-full sm:w-auto">
                 <button
                   onClick={() => setTierFilter("all")}
-                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                  className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
                     tierFilter === "all"
                       ? "bg-yellow-600 text-white shadow-md"
-                      : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30"
+                      : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30 active:bg-yellow-800/50"
                   }`}
                 >
                   All Tiers
@@ -133,10 +133,10 @@ function AchievementsPage() {
                   <button
                     key={tier}
                     onClick={() => setTierFilter(tier)}
-                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                    className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
                       tierFilter === tier
                         ? "bg-yellow-600 text-white shadow-md"
-                        : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30"
+                        : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30 active:bg-yellow-800/50"
                     }`}
                   >
                     T{tier}
@@ -144,15 +144,12 @@ function AchievementsPage() {
                 ))}
               </div>
             </div>
-
-            {/* Empty space to maintain centering */}
-            <div></div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="pt-[132px] pb-24 px-4">
+      <div className="pt-[140px] sm:pt-[150px] md:pt-[132px] pb-20 sm:pb-24 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -172,7 +169,7 @@ function AchievementsPage() {
               {/* Default Achievement */}
               {defaultAchievement && (
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span className="text-gray-400">Starter Title</span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -191,7 +188,7 @@ function AchievementsPage() {
               {/* Tier Achievements */}
               {tierAchievements.length > 0 && (
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex flex-wrap items-center gap-2">
                     <span className="text-blue-400">Tier Achievements</span>
                     <span className="text-sm text-gray-400 font-normal">
                       (Complete all quests of a tier to unlock)
@@ -216,7 +213,7 @@ function AchievementsPage() {
               {/* Quest Line Achievements */}
               {questlineAchievements.length > 0 && (
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex flex-wrap items-center gap-2">
                     <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
                       Quest Line Achievements
                     </span>
@@ -243,7 +240,7 @@ function AchievementsPage() {
               {/* Quest Achievements - Grouped by Tier */}
               {questAchievements.length > 0 && (
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex flex-wrap items-center gap-2">
                     <span className="text-purple-400">Quest Achievements</span>
                     <span className="text-sm text-gray-400 font-normal">
                       (Complete individual quests to unlock)
@@ -255,8 +252,8 @@ function AchievementsPage() {
                     if (!tierQuests || tierQuests.length === 0) return null;
 
                     return (
-                      <div key={tier} className="mb-6">
-                        <h4 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+                      <div key={tier} className="mb-4 sm:mb-6">
+                        <h4 className="text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3 flex flex-wrap items-center gap-2">
                           <span className="text-purple-300">
                             Tier {tier} Quests
                           </span>
@@ -264,7 +261,7 @@ function AchievementsPage() {
                             ({tierQuests.length} quests)
                           </span>
                         </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                           {tierQuests.map((achievement) => (
                             <AchievementCard
                               key={achievement.id}
