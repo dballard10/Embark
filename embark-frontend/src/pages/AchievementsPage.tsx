@@ -100,14 +100,14 @@ function AchievementsPage() {
       {/* Achievements Header */}
       <div className="bg-gradient-to-r from-yellow-900/90 via-amber-900/90 to-yellow-900/90 border-b-2 border-yellow-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-col gap-3 sm:gap-4">
-            {/* Title */}
-            <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex flex-row items-center gap-3 sm:gap-4 py-2">
+            {/* Title Section - Left Aligned */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-yellow-600 to-amber-600 flex items-center justify-center shadow-lg flex-shrink-0">
                 <IconTrophy size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" stroke={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-100">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-100 truncate">
                   Achievements
                 </h1>
                 <p className="text-xs sm:text-sm text-yellow-300/80">
@@ -116,32 +116,34 @@ function AchievementsPage() {
               </div>
             </div>
 
-            {/* Tier Filter */}
-            <div className="flex justify-center sm:justify-start">
-              <div className="flex flex-wrap gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30 w-full sm:w-auto">
-                <button
-                  onClick={() => setTierFilter("all")}
-                  className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
-                    tierFilter === "all"
-                      ? "bg-yellow-600 text-white shadow-md"
-                      : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30 active:bg-yellow-800/50"
-                  }`}
-                >
-                  All Tiers
-                </button>
-                {[1, 2, 3, 4, 5, 6].map((tier) => (
+            {/* Tier Filter - Centered */}
+            <div className="flex items-center justify-center flex-1">
+              <div className="flex items-center justify-center">
+                <div className="flex flex-wrap gap-1 items-center bg-yellow-950/50 backdrop-blur-sm rounded-lg p-1 border border-yellow-700/30">
                   <button
-                    key={tier}
-                    onClick={() => setTierFilter(tier)}
+                    onClick={() => setTierFilter("all")}
                     className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
-                      tierFilter === tier
+                      tierFilter === "all"
                         ? "bg-yellow-600 text-white shadow-md"
                         : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30 active:bg-yellow-800/50"
                     }`}
                   >
-                    T{tier}
+                    All Tiers
                   </button>
-                ))}
+                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setTierFilter(tier)}
+                      className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                        tierFilter === tier
+                          ? "bg-yellow-600 text-white shadow-md"
+                          : "text-yellow-300 hover:text-yellow-100 hover:bg-yellow-800/30 active:bg-yellow-800/50"
+                      }`}
+                    >
+                      T{tier}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

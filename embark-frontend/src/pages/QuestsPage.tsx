@@ -70,31 +70,32 @@ function QuestsPage() {
       {/* Quest Board Header */}
       <div className="bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-blue-900/90 border-b-2 border-blue-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-row gap-3 sm:gap-4">
-            {/* Top Row: Title and Active Quests */}
-            <div className="flex flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <IconTarget
-                    size={24}
-                    className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
-                    stroke={2}
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-100 truncate">
-                    Quest Board
-                  </h1>
-                  <p className="text-xs sm:text-sm text-blue-300/80">
-                    {filteredCompletedQuests.length} / {completedQuests.length}{" "}
-                    completed
-                    {tierFilter !== "all" && ` (Tier ${tierFilter})`}
-                  </p>
-                </div>
+          <div className="flex flex-row items-center gap-3 sm:gap-4 py-2">
+            {/* Title Section - Left Aligned */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                <IconTarget
+                  size={24}
+                  className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
+                  stroke={2}
+                />
               </div>
-              {/* Tier Filter - Full width on mobile */}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-100 truncate">
+                  Quest Board
+                </h1>
+                <p className="text-xs sm:text-sm text-blue-300/80">
+                  {filteredCompletedQuests.length} / {completedQuests.length}{" "}
+                  completed
+                  {tierFilter !== "all" && ` (Tier ${tierFilter})`}
+                </p>
+              </div>
+            </div>
+
+            {/* Tier Filter - Centered */}
+            <div className="flex items-center justify-center flex-1">
               {completedQuests.length > 0 && (
-                <div className="flex items-center justify-center sm:justify-start">
+                <div className="flex items-center justify-center">
                   <div className="flex flex-wrap gap-1 items-center bg-blue-950/50 backdrop-blur-sm rounded-lg p-1 border border-blue-700/30">
                     <button
                       onClick={() => setTierFilter("all")}
@@ -122,6 +123,10 @@ function QuestsPage() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Active Quests - Right Aligned */}
+            <div className="flex items-center justify-end flex-1">
               <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border-2 border-blue-500/40 flex-shrink-0">
                 <IconCheck
                   size={20}

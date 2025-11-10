@@ -168,14 +168,14 @@ function SettingsPage() {
       {/* Settings Header */}
       <div className="bg-gradient-to-r from-slate-900/90 via-gray-900/90 to-slate-900/90 border-b-2 border-slate-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-col gap-3 sm:gap-4">
-            {/* Title Section */}
-            <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex flex-row items-center gap-3 sm:gap-4 py-2">
+            {/* Title Section - Left Aligned */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-slate-600 to-gray-600 flex items-center justify-center shadow-lg flex-shrink-0">
                 <IconSettings size={24} className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" stroke={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-100">Settings</h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-100 truncate">Settings</h1>
                 <p className="text-xs sm:text-sm text-slate-300/80">
                   {activeTab === "settings"
                     ? "Manage your account information"
@@ -184,31 +184,33 @@ function SettingsPage() {
               </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex justify-center sm:justify-start">
-              <div className="flex gap-1 items-center bg-slate-950/50 backdrop-blur-sm rounded-lg p-1 border border-slate-700/30 w-full sm:w-auto">
-                <button
-                  onClick={() => setActiveTab("settings")}
-                  className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
-                    activeTab === "settings"
-                      ? "bg-gray-600 text-white shadow-md"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
-                  }`}
-                >
-                  <IconSettings size={16} stroke={2} />
-                  Settings
-                </button>
-                <button
-                  onClick={() => setActiveTab("statistics")}
-                  className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
-                    activeTab === "statistics"
-                      ? "bg-gray-600 text-white shadow-md"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
-                  }`}
-                >
-                  <IconChartBar size={16} stroke={2} />
-                  Statistics
-                </button>
+            {/* Tabs - Centered */}
+            <div className="flex items-center justify-center flex-1">
+              <div className="flex items-center justify-center">
+                <div className="flex gap-1 items-center bg-slate-950/50 backdrop-blur-sm rounded-lg p-1 border border-slate-700/30">
+                  <button
+                    onClick={() => setActiveTab("settings")}
+                    className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
+                      activeTab === "settings"
+                        ? "bg-gray-600 text-white shadow-md"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
+                    }`}
+                  >
+                    <IconSettings size={16} stroke={2} />
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("statistics")}
+                    className={`min-h-[44px] px-3 sm:px-4 py-2 rounded font-medium text-xs sm:text-sm transition-all flex items-center gap-2 active:scale-95 ${
+                      activeTab === "statistics"
+                        ? "bg-gray-600 text-white shadow-md"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/30 active:bg-slate-800/50"
+                    }`}
+                  >
+                    <IconChartBar size={16} stroke={2} />
+                    Statistics
+                  </button>
+                </div>
               </div>
             </div>
           </div>

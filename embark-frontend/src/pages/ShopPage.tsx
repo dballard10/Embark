@@ -323,20 +323,20 @@ function ShopPage() {
         </div>
       )}
 
-      {/* Shop Header - Responsive mobile-first layout */}
+      {/* Shop Header */}
       <div className="bg-gradient-to-r from-amber-900/90 via-orange-900/90 to-amber-900/90 border-b-2 border-amber-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            {/* Left: Icon and Title */}
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-600 to-orange-600 flex items-center justify-center shadow-lg flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-row items-center gap-3 sm:gap-4 py-2">
+            {/* Title Section - Left Aligned */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-600 to-orange-600 flex items-center justify-center shadow-lg flex-shrink-0">
                 <IoStorefrontOutline
                   size={24}
-                  className="sm:w-8 sm:h-8 text-white"
+                  className="sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-amber-100 truncate">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-100 truncate">
                   Glory Shop
                 </h1>
                 <p className="text-xs sm:text-sm text-amber-300/80">
@@ -346,48 +346,54 @@ function ShopPage() {
               </div>
             </div>
 
-            {/* Center: Tier Filter - Wraps on mobile */}
-            {items.length > 0 && (
-              <div className="flex flex-wrap gap-1 items-center bg-amber-950/50 backdrop-blur-sm rounded-lg p-1 border border-amber-700/30 w-full sm:w-auto">
-                <button
-                  onClick={() => setTierFilter("all")}
-                  className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 will-change-transform ${
-                    tierFilter === "all"
-                      ? "bg-amber-600 text-white shadow-md"
-                      : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30 active:bg-amber-800/50"
-                  }`}
-                >
-                  All
-                </button>
-                {[1, 2, 3, 4, 5, 6].map((tier) => (
-                  <button
-                    key={tier}
-                    onClick={() => setTierFilter(tier)}
-                    className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 will-change-transform ${
-                      tierFilter === tier
-                        ? "bg-amber-600 text-white shadow-md"
-                        : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30 active:bg-amber-800/50"
-                    }`}
-                  >
-                    T{tier}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Right: Glory Display - Hidden on very small screens, shown on sm+ */}
-            <div className="hidden sm:flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-yellow-600/30 to-amber-600/30 border-2 border-yellow-500/40 flex-shrink-0">
-              <IconTrophy
-                size={24}
-                className="sm:w-7 sm:h-7 text-yellow-400"
-                stroke={2}
-              />
-              <div>
-                <div className="text-xs text-yellow-300/80 font-semibold">
-                  Your Glory
+            {/* Tier Filter - Centered */}
+            <div className="flex items-center justify-center flex-1">
+              {items.length > 0 && (
+                <div className="flex items-center justify-center">
+                  <div className="flex flex-wrap gap-1 items-center bg-amber-950/50 backdrop-blur-sm rounded-lg p-1 border border-amber-700/30">
+                    <button
+                      onClick={() => setTierFilter("all")}
+                      className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                        tierFilter === "all"
+                          ? "bg-amber-600 text-white shadow-md"
+                          : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30 active:bg-amber-800/50"
+                      }`}
+                    >
+                      All
+                    </button>
+                    {[1, 2, 3, 4, 5, 6].map((tier) => (
+                      <button
+                        key={tier}
+                        onClick={() => setTierFilter(tier)}
+                        className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                          tierFilter === tier
+                            ? "bg-amber-600 text-white shadow-md"
+                            : "text-amber-300 hover:text-amber-100 hover:bg-amber-800/30 active:bg-amber-800/50"
+                        }`}
+                      >
+                        T{tier}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-200">
-                  {selectedUser.total_glory.toLocaleString()}
+              )}
+            </div>
+
+            {/* Your Glory - Right Aligned */}
+            <div className="flex items-center justify-end flex-1">
+              <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-yellow-600/30 to-amber-600/30 border-2 border-yellow-500/40 flex-shrink-0">
+                <IconTrophy
+                  size={20}
+                  className="sm:w-7 sm:h-7 text-yellow-400"
+                  stroke={2}
+                />
+                <div>
+                  <div className="text-xs text-yellow-300/80 font-semibold">
+                    Your Glory
+                  </div>
+                  <div className="text-xl sm:text-2xl font-bold text-yellow-200">
+                    {selectedUser.total_glory.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>
