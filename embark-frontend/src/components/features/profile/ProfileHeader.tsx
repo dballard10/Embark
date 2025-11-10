@@ -4,9 +4,9 @@ import { ProfileStats } from "./ProfileStats";
 import { LevelProgressCard } from "./LevelProgressCard";
 import type { User } from "../../../types/user.types";
 import type { ProfileData } from "../../../hooks/useProfileData";
-import LoadingIcon from "../../common/LoadingIcon";
 import TitleBadge from "../../common/TitleBadge";
 import { useAchievements } from "../../../contexts/AchievementsContext";
+import { useNavigate } from "react-router-dom";
 
 
 interface ProfileHeaderProps {

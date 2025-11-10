@@ -4,6 +4,7 @@ import type {
   Achievement,
   UserAchievement,
 } from "../../types/achievement.types";
+import type { QuestTier } from "../../types/quest.types";
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -27,7 +28,7 @@ function AchievementCard({
   // Special achievements get tier 6 conqueror color
   const gradientClass = isSpecial
     ? "from-red-600 to-pink-600"
-    : `${getTierColor(achievement.color_tier)}`;
+    : `${getTierColor(achievement.color_tier as QuestTier)}`;
 
   const borderClass = isActive
     ? "border-cyan-400 border-2 shadow-[0_0_20px_rgba(34,211,238,0.6)]"

@@ -85,11 +85,11 @@ function ShopItemDetailsModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
-      onClick={(e) => {
-        if (!isPurchasing) {
-          onClose();
-        }
-      }}
+              onClick={() => {
+                if (!isPurchasing) {
+                  onClose();
+                }
+              }}
     >
       <div
         className={`rounded-none sm:rounded-2xl border-0 sm:border-2 ${tierBorderColor} shadow-2xl max-w-4xl w-full h-full sm:h-auto sm:max-h-[90vh] flex flex-col relative animate-modal-scale will-change-transform`}

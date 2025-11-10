@@ -217,31 +217,6 @@ function ItemDetailsModal({
                   </div>
                 </div>
               </div>
-
-              {/* Additional Info Section */}
-              <div
-                className={`bg-black/20 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl p-6`}
-              >
-                <h2 className="text-xl font-bold text-white mb-4">
-                  Item Details
-                </h2>
-                <div className="space-y-3 text-gray-300">
-                  <div className="flex justify-between py-2 border-b border-slate-700">
-                    <span className="text-gray-400">Item ID</span>
-                    <span className="font-mono text-sm">{item.id}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-slate-700">
-                    <span className="text-gray-400">Created</span>
-                    <span>{formatDateFriendly(item.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between py-2">
-                    <span className="text-gray-400">Status</span>
-                    <span className="text-green-400 font-semibold">
-                      In Vault
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           )}
         </div>

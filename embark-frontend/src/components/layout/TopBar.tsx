@@ -87,7 +87,7 @@ export function TopBar({
                   cx="28"
                   cy="28"
                   r="26"
-                  className="hidden sm:block"
+                  className="hidden sm:block transition-all duration-500 drop-shadow-[0_0_4px_rgba(34,211,238,0.8)]"
                   fill="none"
                   stroke="#22d3ee"
                   strokeWidth="2.5"
@@ -96,7 +96,6 @@ export function TopBar({
                     2 * Math.PI * 26 * (1 - levelProgress / 100)
                   }`}
                   strokeLinecap="round"
-                  className="transition-all duration-500 drop-shadow-[0_0_4px_rgba(34,211,238,0.8)]"
                 />
               </svg>
             </button>

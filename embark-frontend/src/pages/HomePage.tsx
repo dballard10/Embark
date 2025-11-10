@@ -11,12 +11,9 @@ import LoadingIcon from "../components/common/LoadingIcon";
 import {
   IconTrophy,
   IconBox,
-  IconCalendar,
-  IconTarget,
   IconStar,
   IconShield,
   IconSparkles,
-  IconFlame,
 } from "@tabler/icons-react";
 import {
   calculateLevel,
@@ -40,11 +37,10 @@ function HomePage() {
   const {
     activeQuests,
     completedQuests,
-    completedQuestCount,
     loading: questsLoading,
     refreshQuests,
   } = useQuestsContext();
-  const { activeTitle, userAchievements } = useAchievements();
+  const { activeTitle } = useAchievements();
   const navigate = useNavigate();
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
@@ -74,13 +70,6 @@ function HomePage() {
   const xpToNext = xpToNextLevel(selectedUser.total_xp);
   const levelProgressPercent = getLevelProgress(selectedUser.total_xp);
   const currentLevelXP = getCurrentLevelXP(selectedUser.total_xp);
-
-  // Calculate days active
-  const createdDate = new Date(selectedUser.created_at);
-  const now = new Date();
-  const daysActive = Math.floor(
-    (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
 
   return (
     <div className="game-container">

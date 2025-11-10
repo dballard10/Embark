@@ -16,11 +16,9 @@ import {
 } from "../../utils/tierUtils";
 import type { UserCompletedQuest } from "../../types/quest.types";
 import { getEnemyImage } from "../../utils/enemyImageUtils";
-import { formatDateFriendly } from "../../utils/dateUtils";
 import { useQuestsContext } from "../../contexts/QuestsContext";
 import CompletedQuestDetailsModalSkeleton from "./CompletedQuestDetailsModalSkeleton";
 import LoadingIcon from "./LoadingIcon";
-import { getItemImage } from "../../utils/itemImageUtils";
 import ImageViewer from "./ImageViewer";
 
 interface CompletedQuestDetailsModalProps {

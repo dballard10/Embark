@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
 
-import type { Quest } from "../../types/quest.types";
+import type { Quest, QuestTier } from "../../types/quest.types";
 import { QUEST_REWARDS } from "../../utils/constants/gameConfig";
 
 interface QuestFormModalProps {
@@ -78,7 +78,7 @@ function QuestFormModal({
       const submitData = {
         ...formData,
         tier: formData.tier as QuestTier,
-        reward_item_id: formData.reward_item_id || null,
+        reward_item_id: formData.reward_item_id || "",
       };
       await onSave(submitData);
       onClose();

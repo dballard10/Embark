@@ -7,10 +7,8 @@ import LoadingIcon from "../components/common/LoadingIcon";
 import { useUser } from "../contexts/UserContext";
 import { useItems } from "../contexts/ItemsContext";
 import { useQuestsContext } from "../contexts/QuestsContext";
-import { useAchievements } from "../contexts/AchievementsContext";
 import type { UserCompletedQuest } from "../types/quest.types";
 import type { UserItem } from "../types/item.types";
-import { completeQuest, type QuestCompletionResponse } from "../services/api";
 import { IconArrowLeft, IconStar, IconSparkles } from "@tabler/icons-react";
 import {
   getTierColor,
@@ -18,32 +16,24 @@ import {
   getTierGradientColor,
 } from "../utils/tierUtils";
 import { getItemImage } from "../utils/itemImageUtils";
-import { useCelebrationOverlay } from "../contexts/CelebrationOverlayContext";
 
 function QuestDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { selectedUser, isLoading: userLoading, refreshUser } = useUser();
+  const { selectedUser, isLoading: userLoading } = useUser();
   const {
     itemCount: userItemCount,
     loading: itemsLoading,
-    refreshItems,
   } = useItems();
   const {
     activeQuests,
     loading: questsLoading,
-    refreshQuests,
   } = useQuestsContext();
-  const { refetchUserAchievements } = useAchievements();
-  const { showSpecial, showStandard, showItemThenMaybeSpecial } = useCelebrationOverlay();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [completionMessage, setCompletionMessage] = useState<string | null>(
-    null
-  );
-  const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
-  const [awardedAchievements, setAwardedAchievements] = useState<any[]>([]);
+  const error: string | null = null;
+  const completionMessage: string | null = null;
+  const awardedItem = null as UserItem | null;
+  const awardedAchievements: any[] = [];
 
   useEffect(() => {
     loadQuestData();
@@ -88,107 +78,6 @@ function QuestDetailsPage() {
     );
   }
 
-  const handleComplete = async () => {
-    console.log("Complete button clicked");
-
-    if (!selectedUser || !userQuest) {
-      console.error("Missing selectedUser or userQuest", {
-        selectedUser,
-        userQuest,
-      });
-      setError("Unable to complete quest: Missing user or quest data");
-      return;
-    }
-
-    try {
-      setIsCompleting(true);
-      setError(null);
-
-      console.log("Completing quest:", {
-        userId: selectedUser.id,
-        userQuestId: userQuest.id,
-      });
-
-      // Complete the quest
-      const response: QuestCompletionResponse = await completeQuest(
-        selectedUser.id,
-        userQuest.id
-      );
-
-      console.log("Quest completed successfully");
-
-      // Store awarded achievements and item
-      setAwardedAchievements(response.awarded_achievements || []);
-      setAwardedItem(response.awarded_item);
-
-      // Only show completion message if there are no achievements to display
-      if ((response.awarded_achievements || []).length === 0) {
-        if (response.awarded_item) {
-          setCompletionMessage("Quest completed!");
-        } else {
-          setCompletionMessage(
-            "Quest completed! (You already own all items from this tier)"
-          );
-        }
-      } else {
-        // Show completion state without the notification message
-        setCompletionMessage("completed");
-      }
-
-      // Refresh user data to show updated glory, XP, items, quests, and achievements
-      // Begin preloading awarded item image while refreshing state
-      if (response.awarded_item?.item) {
-        const preUrl = getItemImage(
-          response.awarded_item.item.name,
-          response.awarded_item.item.image_url
-        );
-        if (preUrl) {
-          const img = new Image();
-          (img as any).decoding = "async";
-          (img as any).loading = "eager";
-          (img as any).fetchPriority = "high";
-          img.src = preUrl;
-        }
-      }
-
-      await refreshUser();
-      await refreshItems();
-      await refreshQuests();
-      await refetchUserAchievements();
-
-      // Decide celebration type and navigate away before showing
-      const achievements = response.awarded_achievements || [];
-      const hasSpecial = achievements.some(
-        (a: any) => a.achievement_type === "questline" || a.achievement_type === "tier"
-      );
-
-      // Navigate away to close details page
-      navigate("/quests");
-
-      if (response.awarded_item) {
-        showItemThenMaybeSpecial(achievements, response.awarded_item, hasSpecial);
-      } else if (achievements.length > 0) {
-        if (hasSpecial) {
-          showSpecial(achievements, null);
-        } else {
-          showStandard(achievements, null);
-        }
-      }
-    } catch (err) {
-      console.error("Error completing quest:", err);
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to complete quest";
-      setError(errorMessage);
-    } finally {
-      setIsCompleting(false);
-    }
-  };
-
-  const handleAbandon = () => {
-    console.log("Abandon quest:", userQuest?.id);
-    // TODO: Make API call to abandon quest
-  };
-      
   return (
     <div className="game-container">
       {/* Top Stats Bar */}

@@ -1,7 +1,6 @@
 import {
   calculateLevel,
   getLevelProgress,
-  getCurrentLevelXP,
 } from "../../utils/levelCalculator";
 import { IconTrophy, IconSettings, IconBox } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +27,6 @@ function TopBar({
   const { activeTitle } = useAchievements();
   const level = calculateLevel(totalXP);
   const levelProgress = getLevelProgress(totalXP);
-  const currentLevelXP = getCurrentLevelXP(totalXP);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-900/95 to-slate-900/80 backdrop-blur-md border-b border-white/10">
