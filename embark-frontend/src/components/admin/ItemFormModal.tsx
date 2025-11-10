@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
+
 import type { Item } from "../../types/item.types";
 import { ITEM_PRICES } from "../../utils/constants/gameConfig";
 
@@ -53,6 +54,7 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
     try {
       const submitData = {
         ...formData,
+        rarity_tier: formData.rarity_tier as RarityTier,
         image_url: formData.image_url || null,
       };
       await onSave(submitData);

@@ -188,7 +188,7 @@ function QuestDetailsPage() {
     console.log("Abandon quest:", userQuest?.id);
     // TODO: Make API call to abandon quest
   };
-
+      
   return (
     <div className="game-container">
       {/* Top Stats Bar */}

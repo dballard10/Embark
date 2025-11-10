@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
+
 import type { Quest } from "../../types/quest.types";
 import { QUEST_REWARDS } from "../../utils/constants/gameConfig";
 
@@ -76,6 +77,7 @@ function QuestFormModal({
     try {
       const submitData = {
         ...formData,
+        tier: formData.tier as QuestTier,
         reward_item_id: formData.reward_item_id || null,
       };
       await onSave(submitData);

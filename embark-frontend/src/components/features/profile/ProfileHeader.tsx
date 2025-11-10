@@ -1,12 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import {
-  IconShield,
-  IconStar,
-  IconCalendar,
-  IconTrophy,
-  IconBox,
-  IconSparkles,
-} from "@tabler/icons-react";
+import { IconShield, IconStar, IconCalendar } from "@tabler/icons-react";
 import { formatDateFriendly } from "../../../utils/dateUtils";
 import { ProfileStats } from "./ProfileStats";
 import { LevelProgressCard } from "./LevelProgressCard";
@@ -15,6 +7,7 @@ import type { ProfileData } from "../../../hooks/useProfileData";
 import LoadingIcon from "../../common/LoadingIcon";
 import TitleBadge from "../../common/TitleBadge";
 import { useAchievements } from "../../../contexts/AchievementsContext";
+
 
 interface ProfileHeaderProps {
   user: User;

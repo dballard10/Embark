@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { Quest, UserCompletedQuest } from "../types/quest.types";
-import type { Item } from "../types/item.types";
+import type { Item, UserItem } from "../types/item.types";
 import type { User } from "../types/user.types";
 import type { Achievement } from "../types/achievement.types";
 
