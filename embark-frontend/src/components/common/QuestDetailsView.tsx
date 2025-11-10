@@ -14,7 +14,6 @@ import {
   IconClock,
   IconAlertTriangle,
   IconCalendar,
-  IconHourglass,
   IconBox,
   IconSword,
   // IconHelp,
@@ -30,7 +29,7 @@ interface QuestDetailsViewProps {
 
 function QuestDetailsView({
   userQuest,
-  userId,
+  userId: _userId,
   showStartedInfo = true,
 }: QuestDetailsViewProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
@@ -121,20 +120,6 @@ function QuestDetailsView({
       hour: "numeric",
       minute: "2-digit",
     });
-  };
-
-  // Format time limit for display
-  const formatTimeLimit = (hours: number): string => {
-    const days = Math.floor(hours / 24);
-    const remainingHours = hours % 24;
-
-    if (days > 0 && remainingHours > 0) {
-      return `${days}d ${remainingHours}h`;
-    } else if (days > 0) {
-      return days === 1 ? "1 day" : `${days} days`;
-    } else {
-      return `${hours}h`;
-    }
   };
 
   return (
