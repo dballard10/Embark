@@ -29,6 +29,7 @@ function QuestSelectionModal({
   const [startingQuestId, setStartingQuestId] = useState<string | null>(null);
   const [selectedQuestForDetails, setSelectedQuestForDetails] =
     useState<Quest | null>(null);
+  const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   useEffect(() => {
     if (isOpen) {
@@ -89,6 +90,11 @@ function QuestSelectionModal({
     }
   };
 
+  // Filter and sort quests by tier
+  const filteredQuests = availableQuests
+    .filter((quest) => tierFilter === "all" || quest.tier === tierFilter)
+    .sort((a, b) => a.tier - b.tier);
+
   if (!isOpen) return null;
 
   return (
@@ -101,7 +107,7 @@ function QuestSelectionModal({
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+        <div className="flex items-center justify-between gap-4 p-6 border-b border-slate-700">
           <div className="flex items-center gap-3">
             {selectedQuestForDetails && (
               <button
@@ -114,15 +120,56 @@ function QuestSelectionModal({
             )}
             <div>
               <h2 className="text-2xl font-bold text-white">
-                {selectedQuestForDetails ? "Quest Details" : "Select a Quest"}
+                {selectedQuestForDetails
+                  ? selectedQuestForDetails.title
+                  : "Select a Quest"}
               </h2>
               <p className="text-sm text-gray-400 mt-1">
                 {selectedQuestForDetails
-                  ? "Review quest details and start when ready"
+                  ? selectedQuestForDetails.description ||
+                    "Review quest details and start when ready"
+                  : !loading && availableQuests.length > 0
+                  ? `${filteredQuests.length} / ${
+                      availableQuests.length
+                    } quests${
+                      tierFilter !== "all" ? ` (Tier ${tierFilter})` : ""
+                    }`
                   : "Choose a quest to add to your active quests"}
               </p>
             </div>
           </div>
+
+          {/* Tier Filter - Only show when not viewing quest details */}
+          {!selectedQuestForDetails &&
+            !loading &&
+            availableQuests.length > 0 && (
+              <div className="flex gap-1 items-center bg-slate-900/70 backdrop-blur-sm rounded-lg p-1 border border-slate-700/50">
+                <button
+                  onClick={() => setTierFilter("all")}
+                  className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                    tierFilter === "all"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  }`}
+                >
+                  All
+                </button>
+                {[1, 2, 3, 4, 5, 6].map((tier) => (
+                  <button
+                    key={tier}
+                    onClick={() => setTierFilter(tier)}
+                    className={`px-3 py-1 rounded font-medium text-sm transition-all ${
+                      tierFilter === tier
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                    }`}
+                  >
+                    T{tier}
+                  </button>
+                ))}
+              </div>
+            )}
+
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white transition-colors"
@@ -153,6 +200,7 @@ function QuestSelectionModal({
                 deadline_at: "",
                 is_active: false,
               }}
+              userId={userId}
               showStartedInfo={false}
             />
           ) : loading ? (
@@ -170,10 +218,17 @@ function QuestSelectionModal({
                 currently doing all available quests!
               </p>
             </div>
+          ) : filteredQuests.length === 0 ? (
+            // No quests match filter
+            <div className="text-center py-12 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <p className="text-gray-400 text-lg">
+                No quests found for Tier {tierFilter}
+              </p>
+            </div>
           ) : (
             // Quest List
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {availableQuests.map((quest) => {
+              {filteredQuests.map((quest) => {
                 // Create a mock UserCompletedQuest for display purposes
                 const mockUserQuest: UserCompletedQuest = {
                   id: "",

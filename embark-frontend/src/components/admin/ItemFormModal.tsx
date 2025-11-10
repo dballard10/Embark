@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
-import type { Item, RarityTier } from "../../types/item.types";
+import type { Item } from "../../types/item.types";
+import { ITEM_PRICES } from "../../utils/constants/gameConfig";
 
 interface ItemFormModalProps {
   isOpen: boolean;
@@ -130,12 +131,15 @@ function ItemFormModal({ isOpen, onClose, onSave, item }: ItemFormModalProps) {
               <input
                 type="number"
                 value={formData.rarity_tier}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const newTier = parseInt(e.target.value);
+                  const price = ITEM_PRICES[newTier] || 0;
                   setFormData({
                     ...formData,
-                    rarity_tier: parseInt(e.target.value),
-                  })
-                }
+                    rarity_tier: newTier,
+                    price: price,
+                  });
+                }}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 min={1}

@@ -11,10 +11,13 @@ from models.quest import (
     UserQuestResponse,
     ActiveQuestResponse,
     CompletedQuestResponse,
+    QuestChatRequest,
+    QuestChatResponse,
 )
 from services.quest_service import QuestService
 from services.user_service import UserService
 from services.item_service import ItemService
+from services.quest_helper_service import QuestHelperService
 
 router = APIRouter()
 
@@ -76,14 +79,14 @@ async def get_quest(quest_id: UUID):
 @router.get("/quests", response_model=list[QuestResponse])
 async def list_quests(
     tier: Optional[int] = Query(default=None, ge=1, le=6),
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=500, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ):
     """
     List quests with optional tier filter
     
     - **tier**: Filter by tier (1-6)
-    - **limit**: Maximum number of quests to return (1-100)
+    - **limit**: Maximum number of quests to return (1-500, default 500)
     - **offset**: Number of quests to skip
     """
     try:
@@ -173,6 +176,11 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
         user_service = get_user_service()
         item_service = get_item_service()
         
+        # Verify user exists before completing quest
+        user = await user_service.get_user(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
         # Complete the quest and get full details
         completed_quest = await quest_service.complete_quest(user_id, user_quest_id)
         
@@ -182,7 +190,12 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
             glory_delta=completed_quest.quest.glory_reward,
             xp_delta=completed_quest.quest.xp_reward,
         )
-        await user_service.update_user_stats(user_id, stats_update)
+        try:
+            await user_service.update_user_stats(user_id, stats_update)
+        except Exception as stats_error:
+            print(f"Error updating user stats: {stats_error}")
+            # If stats update fails, log but continue (quest is still completed)
+            # This prevents the "User not found" error from breaking the flow
         
         # Award a random item from the quest's tier
         awarded_item = None
@@ -217,7 +230,7 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
             # Log the error but don't fail the quest completion
             print(f"Warning: Failed to award item: {item_error}")
         
-        # Return quest completion info with awarded item details
+        # Return quest completion info with awarded item and achievements
         return {
             "user_quest": UserQuestResponse(
                 id=completed_quest.id,
@@ -228,7 +241,8 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
                 deadline_at=completed_quest.deadline_at,
                 is_active=completed_quest.is_active,
             ),
-            "awarded_item": awarded_item
+            "awarded_item": awarded_item,
+            "awarded_achievements": completed_quest.awarded_achievements
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -236,6 +250,55 @@ async def complete_quest(user_id: UUID, user_quest_id: UUID):
         # Catch any other unexpected errors
         print(f"Error completing quest: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.post("/users/{user_id}/quests/{user_quest_id}/chat", response_model=QuestChatResponse)
+async def quest_chat(user_id: UUID, user_quest_id: UUID, chat_request: QuestChatRequest):
+    """
+    Chat with AI assistant about completing a quest
+    
+    - **user_id**: UUID of the user
+    - **user_quest_id**: UUID of the user_completed_quest entry
+    - **chat_request**: Contains message and chat history
+    
+    Returns: AI assistant's response
+    """
+    try:
+        quest_service = get_quest_service()
+        
+        # Get the active quest details
+        active_quests = await quest_service.get_active_quests(user_id)
+        user_quest = next(
+            (q for q in active_quests if str(q.id) == str(user_quest_id)),
+            None
+        )
+        
+        if not user_quest:
+            raise HTTPException(
+                status_code=404,
+                detail="Active quest not found"
+            )
+        
+        # Initialize quest helper service
+        helper_service = QuestHelperService()
+        
+        # Get chat response
+        response = await helper_service.get_chat_response(
+            quest=user_quest.quest,
+            user_message=chat_request.message,
+            chat_history=chat_request.chat_history
+        )
+        
+        return QuestChatResponse(response=response)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in quest chat: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get chat response. Please try again."
+        )
 
 
 @router.delete("/users/{user_id}/quests/{user_quest_id}/abandon", status_code=204)

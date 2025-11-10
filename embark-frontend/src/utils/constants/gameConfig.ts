@@ -7,8 +7,7 @@ export const GAME_CONFIG = {
   MAX_ACTIVE_QUESTS: 4,
   DEFAULT_QUEST_LIMIT: 50,
 
-  // Level system
-  XP_PER_LEVEL: 10000,
+  // Level system (now uses progressive XP requirements - see levelCalculator.ts)
   MAX_LEVEL: 100,
 
   // Tiers
@@ -109,4 +108,28 @@ export const DIFFICULTY_NAMES: Record<number, string> = {
   4: "Challenging",
   5: "Hard",
   6: "Extreme",
+};
+
+/**
+ * Quest rewards by tier (glory and XP)
+ */
+export const QUEST_REWARDS: Record<number, { glory: number; xp: number }> = {
+  1: { glory: 3000, xp: 300 },
+  2: { glory: 10000, xp: 1000 },
+  3: { glory: 30000, xp: 3000 },
+  4: { glory: 100000, xp: 10000 },
+  5: { glory: 300000, xp: 30000 },
+  6: { glory: 1000000, xp: 100000 },
+};
+
+/**
+ * Item shop prices by rarity tier
+ */
+export const ITEM_PRICES: Record<number, number> = {
+  1: 9000,
+  2: 30000,
+  3: 90000,
+  4: 300000,
+  5: 900000,
+  6: 3000000,
 };

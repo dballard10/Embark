@@ -6,6 +6,8 @@ import {
 import { IconTrophy, IconSettings, IconBox } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import LoadingIcon from "./LoadingIcon";
+import TitleBadge from "./TitleBadge";
+import { useAchievements } from "../../contexts/AchievementsContext";
 
 interface TopBarProps {
   username: string;
@@ -23,6 +25,7 @@ function TopBar({
   isLoadingItems = false,
 }: TopBarProps) {
   const navigate = useNavigate();
+  const { activeTitle } = useAchievements();
   const level = calculateLevel(totalXP);
   const levelProgress = getLevelProgress(totalXP);
   const currentLevelXP = getCurrentLevelXP(totalXP);
@@ -52,7 +55,7 @@ function TopBar({
                   cy="28"
                   r="26"
                   fill="none"
-                  stroke="rgba(34, 211, 238, 0.15)"
+                  stroke="rgba(0, 0, 0, 1)"
                   strokeWidth="2"
                 />
                 {/* Progress ring - only shows completed portion */}
@@ -73,15 +76,16 @@ function TopBar({
               </svg>
             </button>
             <div className="hidden sm:block">
-              <div className="text-xl font-bold text-white mb-1">
-                {username}
-              </div>
-              {/* XP Progress Text */}
-              <div>
-                <div className="text-sm font-semibold text-gray-400">
-                  {currentLevelXP.toLocaleString()} / 10,000
+              <div className="text-xl font-bold text-white">{username}</div>
+              {activeTitle && (
+                <div className="mt-0.5 mb-1">
+                  <TitleBadge 
+                    achievement={activeTitle} 
+                    size="sm" 
+                    onClick={() => navigate('/achievements')}
+                  />
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -116,7 +120,10 @@ function TopBar({
             </button>
 
             {/* Settings */}
-            <button className="w-12 h-12 rounded-full bg-slate-800/80 border border-white/20 flex items-center justify-center hover:bg-slate-700/80 transition-colors shadow-lg">
+            <button
+              onClick={() => navigate("/settings")}
+              className="w-12 h-12 rounded-full bg-slate-800/80 border border-white/20 flex items-center justify-center hover:bg-slate-700/80 transition-colors shadow-lg cursor-pointer hover:scale-105 transition-transform"
+            >
               <IconSettings size={24} className="text-gray-300" stroke={2} />
             </button>
           </div>

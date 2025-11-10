@@ -2,6 +2,7 @@ from uuid import UUID
 from typing import Optional
 from supabase import Client
 from models.user import UserCreate, UserUpdate, UserResponse, UserStatsUpdate
+from utils.level_calculator import calculate_level
 
 
 class UserService:
@@ -15,7 +16,10 @@ class UserService:
         try:
             response = (
                 self.supabase.table("users")
-                .insert({"username": user_data.username})
+                .insert({
+                    "username": user_data.username,
+                    "email": user_data.email
+                })
                 .execute()
             )
 
@@ -50,6 +54,23 @@ class UserService:
                 self.supabase.table("users")
                 .select("*")
                 .eq("username", username)
+                .execute()
+            )
+
+            if not response.data:
+                return None
+
+            return UserResponse(**response.data[0])
+        except Exception as e:
+            raise ValueError(f"Error fetching user: {str(e)}")
+
+    async def get_user_by_email(self, email: str) -> Optional[UserResponse]:
+        """Get a user by email"""
+        try:
+            response = (
+                self.supabase.table("users")
+                .select("*")
+                .eq("email", email)
                 .execute()
             )
 
@@ -112,19 +133,26 @@ class UserService:
             new_glory = user.total_glory + stats_update.glory_delta
             new_xp = user.total_xp + stats_update.xp_delta
 
-            # Calculate new level (every 10000 XP = 1 level)
-            new_level = 1 + (new_xp // 10000)
+            # Calculate new level using progressive XP system
+            new_level = calculate_level(new_xp)
+
+            # Update data dictionary
+            update_data = {
+                "total_glory": new_glory,
+                "total_xp": new_xp,
+                "level": new_level,
+            }
+
+            # Track lifetime glory gained (only when earning, not spending)
+            # glory_delta > 0 means earning, < 0 means spending
+            if stats_update.glory_delta > 0:
+                current_lifetime = getattr(user, 'lifetime_glory_gained', 0)
+                update_data["lifetime_glory_gained"] = current_lifetime + stats_update.glory_delta
 
             # Update user
             response = (
                 self.supabase.table("users")
-                .update(
-                    {
-                        "total_glory": new_glory,
-                        "total_xp": new_xp,
-                        "level": new_level,
-                    }
-                )
+                .update(update_data)
                 .eq("id", str(user_id))
                 .execute()
             )

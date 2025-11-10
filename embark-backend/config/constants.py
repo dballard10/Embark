@@ -6,12 +6,31 @@ Business logic constants for the Embark application
 MAX_ACTIVE_QUESTS = 4
 QUEST_TIERS = [1, 2, 3, 4, 5, 6]
 
+# Quest rewards by tier (glory, xp)
+QUEST_REWARDS = {
+    1: {"glory": 3000, "xp": 300},
+    2: {"glory": 10000, "xp": 1000},
+    3: {"glory": 30000, "xp": 3000},
+    4: {"glory": 100000, "xp": 10000},
+    5: {"glory": 300000, "xp": 30000},
+    6: {"glory": 1000000, "xp": 100000},
+}
+
 # Item constants
 ITEM_TIERS = [1, 2, 3, 4, 5, 6]
 ITEM_STARS = [1, 2, 3, 4, 5, 6]
 
-# Level system
-XP_PER_LEVEL = 10000
+# Item shop prices by rarity tier
+ITEM_PRICES = {
+    1: 9000,
+    2: 30000,
+    3: 90000,
+    4: 300000,
+    5: 900000,
+    6: 3000000,
+}
+
+# Level system (now uses progressive XP requirements - see utils/level_calculator.py)
 MAX_LEVEL = 100
 
 # Tier names for display

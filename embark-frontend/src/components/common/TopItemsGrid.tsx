@@ -19,22 +19,23 @@ function TopItemsGrid({
   return (
     <div className="mb-6">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 text-green-300 border-2 border-green-400/30 font-bold">
-          <IconBox size={20} className="text-green-400" stroke={2} />
-          <span className="text-lg">Top Items</span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-green-500/20 text-green-300 border-2 border-green-400/30 font-bold">
+          <IconBox size={18} className="sm:w-5 sm:h-5 text-green-400" stroke={2} />
+          <span className="text-base sm:text-lg">Top Items</span>
         </div>
         <button
           onClick={onViewAll}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-700 to-green-500 hover:from-green-500 hover:to-green-300 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 min-h-[44px] bg-gradient-to-r from-green-700 to-green-500 hover:from-green-500 hover:to-green-300 active:from-green-600 active:to-green-400 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
         >
-          View All Items
+          <span className="hidden sm:inline">View All Items</span>
+          <span className="sm:hidden">View All</span>
           <IconArrowRight size={18} stroke={2} />
         </button>
       </div>
 
       {/* Items Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {loading
           ? [...Array(4)].map((_, index) => (
               <CardSkeleton key={`skeleton-${index}`} variant="item" />

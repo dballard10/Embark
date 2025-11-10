@@ -4,6 +4,9 @@ import { ProfileStats } from "./ProfileStats";
 import { LevelProgressCard } from "./LevelProgressCard";
 import type { User } from "../../../types/user.types";
 import type { ProfileData } from "../../../hooks/useProfileData";
+import LoadingIcon from "../../common/LoadingIcon";
+import TitleBadge from "../../common/TitleBadge";
+import { useAchievements } from "../../../contexts/AchievementsContext";
 
 interface ProfileHeaderProps {
   user: User;
@@ -22,7 +25,9 @@ export function ProfileHeader({
   onNavigateToShop,
   onNavigateToVault,
 }: ProfileHeaderProps) {
+  const navigate = useNavigate();
   const { currentLevel, levelColor } = profileData;
+  const { activeTitle } = useAchievements();
 
   return (
     <div className="mb-10 animate-slide-up">
@@ -80,6 +85,15 @@ export function ProfileHeader({
             <h1 className="text-3xl sm:text-4xl font-black text-white mb-2 tracking-tight">
               {user.username}
             </h1>
+            {activeTitle && (
+              <div className="mb-2">
+                <TitleBadge 
+                  achievement={activeTitle} 
+                  size="md" 
+                  onClick={() => navigate('/achievements')}
+                />
+              </div>
+            )}
             <div className="flex items-center gap-2 text-gray-400 text-sm">
               <IconCalendar size={16} stroke={2} className="text-cyan-400" />
               <span className="font-medium">

@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../types/user.types";
-import { fetchAllUsers, fetchUserById } from "../services/api";
+import { fetchUserById } from "../services/api";
+import { useAuth } from "./AuthContext";
 
 interface UserContextType {
   selectedUserId: string | null;
@@ -16,51 +17,37 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 const STORAGE_KEY = "embark_selected_user_id";
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const { currentUser, isAuthenticated } = useAuth();
   const [selectedUserId, setSelectedUserIdState] = useState<string | null>(
     null
   );
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load selected user from localStorage on mount
+  // Load selected user based on authenticated user
   useEffect(() => {
     const loadInitialUser = async () => {
+      if (!isAuthenticated || !currentUser) {
+        setSelectedUser(null);
+        setSelectedUserIdState(null);
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        // Try to load from localStorage
-        const storedUserId = localStorage.getItem(STORAGE_KEY);
-
-        if (storedUserId) {
-          try {
-            const user = await fetchUserById(storedUserId);
-            setSelectedUserIdState(storedUserId);
-            setSelectedUser(user);
-            setIsLoading(false);
-            return;
-          } catch (error) {
-            console.error(
-              "Stored user not found, loading first available user"
-            );
-            localStorage.removeItem(STORAGE_KEY);
-          }
-        }
-
-        // If no stored user or stored user not found, get first available user
-        const users = await fetchAllUsers();
-        if (users.length > 0) {
-          const firstUser = users[0];
-          setSelectedUserIdState(firstUser.id);
-          setSelectedUser(firstUser);
-          localStorage.setItem(STORAGE_KEY, firstUser.id);
-        }
+        // Use the authenticated user as the selected user
+        setSelectedUserIdState(currentUser.id);
+        setSelectedUser(currentUser);
+        localStorage.setItem(STORAGE_KEY, currentUser.id);
       } catch (error) {
-        console.error("Error loading initial user:", error);
+        console.error("Error loading user:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadInitialUser();
-  }, []);
+  }, [currentUser, isAuthenticated]);
 
   const setSelectedUserId = async (userId: string) => {
     try {

@@ -2,6 +2,7 @@ import axios from "axios";
 import type { Quest, UserCompletedQuest } from "../types/quest.types";
 import type { Item, UserItem } from "../types/item.types";
 import type { User } from "../types/user.types";
+import type { Achievement } from "../types/achievement.types";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -18,7 +19,7 @@ const api = axios.create({
 export const fetchAllQuests = async (): Promise<Quest[]> => {
   try {
     const response = await api.get<Quest[]>("/quests", {
-      params: { limit: 100 },
+      params: { limit: 500 },
     });
     return response.data;
   } catch (error) {
@@ -80,6 +81,7 @@ export const startQuest = async (
 export interface QuestCompletionResponse {
   user_quest: UserCompletedQuest;
   awarded_item: UserItem | null;
+  awarded_achievements: Achievement[];
 }
 
 export const completeQuest = async (
@@ -130,7 +132,7 @@ export const abandonQuest = async (
 export const fetchAllItems = async (): Promise<Item[]> => {
   try {
     const response = await api.get<Item[]>("/items", {
-      params: { limit: 100 },
+      params: { limit: 500 },
     });
     return response.data;
   } catch (error) {
@@ -170,6 +172,7 @@ export const purchaseItem = async (
   user_item: import("../types/item.types").UserItem;
   new_glory: number;
   item_price: number;
+  awarded_achievements?: Achievement[];
 }> => {
   try {
     const response = await api.post(
@@ -313,5 +316,8 @@ export const deleteUser = async (userId: string): Promise<void> => {
     throw new Error("Failed to delete user");
   }
 };
+
+// Export chat service
+export { sendQuestChatMessage } from "./api/questChatService";
 
 export default api;

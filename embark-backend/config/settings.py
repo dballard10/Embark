@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
     
+    # OpenAI Settings
+    OPENAI_API_KEY: str = ""
+    
     # Logging
     LOG_LEVEL: str = "INFO"
     

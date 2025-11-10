@@ -11,6 +11,7 @@ from models.quest import (
     ActiveQuestResponse,
     CompletedQuestResponse,
 )
+from services.achievement_service import AchievementService
 
 
 class QuestService:
@@ -18,6 +19,7 @@ class QuestService:
 
     def __init__(self, supabase: Client):
         self.supabase = supabase
+        self.achievement_service = AchievementService()
 
     async def create_quest(self, quest_data: QuestCreate) -> QuestResponse:
         """Create a new quest"""
@@ -53,10 +55,16 @@ class QuestService:
             raise ValueError(f"Error fetching quest: {str(e)}")
 
     async def list_quests(
-        self, tier: Optional[int] = None, limit: int = 100, offset: int = 0
+        self, tier: Optional[int] = None, limit: int = 500, offset: int = 0
     ) -> list[QuestResponse]:
         """List quests with optional tier filter"""
         try:
+            # Validate limit to prevent excessive queries
+            if limit > 500:
+                limit = 500
+            if limit < 1:
+                limit = 1
+                
             query = self.supabase.table("quests").select("*")
 
             if tier:
@@ -137,9 +145,9 @@ class QuestService:
             if not quest:
                 raise ValueError("Quest not found")
 
-            # Calculate deadline
+            # Calculate deadline (extended: 5x original quest time limit)
             started_at = datetime.now(timezone.utc)
-            deadline_at = started_at + timedelta(hours=quest.time_limit_hours)
+            deadline_at = started_at + timedelta(hours=quest.time_limit_hours * 5)
 
             # Create user quest entry
             insert_data = {
@@ -237,8 +245,37 @@ class QuestService:
             if not update_response.data:
                 raise ValueError("Failed to complete quest")
 
-            # Return full quest details for reward processing
-            return CompletedQuestResponse(**update_response.data[0], quest=quest)
+            # Check and award achievements
+            awarded_achievements = []
+            try:
+                # Award quest-specific achievement (instant)
+                quest_achievement = await self.achievement_service.check_and_award_quest_achievement(
+                    user_id, quest.id
+                )
+                if quest_achievement:
+                    awarded_achievements.append(quest_achievement)
+                
+                # Award tier achievement (only if ALL quests in tier are complete)
+                tier_achievement = await self.achievement_service.check_and_award_tier_achievement(
+                    user_id, quest.tier
+                )
+                if tier_achievement:
+                    awarded_achievements.append(tier_achievement)
+                
+                # Check for questline achievement (only if ALL quests in topic are complete)
+                questline_achievement = await self.achievement_service.check_and_award_questline_achievement(
+                    user_id, quest.topic
+                )
+                if questline_achievement:
+                    awarded_achievements.append(questline_achievement)
+            except Exception as achievement_error:
+                # Log the error but don't fail the quest completion
+                print(f"Error awarding achievements: {str(achievement_error)}")
+
+            # Return full quest details for reward processing along with achievements
+            completed_quest_response = CompletedQuestResponse(**update_response.data[0], quest=quest)
+            completed_quest_response.awarded_achievements = awarded_achievements
+            return completed_quest_response
         except Exception as e:
             raise ValueError(f"Error completing quest: {str(e)}")
 

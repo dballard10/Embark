@@ -24,17 +24,18 @@ function ActiveQuestsGrid({
     <div className="mb-6">
       {/* Section Header */}
       {showHeader && (
-        <div className="flex items-center justify-between mb-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-300 border-2 border-blue-400/30 font-bold">
-            <IconTarget size={20} className="text-blue-400" stroke={2} />
-            <span className="text-lg">Active Quests</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-blue-500/20 text-blue-300 border-2 border-blue-400/30 font-bold">
+            <IconTarget size={18} className="sm:w-5 sm:h-5 text-blue-400" stroke={2} />
+            <span className="text-base sm:text-lg">Active Quests</span>
           </div>
           {onViewAll && (
             <button
               onClick={onViewAll}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 min-h-[44px] bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 active:from-blue-700 active:to-cyan-700 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
             >
-              View All Quests
+              <span className="hidden sm:inline">View All Quests</span>
+              <span className="sm:hidden">View All</span>
               <IconArrowRight size={18} stroke={2} />
             </button>
           )}
@@ -42,7 +43,7 @@ function ActiveQuestsGrid({
       )}
 
       {/* Quests Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {loading
           ? [...Array(4)].map((_, index) => (
               <CardSkeleton key={`skeleton-${index}`} variant="quest" />

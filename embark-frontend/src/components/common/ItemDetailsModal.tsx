@@ -9,6 +9,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useItems } from "../../contexts/ItemsContext";
 import ItemDetailsModalSkeleton from "./ItemDetailsModalSkeleton";
 import LoadingIcon from "./LoadingIcon";
+import ImageViewer from "./ImageViewer";
 
 interface ItemDetailsModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ function ItemDetailsModal({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen && selectedUser?.id && userItemId) {
@@ -106,15 +108,17 @@ function ItemDetailsModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Item Details</h2>
+          <div className="flex-1 pr-4">
+            <h2 id="item-modal-title" className="text-2xl font-bold text-white">
+              {item?.name || "Item Details"}
+            </h2>
             <p className="text-sm text-gray-400 mt-1">
-              View your collected item information
+              {item?.description || "View your collected item information"}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors flex-shrink-0"
             aria-label="Close modal"
           >
             <IconX size={24} />
@@ -143,7 +147,7 @@ function ItemDetailsModal({
                 className={`bg-black/10 backdrop-blur-sm border-2 ${tierBorderColor} rounded-xl overflow-hidden shadow-2xl`}
               >
                 {/* Item Image - Transparent Gallery View */}
-                <div className="h-64 relative bg-transparent">
+                <div className="h-96 relative bg-transparent">
                   {itemImage ? (
                     <div className="w-full h-full flex items-center justify-center p-8 backdrop-blur-md relative">
                       {imageLoading && (
@@ -154,8 +158,9 @@ function ItemDetailsModal({
                       <img
                         src={itemImage}
                         alt={item.name}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain cursor-pointer hover:scale-105 transition-transform duration-200"
                         onLoad={() => setImageLoading(false)}
+                        onClick={() => setIsImageViewerOpen(true)}
                         style={{ opacity: imageLoading ? 0 : 1 }}
                       />
                     </div>
@@ -184,19 +189,6 @@ function ItemDetailsModal({
                       </div>
                     </div>
                   )}
-                </div>
-
-                {/* Title and Description */}
-                <div className="p-6 space-y-4 bg-black/20">
-                  <h1
-                    id="item-modal-title"
-                    className="text-3xl font-bold text-white"
-                  >
-                    {item.name}
-                  </h1>
-                  <p className="text-gray-100 text-lg leading-relaxed">
-                    {item.description}
-                  </p>
                 </div>
               </div>
 
@@ -264,6 +256,16 @@ function ItemDetailsModal({
           </button>
         </div>
       </div>
+
+      {/* Image Viewer */}
+      {itemImage && (
+        <ImageViewer
+          isOpen={isImageViewerOpen}
+          onClose={() => setIsImageViewerOpen(false)}
+          imageUrl={itemImage}
+          altText={item?.name || "Item"}
+        />
+      )}
     </div>
   );
 }

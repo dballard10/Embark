@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconStar, IconSparkles } from "@tabler/icons-react";
 import QuestDetailsView from "./QuestDetailsView";
 import LoadingIcon from "./LoadingIcon";
 import { useUser } from "../../contexts/UserContext";
 import { useItems } from "../../contexts/ItemsContext";
 import { useQuestsContext } from "../../contexts/QuestsContext";
+import { useAchievements } from "../../contexts/AchievementsContext";
+import { useCelebrationOverlay } from "../../contexts/CelebrationOverlayContext";
 import type { UserCompletedQuest } from "../../types/quest.types";
+import type { UserItem } from "../../types/item.types";
 import {
   completeQuest,
   abandonQuest,
   type QuestCompletionResponse,
 } from "../../services/api";
 import QuestDetailsModalSkeleton from "./QuestDetailsModalSkeleton";
+import {
+  getTierColor,
+  getTierStars,
+  getTierGradientColor,
+} from "../../utils/tierUtils";
+import { getItemImage } from "../../utils/itemImageUtils";
 
 interface QuestDetailsModalProps {
   isOpen: boolean;
@@ -27,6 +36,8 @@ function QuestDetailsModal({
   const { selectedUser, refreshUser } = useUser();
   const { refreshItems } = useItems();
   const { activeQuests, refreshQuests } = useQuestsContext();
+  const { refetchUserAchievements } = useAchievements();
+  const { showSpecial, showStandard, showItemThenMaybeSpecial } = useCelebrationOverlay();
   const [userQuest, setUserQuest] = useState<UserCompletedQuest | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -35,12 +46,24 @@ function QuestDetailsModal({
   const [completionMessage, setCompletionMessage] = useState<string | null>(
     null
   );
+  const [awardedItem, setAwardedItem] = useState<UserItem | null>(null);
+  const [awardedAchievements, setAwardedAchievements] = useState<any[]>([]);
 
   useEffect(() => {
-    if (isOpen && questId) {
+    if (isOpen && questId && !completionMessage) {
       loadQuestData();
     }
   }, [isOpen, questId, activeQuests]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCompletionMessage(null);
+      setAwardedItem(null);
+      setAwardedAchievements([]);
+      setError(null);
+    }
+  }, [isOpen]);
 
   // ESC key handler
   useEffect(() => {
@@ -73,7 +96,11 @@ function QuestDetailsModal({
       if (quest) {
         setUserQuest(quest);
       } else {
-        setError("Quest not found");
+        // Don't show error if we just completed the quest
+        // (quest is removed from activeQuests after completion)
+        if (!completionMessage) {
+          setError("Quest not found");
+        }
       }
     } catch (error) {
       console.error("Error loading quest data:", error);
@@ -95,27 +122,64 @@ function QuestDetailsModal({
         userQuest.id
       );
 
-      // Set completion message based on whether item was awarded
-      if (response.awarded_item?.item) {
-        setCompletionMessage(
-          `Quest completed! You received: ${response.awarded_item.item.name}`
-        );
+      // Store awarded achievements and item
+      setAwardedAchievements(response.awarded_achievements || []);
+      setAwardedItem(response.awarded_item);
+
+      // Only show completion message if there are no achievements to display
+      if ((response.awarded_achievements || []).length === 0) {
+        if (response.awarded_item) {
+          setCompletionMessage("Quest completed!");
+        } else {
+          setCompletionMessage(
+            "Quest completed! (You already own all items from this tier)"
+          );
+        }
       } else {
-        setCompletionMessage(
-          "Quest completed! (You already own all items from this tier)"
-        );
+        // Show completion state without the notification message
+        setCompletionMessage("completed");
       }
 
-      // Refresh user data, items, and quests
+      // Begin preloading awarded item image while refreshing state
+      if (response.awarded_item?.item) {
+        const preUrl = getItemImage(
+          response.awarded_item.item.name,
+          response.awarded_item.item.image_url
+        );
+        if (preUrl) {
+          const img = new Image();
+          (img as any).decoding = "async";
+          (img as any).loading = "eager";
+          (img as any).fetchPriority = "high";
+          img.src = preUrl;
+        }
+      }
+
+      // Refresh user data, items, quests, and achievements
       await refreshUser();
       await refreshItems();
       await refreshQuests();
+      await refetchUserAchievements();
 
-      // Close modal after a brief delay to show the message
-      setTimeout(() => {
-        onClose();
-        setCompletionMessage(null);
-      }, 2000);
+      // After state refresh, close this modal and trigger celebrations
+      const achievements = response.awarded_achievements || [];
+      const hasSpecial = achievements.some(
+        (a: any) => a.achievement_type === "questline" || a.achievement_type === "tier"
+      );
+
+      // Close modal first to avoid stacked UIs
+      onClose();
+
+      if (response.awarded_item) {
+        // Item-first, then special if needed; always shows toast at bottom
+        showItemThenMaybeSpecial(achievements, response.awarded_item, hasSpecial);
+      } else if (achievements.length > 0) {
+        if (hasSpecial) {
+          showSpecial(achievements, null);
+        } else {
+          showStandard(achievements, null);
+        }
+      }
     } catch (error: any) {
       console.error("Error completing quest:", error);
       setError(error.message || "Failed to complete quest");
@@ -170,20 +234,21 @@ function QuestDetailsModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <div>
+          <div className="flex-1 pr-4">
             <h2
               id="quest-modal-title"
               className="text-2xl font-bold text-white"
             >
-              Quest Details
+              {userQuest?.quest?.title || "Quest Details"}
             </h2>
             <p className="text-sm text-gray-400 mt-1">
-              Review quest progress and manage completion
+              {userQuest?.quest?.description ||
+                "Review quest progress and manage completion"}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors flex-shrink-0"
             aria-label="Close modal"
           >
             <IconX size={24} />
@@ -203,17 +268,13 @@ function QuestDetailsModal({
               {error}
             </div>
           )}
-
-          {/* Completion Message */}
-          {completionMessage && (
-            <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 text-green-300 text-center mb-4">
-              {completionMessage}
-            </div>
-          )}
-
           {/* Quest Details */}
-          {!loading && !error && userQuest && (
-            <QuestDetailsView userQuest={userQuest} showStartedInfo={true} />
+          {!loading && !error && userQuest && selectedUser && (
+            <QuestDetailsView
+              userQuest={userQuest}
+              userId={selectedUser.id}
+              showStartedInfo={true}
+            />
           )}
         </div>
 

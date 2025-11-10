@@ -47,6 +47,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterText, setFilterText] = useState("");
+  const [tierFilter, setTierFilter] = useState<number | "all">("all");
 
   // Modal states
   const [questModalOpen, setQuestModalOpen] = useState(false);
@@ -117,6 +118,7 @@ function AdminPage() {
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     setFilterText("");
+    setTierFilter("all");
   };
 
   // Create handlers
@@ -232,20 +234,37 @@ function AdminPage() {
     }
   };
 
-  // Filter logic
-  const filteredQuests = quests.filter(
-    (q) =>
-      q.title.toLowerCase().includes(filterText.toLowerCase()) ||
-      q.description.toLowerCase().includes(filterText.toLowerCase()) ||
-      q.tier.toString().includes(filterText)
-  );
+  // Filter and sort logic
+  const filteredQuests = quests
+    .filter((q) => {
+      // Text filter
+      const matchesText =
+        q.title.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.description.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.topic.toLowerCase().includes(filterText.toLowerCase()) ||
+        q.tier.toString().includes(filterText);
 
-  const filteredItems = items.filter(
-    (i) =>
-      i.name.toLowerCase().includes(filterText.toLowerCase()) ||
-      i.description.toLowerCase().includes(filterText.toLowerCase()) ||
-      i.rarity_tier.toString().includes(filterText)
-  );
+      // Tier filter
+      const matchesTier = tierFilter === "all" || q.tier === tierFilter;
+
+      return matchesText && matchesTier;
+    })
+    .sort((a, b) => a.tier - b.tier); // Sort by tier ascending
+
+  const filteredItems = items
+    .filter((i) => {
+      // Text filter
+      const matchesText =
+        i.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        i.description.toLowerCase().includes(filterText.toLowerCase()) ||
+        i.rarity_tier.toString().includes(filterText);
+
+      // Tier filter
+      const matchesTier = tierFilter === "all" || i.rarity_tier === tierFilter;
+
+      return matchesText && matchesTier;
+    })
+    .sort((a, b) => a.rarity_tier - b.rarity_tier); // Sort by tier ascending
 
   const filteredUsers = users.filter(
     (u) =>
@@ -254,11 +273,16 @@ function AdminPage() {
   );
 
   const getDataCount = () => {
+    const tierText =
+      tierFilter !== "all" && activeTab !== "users"
+        ? ` (Tier ${tierFilter})`
+        : "";
+
     switch (activeTab) {
       case "quests":
-        return `${filteredQuests.length} / ${quests.length}`;
+        return `${filteredQuests.length} / ${quests.length}${tierText}`;
       case "items":
-        return `${filteredItems.length} / ${items.length}`;
+        return `${filteredItems.length} / ${items.length}${tierText}`;
       case "users":
         return `${filteredUsers.length} / ${users.length}`;
     }
@@ -290,47 +314,47 @@ function AdminPage() {
       )}
 
       {/* Header */}
-      <div className="pt-20 pb-24">
-        <div className="bg-slate-800/50 border-b border-slate-700 fixed top-16 left-0 right-0 z-10 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-3 mb-4">
-              <IconShield className="text-amber-500" size={32} />
+      <div className="pt-20 sm:pt-24 pb-20 sm:pb-24">
+        <div className="bg-slate-800/50 border-b border-slate-700 fixed top-[64px] sm:top-16 left-0 right-0 z-10 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <IconShield className="text-amber-500 w-6 h-6 sm:w-8 sm:h-8" />
               <div>
-                <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
-                <p className="text-slate-400 text-sm">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">Admin Panel</h1>
+                <p className="text-slate-400 text-xs sm:text-sm">
                   Manage Database & Test User
                 </p>
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
               <button
                 onClick={() => handleTabChange("quests")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`min-h-[44px] px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all active:scale-95 ${
                   activeTab === "quests"
                     ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600 active:bg-slate-500"
                 }`}
               >
                 Quests
               </button>
               <button
                 onClick={() => handleTabChange("items")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`min-h-[44px] px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all active:scale-95 ${
                   activeTab === "items"
                     ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600 active:bg-slate-500"
                 }`}
               >
                 Items
               </button>
               <button
                 onClick={() => handleTabChange("users")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`min-h-[44px] px-3 sm:px-4 py-2 rounded-lg font-medium text-sm transition-all active:scale-95 ${
                   activeTab === "users"
                     ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600 active:bg-slate-500"
                 }`}
               >
                 Users
@@ -338,20 +362,49 @@ function AdminPage() {
             </div>
 
             {/* Controls */}
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
               <div className="flex-1 min-w-[200px] relative">
                 <IconSearch
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"
                 />
                 <input
                   type="text"
                   placeholder={`Filter ${activeTab}...`}
                   value={filterText}
                   onChange={(e) => setFilterText(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2.5 text-base bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
+              {/* Tier Filter - Only show for quests and items */}
+              {activeTab !== "users" && (
+                <div className="flex flex-wrap gap-1 items-center bg-slate-900 rounded-lg p-1">
+                  <button
+                    onClick={() => setTierFilter("all")}
+                    className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                      tierFilter === "all"
+                        ? "bg-blue-600 text-white"
+                        : "text-slate-400 hover:text-white active:bg-slate-700"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {[1, 2, 3, 4, 5, 6].map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => setTierFilter(tier)}
+                      className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded font-medium text-xs sm:text-sm transition-all active:scale-95 ${
+                        tierFilter === tier
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-400 hover:text-white active:bg-slate-700"
+                      }`}
+                    >
+                      T{tier}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <button
                 onClick={
                   activeTab === "quests"
@@ -360,23 +413,24 @@ function AdminPage() {
                     ? handleCreateItem
                     : handleCreateUser
                 }
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                className="min-h-[44px] px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
               >
                 <IconPlus size={20} />
-                Create New
+                <span className="hidden sm:inline">Create New</span>
+                <span className="sm:hidden">New</span>
               </button>
               <button
                 onClick={handleRefresh}
                 disabled={loading}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[44px] px-3 sm:px-4 py-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white rounded-lg font-medium text-sm transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <IconRefresh
                   size={20}
                   className={loading ? "animate-spin" : ""}
                 />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </button>
-              <div className="px-4 py-2 bg-slate-900 rounded-lg text-slate-300 text-sm font-medium">
+              <div className="min-h-[44px] px-3 sm:px-4 py-2 bg-slate-900 rounded-lg text-slate-300 text-xs sm:text-sm font-medium flex items-center">
                 Showing: {getDataCount()}
               </div>
             </div>
@@ -384,7 +438,7 @@ function AdminPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-4 py-6 pt-[220px]">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pt-[200px] sm:pt-[220px]">
           {activeTab === "quests" && (
             <TabPanel isLoading={loading} error={error}>
               {filteredQuests.map((quest) => (

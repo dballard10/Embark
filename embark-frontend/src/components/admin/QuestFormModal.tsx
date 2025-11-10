@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { IconX, IconDeviceFloppy } from "@tabler/icons-react";
-import type { Quest, QuestTier } from "../../types/quest.types";
+import type { Quest } from "../../types/quest.types";
+import { QUEST_REWARDS } from "../../utils/constants/gameConfig";
 
 interface QuestFormModalProps {
   isOpen: boolean;
@@ -18,11 +19,16 @@ function QuestFormModal({
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    topic: "",
     tier: 1,
     glory_reward: 0,
     xp_reward: 0,
     time_limit_hours: 24,
     reward_item_id: "",
+    enemy_name: "",
+    enemy_type: "",
+    enemy_description: "",
+    enemy_image_url: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +38,31 @@ function QuestFormModal({
       setFormData({
         title: quest.title,
         description: quest.description,
+        topic: quest.topic,
         tier: quest.tier,
         glory_reward: quest.glory_reward,
         xp_reward: quest.xp_reward,
         time_limit_hours: quest.time_limit_hours,
         reward_item_id: quest.reward_item_id || "",
+        enemy_name: quest.enemy_name,
+        enemy_type: quest.enemy_type,
+        enemy_description: quest.enemy_description,
+        enemy_image_url: quest.enemy_image_url || "",
       });
     } else {
       setFormData({
         title: "",
         description: "",
+        topic: "",
         tier: 1,
         glory_reward: 0,
         xp_reward: 0,
         time_limit_hours: 24,
         reward_item_id: "",
+        enemy_name: "",
+        enemy_type: "",
+        enemy_description: "",
+        enemy_image_url: "",
       });
     }
     setError(null);
@@ -130,6 +146,23 @@ function QuestFormModal({
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Topic *
+            </label>
+            <input
+              type="text"
+              value={formData.topic}
+              onChange={(e) =>
+                setFormData({ ...formData, topic: e.target.value })
+              }
+              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              maxLength={100}
+              placeholder="e.g., Running, Reading, Meditation"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -138,9 +171,16 @@ function QuestFormModal({
               <input
                 type="number"
                 value={formData.tier}
-                onChange={(e) =>
-                  setFormData({ ...formData, tier: parseInt(e.target.value) })
-                }
+                onChange={(e) => {
+                  const newTier = parseInt(e.target.value);
+                  const rewards = QUEST_REWARDS[newTier] || { glory: 0, xp: 0 };
+                  setFormData({
+                    ...formData,
+                    tier: newTier,
+                    glory_reward: rewards.glory,
+                    xp_reward: rewards.xp,
+                  });
+                }}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 min={1}
@@ -221,6 +261,83 @@ function QuestFormModal({
               className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="UUID of reward item"
             />
+          </div>
+
+          {/* Enemy Section */}
+          <div className="border-t border-slate-600 pt-4 mt-4">
+            <h3 className="text-lg font-bold text-white mb-4">
+              Enemy Information
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Enemy Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.enemy_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, enemy_name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  maxLength={100}
+                  placeholder="e.g., Swift Shadow Goblin"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Enemy Type *
+                </label>
+                <input
+                  type="text"
+                  value={formData.enemy_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, enemy_type: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  maxLength={50}
+                  placeholder="e.g., Goblin Scout"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Enemy Description *
+              </label>
+              <textarea
+                value={formData.enemy_description}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    enemy_description: e.target.value,
+                  })
+                }
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                required
+                maxLength={1000}
+                placeholder="Describe the enemy and its characteristics..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Enemy Image URL (optional)
+              </label>
+              <input
+                type="text"
+                value={formData.enemy_image_url}
+                onChange={(e) =>
+                  setFormData({ ...formData, enemy_image_url: e.target.value })
+                }
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="URL to enemy image"
+              />
+            </div>
           </div>
 
           {/* Actions */}
