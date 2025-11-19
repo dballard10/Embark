@@ -33,12 +33,18 @@ function LoginPage() {
         {/* Logo/Brand Section */}
         <div className="text-center mb-6 sm:mb-8 animate-slide-up">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 rounded-full mb-3 sm:mb-4 shadow-2xl">
-            <IconShield size={40} className="sm:w-12 sm:h-12 text-white" stroke={2.5} />
+            <IconShield
+              size={40}
+              className="sm:w-12 sm:h-12 text-white"
+              stroke={2.5}
+            />
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2 tracking-tight">
             Welcome to Embark
           </h1>
-          <p className="text-gray-300 text-base sm:text-lg">Begin your epic journey today</p>
+          <p className="text-gray-300 text-base sm:text-lg">
+            Begin your epic journey today
+          </p>
         </div>
 
         {/* Login Card */}
@@ -111,16 +117,6 @@ function LoginPage() {
               </Link>
             </p>
           </div>
-        </div>
-
-        {/* Footer Note */}
-        <div
-          className="text-center mt-6 animate-fade-in"
-          style={{ animationDelay: "0.3s" }}
-        >
-          <p className="text-gray-400 text-sm">
-            Simple email login - no password required
-          </p>
         </div>
       </div>
     </div>
