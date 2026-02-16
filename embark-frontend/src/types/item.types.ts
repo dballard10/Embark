@@ -1,24 +1,27 @@
 export type RarityTier = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface Item {
+export type ItemCategory = 'warrior' | 'creature' | 'elemental' | 'mythology';
+
+export interface GachaItem {
   id: string;
   name: string;
   description: string;
-  rarity_tier: RarityTier;
-  rarity_stars: number;
-  image_url: string | null;
-  price: number;
-  created_at: string;
+  tier: RarityTier;
+  category: ItemCategory;
+  imageFilename: string;
 }
 
-// Legacy alias for backwards compatibility
-export type Reward = Item;
+export interface OwnedItem {
+  instanceId: string;
+  itemId: string;
+  acquiredAt: string;
+  source: 'pull' | 'shop';
+}
 
-export interface UserItem {
+export interface PullRecord {
   id: string;
-  user_id: string;
-  item_id: string;
-  item?: Item;
-  acquired_at: string;
-  is_featured: boolean;
+  itemId: string;
+  tier: RarityTier;
+  timestamp: string;
+  pullType: 'single' | 'multi';
 }

@@ -24,6 +24,8 @@ export default {
         "fade-in": "fadeIn 0.5s ease-in",
         "slide-up": "slideUp 0.5s ease-out",
         glow: "glow 2s ease-in-out infinite",
+        "spin-slow": "spin 12s linear infinite",
+        "float-particle": "floatParticle 3s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -37,6 +39,10 @@ export default {
         glow: {
           "0%, 100%": { boxShadow: "0 0 20px rgba(14, 165, 233, 0.5)" },
           "50%": { boxShadow: "0 0 30px rgba(14, 165, 233, 0.8)" },
+        },
+        floatParticle: {
+          "0%, 100%": { opacity: "0.3", transform: "rotate(var(--tw-rotate, 0deg)) translateY(-120px) scale(0.8)" },
+          "50%": { opacity: "0.8", transform: "rotate(var(--tw-rotate, 0deg)) translateY(-130px) scale(1.2)" },
         },
       },
     },

@@ -21,3 +21,6 @@ package-lock.json
 *~
 
 .vercel
+
+# Session state (local only)
+.scratchpad/

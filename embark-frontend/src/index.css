@@ -204,6 +204,40 @@
     }
   }
 
+  /* Pull Animation Keyframes */
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes itemReveal {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(-10deg);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.15) rotate(2deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  /* Scrollbar Hide Utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Game Container */
   .game-container {
     @apply relative min-h-screen pb-24 pt-20;

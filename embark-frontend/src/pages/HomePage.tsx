@@ -1,378 +1,179 @@
-import { useState } from "react";
+import { BottomNav } from "../components/layout/BottomNav";
+import { TopBar } from "../components/layout/TopBar";
+import { useGacha } from "../contexts/GachaContext";
 import { useNavigate } from "react-router-dom";
-import TopBar from "../components/common/TopBar";
-import ActiveQuestsGrid from "../components/common/ActiveQuestsGrid";
-import TopItemsGrid from "../components/common/TopItemsGrid";
-import QuestSelectionModal from "../components/common/QuestSelectionModal";
-import QuestDetailsModal from "../components/common/QuestDetailsModal";
-import ItemDetailsModal from "../components/common/ItemDetailsModal";
-import BottomNav from "../components/common/BottomNav";
-import LoadingIcon from "../components/common/LoadingIcon";
-import {
-  IconTrophy,
-  IconBox,
-  IconStar,
-  IconShield,
-  IconSparkles,
-} from "@tabler/icons-react";
-import {
-  calculateLevel,
-  xpToNextLevel,
-  getLevelProgress,
-  getCurrentLevelXP,
-} from "../utils/levelCalculator";
-import { useUser } from "../contexts/UserContext";
-import { useItems } from "../contexts/ItemsContext";
-import { useQuestsContext } from "../contexts/QuestsContext";
-import { useAchievements } from "../contexts/AchievementsContext";
-import TitleBadge from "../components/common/TitleBadge";
+import { TOTAL_ITEMS, ITEM_BY_ID, TIER_NAMES } from "../data/itemCatalog";
+import { IconSparkles, IconTrophy, IconBox } from "@tabler/icons-react";
 
-function HomePage() {
-  const { selectedUser, isLoading: userLoading } = useUser();
-  const {
-    itemCount: userItemCount,
-    topItems,
-    loading: itemsLoading,
-  } = useItems();
-  const {
-    activeQuests,
-    completedQuests,
-    loading: questsLoading,
-    refreshQuests,
-  } = useQuestsContext();
-  const { activeTitle } = useAchievements();
+export default function HomePage() {
   const navigate = useNavigate();
-  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
-  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
-  const [isQuestDetailsModalOpen, setIsQuestDetailsModalOpen] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const { glory, uniqueItemCount, stats, pullHistory, inventory } = useGacha();
 
-  const handleAddQuest = () => {
-    setIsQuestModalOpen(true);
-  };
+  // Get top 4 rarest owned items
+  const topItems = [...new Set(inventory.map((o) => o.itemId))]
+    .map((id) => ITEM_BY_ID[id])
+    .filter(Boolean)
+    .sort((a, b) => b.tier - a.tier)
+    .slice(0, 4);
 
-  const handleQuestAdded = () => {
-    // Reload quests after a quest is added
-    refreshQuests();
-  };
-
-  if (userLoading || !selectedUser) {
-    return (
-      <div className="game-container flex items-center justify-center min-h-screen">
-        <LoadingIcon size="large" />
-      </div>
-    );
-  }
-
-  // Calculate level info
-  const currentLevel = calculateLevel(selectedUser.total_xp);
-  const xpToNext = xpToNextLevel(selectedUser.total_xp);
-  const levelProgressPercent = getLevelProgress(selectedUser.total_xp);
-  const currentLevelXP = getCurrentLevelXP(selectedUser.total_xp);
+  const recentPulls = pullHistory.slice(0, 8);
 
   return (
-    <div className="game-container">
-      {/* Top Stats Bar */}
-      <TopBar
-        username={selectedUser.username}
-        totalXP={selectedUser.total_xp}
-        totalGlory={selectedUser.total_glory}
-        totalItems={userItemCount}
-        isLoadingItems={itemsLoading}
-      />
+    <div className="game-container min-h-screen pb-20 pt-16">
+      <TopBar />
 
-      {/* Profile Header */}
-      <div className="bg-gradient-to-r from-purple-900/90 via-teal-900/90 to-purple-900/90 border-b-2 border-purple-600 fixed top-[64px] sm:top-[72px] md:top-[80px] left-0 right-0 z-20">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              {/* Avatar Container */}
-              <div className="relative p-1.5 sm:p-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full border-2 sm:border-4 border-purple-500/60 shadow-2xl flex-shrink-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-purple-600 via-purple-500 to-blue-600 flex items-center justify-center shadow-inner">
-                  <IconShield
-                    size={28}
-                    className="sm:w-8 sm:h-8 md:w-10 md:h-10 text-white drop-shadow-lg"
-                    stroke={2.5}
+      <div className="px-4 py-6 space-y-6">
+        {/* Hero */}
+        <div className="text-center py-6">
+          <h1 className="text-4xl sm:text-5xl font-title font-bold bg-gradient-to-r from-cyan-300 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+            EMBARK
+          </h1>
+          <p className="text-gray-400 text-sm">
+            Collect legendary items from across the realms
+          </p>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-slate-800/60 border border-yellow-600/30 rounded-xl p-3 text-center">
+            <IconTrophy
+              size={24}
+              className="text-yellow-400 mx-auto mb-1"
+              stroke={2}
+            />
+            <div className="text-lg font-bold text-yellow-300">
+              {glory.toLocaleString()}
+            </div>
+            <div className="text-[10px] text-gray-400">Glory</div>
+          </div>
+          <div className="bg-slate-800/60 border border-green-600/30 rounded-xl p-3 text-center">
+            <IconBox
+              size={24}
+              className="text-green-400 mx-auto mb-1"
+              stroke={2}
+            />
+            <div className="text-lg font-bold text-green-300">
+              {uniqueItemCount}/{TOTAL_ITEMS}
+            </div>
+            <div className="text-[10px] text-gray-400">Collected</div>
+          </div>
+          <div className="bg-slate-800/60 border border-purple-600/30 rounded-xl p-3 text-center">
+            <IconSparkles
+              size={24}
+              className="text-purple-400 mx-auto mb-1"
+              stroke={2}
+            />
+            <div className="text-lg font-bold text-purple-300">
+              {stats.totalPulls.toLocaleString()}
+            </div>
+            <div className="text-[10px] text-gray-400">Total Pulls</div>
+          </div>
+        </div>
+
+        {/* Quick Summon Button */}
+        <button
+          onClick={() => navigate("/pull")}
+          className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+        >
+          <IconSparkles size={28} stroke={2} />
+          <span>SUMMON</span>
+        </button>
+
+        {/* Recent Pulls */}
+        {recentPulls.length > 0 && (
+          <div>
+            <h2 className="text-lg font-bold text-white mb-3">Recent Pulls</h2>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {recentPulls.map((pull) => {
+                const item = ITEM_BY_ID[pull.itemId];
+                if (!item) return null;
+                return (
+                  <div
+                    key={pull.id}
+                    className="flex-shrink-0 w-16 h-16 rounded-xl border-2 overflow-hidden bg-slate-800/60"
+                    style={{
+                      borderColor:
+                        item.tier === 6
+                          ? "#ef4444"
+                          : item.tier === 5
+                          ? "#f97316"
+                          : item.tier === 4
+                          ? "#a855f7"
+                          : item.tier === 3
+                          ? "#3b82f6"
+                          : item.tier === 2
+                          ? "#22c55e"
+                          : "#6b7280",
+                    }}
+                  >
+                    <img
+                      src={`/items/${item.imageFilename}`}
+                      alt={item.name}
+                      className="w-full h-full object-contain p-1"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Top Items */}
+        {topItems.length > 0 && (
+          <div>
+            <h2 className="text-lg font-bold text-white mb-3">Rarest Items</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {topItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-slate-800/60 border border-white/10 rounded-xl p-3 flex items-center gap-3"
+                >
+                  <img
+                    src={`/items/${item.imageFilename}`}
+                    alt={item.name}
+                    className="w-12 h-12 object-contain"
                   />
-                </div>
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-100 truncate">
-                  {selectedUser.username}
-                </h1>
-                {activeTitle && (
-                  <div className="mt-1 hidden sm:block">
-                    <TitleBadge
-                      achievement={activeTitle}
-                      size="md"
-                      onClick={() => navigate("/achievements")}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-br from-purple-600/30 to-teal-600/30 border-2 border-purple-500/40 flex-shrink-0 w-full sm:w-auto justify-center sm:justify-start">
-              <IconStar
-                size={20}
-                className="sm:w-7 sm:h-7 text-purple-300"
-                fill="currentColor"
-                stroke={2}
-              />
-              <div>
-                <div className="text-xs text-purple-300/80 font-semibold">
-                  Current Level
-                </div>
-                <div className="text-xl sm:text-2xl font-bold text-purple-100">
-                  {currentLevel}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 pt-[140px] sm:pt-[150px] md:pt-[160px]">
-        {/* Profile Header - Enhanced Hero Section */}
-        <div className="mb-10 animate-slide-up">
-          <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl border-2 border-purple-500/40 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
-            {/* Enhanced Background Pattern with Animation */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/30 via-blue-600/30 to-cyan-500/30 overflow-hidden z-0">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.2),transparent_50%)]"></div>
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(34,211,238,0.15),transparent_50%)]"></div>
-              {/* Animated Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse-subtle"></div>
-            </div>
-
-            {/* Profile Info */}
-            <div className="px-4 sm:px-6 md:px-8 pb-6 sm:pb-8 pt-4 sm:pt-6 relative z-10">
-              {/* Enhanced Stats Grid - 3 columns on larger screens */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                {/* Total Glory */}
-                <div
-                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-yellow-500/30 hover:border-yellow-400/60 shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer min-h-[80px]"
-                  onClick={() => navigate("/shop")}
-                >
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="p-2 sm:p-3 bg-gradient-to-br from-yellow-900/50 to-yellow-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                      <IconTrophy
-                        size={24}
-                        className="sm:w-8 sm:h-8 text-yellow-400 drop-shadow-glow"
-                        stroke={2.5}
-                      />
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-white truncate">
+                      {item.name}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
-                        Total Glory
-                      </div>
-                      <div className="text-xl sm:text-2xl font-black text-yellow-300 drop-shadow truncate">
-                        {selectedUser.total_glory.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Total Items */}
-                <div
-                  className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-green-500/30 hover:border-green-400/60 shadow-lg hover:shadow-green-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer min-h-[80px]"
-                  onClick={() => navigate("/vault")}
-                >
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="p-2 sm:p-3 bg-gradient-to-br from-green-900/50 to-green-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                      <IconBox
-                        size={24}
-                        className="sm:w-8 sm:h-8 text-green-400 drop-shadow-glow"
-                        stroke={2.5}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
-                        Total Items
-                      </div>
-                      <div className="text-xl sm:text-2xl font-black text-green-300 drop-shadow">
-                        {itemsLoading ? (
-                          <LoadingIcon size="small" />
-                        ) : (
-                          userItemCount
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Total XP */}
-                <div className="group bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur rounded-xl p-4 sm:p-5 border border-cyan-500/30 hover:border-cyan-400/60 shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] sm:col-span-2 lg:col-span-1 min-h-[80px]">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="p-2 sm:p-3 bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 rounded-xl shadow-inner group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                      <IconSparkles
-                        size={24}
-                        className="sm:w-8 sm:h-8 text-cyan-400 drop-shadow-glow"
-                        stroke={2.5}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5">
-                        Total XP
-                      </div>
-                      <div className="text-xl sm:text-2xl font-black text-cyan-300 drop-shadow truncate">
-                        {selectedUser.total_xp.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Level Progress Section */}
-              <div className="bg-slate-900/50 backdrop-blur rounded-xl p-4 sm:p-6 border border-slate-700/50">
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                    <IconSparkles
-                      size={18}
-                      className="sm:w-5 sm:h-5 text-cyan-400 animate-pulse-subtle"
-                      stroke={2.5}
-                    />
-                    <span>Level Progress</span>
-                  </h3>
-                  <div className="px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 rounded-lg">
-                    <span className="text-xs sm:text-sm font-bold text-blue-300">
-                      {Math.round(levelProgressPercent)}%
-                    </span>
-                  </div>
-                </div>
-
-                {/* Enhanced Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2.5">
-                    <span className="text-sm font-semibold text-gray-300">
-                      Level {currentLevel}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-300">
-                      Level {currentLevel + 1}
-                    </span>
-                  </div>
-                  <div className="relative w-full h-8 bg-slate-800/80 rounded-full overflow-hidden border-2 border-slate-700/50 shadow-inner">
-                    {/* Background Glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
-                    {/* Progress Fill with Animation */}
                     <div
-                      className="relative h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-purple-500 transition-all duration-700 ease-out flex items-center justify-end px-3 shadow-lg"
-                      style={{ width: `${levelProgressPercent}%` }}
+                      className="text-[10px] font-semibold"
+                      style={{
+                        color:
+                          item.tier === 6
+                            ? "#ef4444"
+                            : item.tier === 5
+                            ? "#f97316"
+                            : item.tier === 4
+                            ? "#a855f7"
+                            : item.tier === 3
+                            ? "#3b82f6"
+                            : item.tier === 2
+                            ? "#22c55e"
+                            : "#9ca3af",
+                      }}
                     >
-                      {/* Shine Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse-subtle"></div>
-                      {levelProgressPercent > 15 && (
-                        <span className="relative text-sm font-black text-white drop-shadow-lg z-10">
-                          {Math.round(levelProgressPercent)}%
-                        </span>
-                      )}
+                      {TIER_NAMES[item.tier]}
                     </div>
                   </div>
                 </div>
-
-                {/* XP Details - Enhanced */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-3 sm:p-4 border border-slate-700/50">
-                    <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
-                      Current Level XP
-                    </div>
-                    <div className="text-lg sm:text-xl font-black text-white">
-                      {currentLevelXP.toLocaleString()}
-                      <span className="text-xs sm:text-sm text-gray-400 font-semibold">
-                        {" "}
-                        / 10,000
-                      </span>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-lg p-3 sm:p-4 border border-slate-700/50">
-                    <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
-                      XP to Next Level
-                    </div>
-                    <div className="text-lg sm:text-xl font-black text-white">
-                      {xpToNext.toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Active Quests Section with Animation */}
-        <div
-          className="mb-10 animate-slide-up"
-          style={{ animationDelay: "0.1s" }}
-        >
-          <ActiveQuestsGrid
-            activeQuests={activeQuests}
-            loading={questsLoading}
-            onAddQuest={handleAddQuest}
-            onQuestClick={(questId) => {
-              setSelectedQuestId(questId);
-              setIsQuestDetailsModalOpen(true);
-            }}
-            onViewAll={() => navigate("/quests")}
-          />
-        </div>
-
-        {/* Top Items Section with Animation */}
-        <div
-          className="mb-[-24px] animate-slide-up"
-          style={{ animationDelay: "0.2s" }}
-        >
-          <TopItemsGrid
-            topItems={topItems}
-            loading={itemsLoading}
-            onViewAll={() => navigate("/vault")}
-            onItemClick={(userItemId) => {
-              setSelectedItemId(userItemId);
-              setIsItemModalOpen(true);
-            }}
-          />
-        </div>
+        {/* Empty state */}
+        {stats.totalPulls === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-sm">
+              No items yet. Hit the Summon button to start collecting!
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNav currentPage="home" />
-
-      {/* Quest Selection Modal */}
-      <QuestSelectionModal
-        isOpen={isQuestModalOpen}
-        onClose={() => setIsQuestModalOpen(false)}
-        onQuestSelected={handleQuestAdded}
-        userId={selectedUser.id}
-        activeQuests={activeQuests}
-        completedQuests={completedQuests}
-      />
-
-      {/* Quest Details Modal */}
-      {selectedQuestId && (
-        <QuestDetailsModal
-          isOpen={isQuestDetailsModalOpen}
-          onClose={() => {
-            setIsQuestDetailsModalOpen(false);
-            setSelectedQuestId(null);
-            // Reload quests after completing quest
-            refreshQuests();
-          }}
-          questId={selectedQuestId}
-        />
-      )}
-
-      {/* Item Details Modal */}
-      {selectedItemId && (
-        <ItemDetailsModal
-          isOpen={isItemModalOpen}
-          onClose={() => {
-            setIsItemModalOpen(false);
-            setSelectedItemId(null);
-          }}
-          userItemId={selectedItemId}
-        />
-      )}
+      <BottomNav />
     </div>
   );
 }
-
-export default HomePage;
